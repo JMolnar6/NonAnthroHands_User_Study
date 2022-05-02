@@ -6,6 +6,8 @@ using System.Collections.Generic; // JLM 04/2022
 
 // This script has been modified in order to take inputs from the Oculus Quest. Changed lines are initialed: JM 04/2022
 
+//Commenting again =P
+
 // namespace Unity.Robotics.UrdfImporter.OculusControl
 // {
 //     public enum RotationDirection { None = 0, Positive = 1, Negative = -1 };
