@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     private string HandName;
     private GameObject leftHand;
     private GameObject rightHand;
+
+    private TextMeshPro DebugReport;
     // private List<GameObject> MyTeam = new List<GameObject>();
     
 
@@ -29,7 +31,10 @@ public class GameManager : MonoBehaviour
         int OculusID = int.Parse(now.Substring(now.Length-7));
         Debug.Log("OculusID = " + OculusID.ToString());
 
+        
+
         StartCoroutine(GetTeamNumber(OculusID));
+
         // Now we know what team we're on (0=Blue, 1=Red). We won't change this from here on out
 
         // // instantiate the flags at the base
