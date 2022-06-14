@@ -63,6 +63,7 @@ using TMPro;
             DisplaySelectedJoint(selectedIndex);
             StoreJointColors(selectedIndex);
 
+
             // Check for Oculus Quest connection - JLM 04/2022
             var inputDevices = new List<UnityEngine.XR.InputDevice>();
             UnityEngine.XR.InputDevices.GetDevices(inputDevices);
