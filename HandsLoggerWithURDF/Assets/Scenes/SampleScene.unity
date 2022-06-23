@@ -536,7 +536,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: connect_root_and_world
+  jointName: world_root_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &88249856
@@ -4555,7 +4555,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_finger_tip_1
+  jointName: j2s6s300_link_finger_1_j2s6s300_link_finger_tip_1_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &637465346
@@ -4585,7 +4585,7 @@ ArticulationBody:
   m_GameObject: {fileID: 637465343}
   m_Enabled: 1
   m_Mass: 0.01
-  m_ParentAnchorPosition: {x: 0.0029997807, y: 0, z: 0.044000607}
+  m_ParentAnchorPosition: {x: 0.0029997788, y: -0.000000011175871, z: 0.044000603}
   m_ParentAnchorRotation: {x: 0, y: 0, z: -0.7071072, w: 0.7071072}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
@@ -4751,7 +4751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_finger_tip_2
+  jointName: j2s6s300_link_finger_2_j2s6s300_link_finger_tip_2_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &663819273
@@ -4781,7 +4781,7 @@ ArticulationBody:
   m_GameObject: {fileID: 663819270}
   m_Enabled: 1
   m_Mass: 0.01
-  m_ParentAnchorPosition: {x: 0.0029995441, y: 0.00000013783574, z: 0.04400039}
+  m_ParentAnchorPosition: {x: 0.002999546, y: 0.00000015087426, z: 0.044000395}
   m_ParentAnchorRotation: {x: -0.000000100098774, y: -0.000000057951922, z: -0.7071073, w: 0.7071073}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
@@ -5202,7 +5202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_end_effector
+  jointName: j2s6s300_link_6_j2s6s300_end_effector_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!171741748 &743448568
@@ -5214,7 +5214,7 @@ ArticulationBody:
   m_GameObject: {fileID: 743448565}
   m_Enabled: 1
   m_Mass: 1
-  m_ParentAnchorPosition: {x: -0.0000002235175, y: -0.16000055, z: -0.000000008475524}
+  m_ParentAnchorPosition: {x: -0.0000002235175, y: -0.16000055, z: 3.5527154e-15}
   m_ParentAnchorRotation: {x: 0.5000002, y: -0.5000002, z: -0.5000003, w: 0.5000003}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}
@@ -6250,7 +6250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_2
+  jointName: j2s6s300_link_1_j2s6s300_link_2_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &883340633
@@ -6280,10 +6280,10 @@ ArticulationBody:
   m_GameObject: {fileID: 883340630}
   m_Enabled: 1
   m_Mass: 0.99
-  m_ParentAnchorPosition: {x: -0.0016, y: -0.118750006, z: 0.000000010381455}
-  m_ParentAnchorRotation: {x: 0, y: -1.0000001, z: -3.5527137e-15, w: -0.0000000437114}
+  m_ParentAnchorPosition: {x: -0.0016, y: -0.118750006, z: 0}
+  m_ParentAnchorRotation: {x: 0, y: 1, z: 3.5527137e-15, w: 0.000000043711395}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
-  m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
   m_ComputeParentAnchor: 1
   m_ArticulationJointType: 2
   m_LinearX: 1
@@ -8367,7 +8367,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_6
+  jointName: j2s6s300_link_5_j2s6s300_link_6_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1213288410
@@ -8397,10 +8397,10 @@ ArticulationBody:
   m_GameObject: {fileID: 1213288407}
   m_Enabled: 1
   m_Mass: 0.99
-  m_ParentAnchorPosition: {x: -0.103750184, y: -0.00000023841858, z: -0.0000000073391626}
-  m_ParentAnchorRotation: {x: 0, y: -1.0000005, z: -5.3290705e-15, w: -0.00000004371141}
+  m_ParentAnchorPosition: {x: -0.103750184, y: -0.00000023841858, z: -2.2145134e-15}
+  m_ParentAnchorRotation: {x: 0, y: 1.0000004, z: 5.3290705e-15, w: 0.00000004371141}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
-  m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
   m_ComputeParentAnchor: 1
   m_ArticulationJointType: 2
   m_LinearX: 0
@@ -8972,7 +8972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_5
+  jointName: j2s6s300_link_4_j2s6s300_link_5_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1310411887
@@ -9002,10 +9002,10 @@ ArticulationBody:
   m_GameObject: {fileID: 1310411884}
   m_Enabled: 1
   m_Mass: 0.463
-  m_ParentAnchorPosition: {x: 0.00000017881395, y: -0.10374996, z: -0.000000010801069}
-  m_ParentAnchorRotation: {x: 1.0000004, y: 0, z: 0.000000043711402, w: 5.3290705e-15}
+  m_ParentAnchorPosition: {x: 0.00000017881395, y: -0.10374996, z: 2.3092644e-14}
+  m_ParentAnchorRotation: {x: -1.0000002, y: 0, z: -0.000000043711395, w: -5.3290705e-15}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
-  m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
   m_ComputeParentAnchor: 1
   m_ArticulationJointType: 2
   m_LinearX: 1
@@ -9425,7 +9425,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_base
+  jointName: root_j2s6s300_link_base_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1390053070
@@ -9650,7 +9650,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_4
+  jointName: j2s6s300_link_3_j2s6s300_link_4_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1404611784
@@ -9680,7 +9680,7 @@ ArticulationBody:
   m_GameObject: {fileID: 1404611781}
   m_Enabled: 1
   m_Mass: 0.463
-  m_ParentAnchorPosition: {x: -0.20729981, y: -0.011399764, z: -0.000000007339171}
+  m_ParentAnchorPosition: {x: -0.20729981, y: -0.011399764, z: -1.1768367e-14}
   m_ParentAnchorRotation: {x: 0, y: 1.0000001, z: -1.7763568e-15, w: 0.000000043711402}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
@@ -10596,7 +10596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_1
+  jointName: j2s6s300_link_base_j2s6s300_link_1_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1520575994
@@ -10860,7 +10860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_finger_3
+  jointName: j2s6s300_link_6_j2s6s300_link_finger_3_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1569261661
@@ -10890,7 +10890,7 @@ ArticulationBody:
   m_GameObject: {fileID: 1569261658}
   m_Enabled: 1
   m_Mass: 0.01
-  m_ParentAnchorPosition: {x: 0.027069846, y: -0.11482051, z: -0.022260087}
+  m_ParentAnchorPosition: {x: 0.027069846, y: -0.11482051, z: -0.022260088}
   m_ParentAnchorRotation: {x: -0.20378387, y: -0.7291074, z: 0.24537168, w: -0.60553145}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
@@ -11192,7 +11192,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_finger_1
+  jointName: j2s6s300_link_6_j2s6s300_link_finger_1_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1649611370
@@ -11222,10 +11222,10 @@ ArticulationBody:
   m_GameObject: {fileID: 1649611367}
   m_Enabled: 1
   m_Mass: 0.01
-  m_ParentAnchorPosition: {x: -0.031260293, y: -0.114670485, z: 0.0027900233}
-  m_ParentAnchorRotation: {x: 0.16558644, y: -0.7164738, z: 0.27819574, w: 0.6179438}
+  m_ParentAnchorPosition: {x: -0.031260293, y: -0.114670485, z: 0.0027900105}
+  m_ParentAnchorRotation: {x: -0.16558641, y: 0.71647376, z: -0.27819574, w: -0.61794376}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
-  m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
   m_ComputeParentAnchor: 1
   m_ArticulationJointType: 2
   m_LinearX: 1
@@ -11373,7 +11373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_finger_tip_3
+  jointName: j2s6s300_link_finger_3_j2s6s300_link_finger_tip_3_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1673756082
@@ -11403,10 +11403,10 @@ ArticulationBody:
   m_GameObject: {fileID: 1673756079}
   m_Enabled: 1
   m_Mass: 0.01
-  m_ParentAnchorPosition: {x: 0.0029995274, y: -0.00000017508864, z: 0.04400038}
-  m_ParentAnchorRotation: {x: 0.000000010536713, y: 0.00000007375699, z: -0.7071072, w: 0.7071072}
+  m_ParentAnchorPosition: {x: 0.0029995255, y: -0.00000017508864, z: 0.04400038}
+  m_ParentAnchorRotation: {x: -0.000000010536713, y: -0.00000007375698, z: 0.7071071, w: -0.7071071}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
-  m_AnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
   m_ComputeParentAnchor: 1
   m_ArticulationJointType: 2
   m_LinearX: 1
@@ -12172,6 +12172,7 @@ GameObject:
   - component: {fileID: 1894238208}
   - component: {fileID: 1894238212}
   - component: {fileID: 1894238213}
+  - component: {fileID: 1894238214}
   m_Layer: 0
   m_Name: j2s6s300
   m_TagString: robot
@@ -12186,7 +12187,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1894238207}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1d7b05fb2a710034a8aaf18cf1544733, type: 3}
   m_Name: 
@@ -12284,6 +12285,30 @@ MonoBehaviour:
   selectedJoint: 
   selectedIndex: 0
   control: 0
+  stiffness: 100000
+  damping: 10000
+  forceLimit: 10000
+  speed: 15
+  torque: 100
+  acceleration: 5
+  highLightColor: {r: 1, g: 0, b: 0, a: 1}
+--- !u!114 &1894238214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894238207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 503a700890420e7419d0fb92f964eb57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DebugReport1: {fileID: 2134438953}
+  DebugReport2: {fileID: 254808761}
+  DebugReport3: {fileID: 1023804603}
+  selectedJoint: 1
+  selectedIndex: 1
   stiffness: 100000
   damping: 10000
   forceLimit: 10000
@@ -12609,7 +12634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_3
+  jointName: j2s6s300_link_2_j2s6s300_link_3_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &1975312301
@@ -12639,7 +12664,7 @@ ArticulationBody:
   m_GameObject: {fileID: 1975312298}
   m_Enabled: 1
   m_Mass: 0.6763
-  m_ParentAnchorPosition: {x: 0.41000023, y: -0.00000023841858, z: -0.000000004340438}
+  m_ParentAnchorPosition: {x: 0.41000023, y: -0.00000023841858, z: -1.2079699e-14}
   m_ParentAnchorRotation: {x: -0.7071068, y: -0.7071068, z: -0.000000030908616, w: 0.000000030908623}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
@@ -12806,7 +12831,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: j2s6s300_joint_finger_2
+  jointName: j2s6s300_link_6_j2s6s300_link_finger_2_joint
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!114 &2012950051
@@ -12836,7 +12861,7 @@ ArticulationBody:
   m_GameObject: {fileID: 2012950048}
   m_Enabled: 1
   m_Mass: 0.01
-  m_ParentAnchorPosition: {x: 0.027069846, y: -0.11482052, z: 0.022260068}
+  m_ParentAnchorPosition: {x: 0.027069846, y: -0.11482052, z: 0.022260081}
   m_ParentAnchorRotation: {x: -0.24537174, y: -0.60553145, z: 0.20378387, w: -0.7291074}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}

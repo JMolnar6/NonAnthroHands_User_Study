@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 //using Unity.Robotics;
 using UnityEngine;
 using System.Collections.Generic; // JLM 04/2022
@@ -12,7 +13,7 @@ using TMPro;
 //     public enum RotationDirection { None = 0, Positive = 1, Negative = -1 };
 //     public enum ControlType { PositionControl };
 
-    public class ControllerWithOculus : MonoBehaviour
+    public class ControllerFromLogFile : MonoBehaviour
     {
         private ArticulationBody[] articulationChain;
         // Stores original colors of the part being highlighted
@@ -29,6 +30,9 @@ using TMPro;
         public string selectedJoint;
         // [HideInInspector]
         public int selectedIndex;
+        public int startJoint = 3; //If the first few joints of the URDF includes a root and a base, 
+                                   // increment the startJoint number so that the position and velocity
+                                   // commands will apply to the first moveable joint
 
         // public ControlType control = PositionControl;
         public float stiffness;
@@ -78,6 +82,9 @@ using TMPro;
             else {
                 DebugReport1.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
             }
+
+            // Need a subroutine that initializes the position of the robot 
+            StartCoroutine(ReadCSV());
             
         }
 
@@ -96,42 +103,42 @@ using TMPro;
 
             OVRInput.Update();
 
-            Vector2 prev_controls = temp_controls;
-            temp_controls = GatherControls();
-            if (prev_controls[0]==0 && temp_controls[0]==1){
-                SelectionInput1 = true;
-            }
-            else{
-                SelectionInput1 = false;
-            }
-            if (prev_controls[1]==0 && temp_controls[1]==1){
-                SelectionInput2 = true;
-            }
-            else{
-                SelectionInput2 = false;
-            }
-            Debug.Log("SelectionInput1 = " + SelectionInput1);
-            Debug.Log("SelectionInput2 = " + SelectionInput2);
+            // Vector2 prev_controls = temp_controls;
+            // temp_controls = GatherControls();
+            // if (prev_controls[0]==0 && temp_controls[0]==1){
+            //     SelectionInput1 = true;
+            // }
+            // else{
+            //     SelectionInput1 = false;
+            // }
+            // if (prev_controls[1]==0 && temp_controls[1]==1){
+            //     SelectionInput2 = true;
+            // }
+            // else{
+            //     SelectionInput2 = false;
+            // }
+            // Debug.Log("SelectionInput1 = " + SelectionInput1);
+            // Debug.Log("SelectionInput2 = " + SelectionInput2);
             
 
-            // bool SelectionInput1 = Input.GetKeyDown("right"); 
-            // bool SelectionInput2 = Input.GetKeyDown("left");
+            // // bool SelectionInput1 = Input.GetKeyDown("right"); 
+            // // bool SelectionInput2 = Input.GetKeyDown("left");
 
-            SetSelectedJointIndex(selectedIndex); // to make sure it is in the valid range
-            UpdateDirection(selectedIndex);
+            // SetSelectedJointIndex(selectedIndex); // to make sure it is in the valid range
+            // UpdateDirection(selectedIndex);
 
-            if (SelectionInput2)
-            {
-                SetSelectedJointIndex(selectedIndex - 1);
-                Highlight(selectedIndex);
-            }
-            else if (SelectionInput1)
-            {
-                SetSelectedJointIndex(selectedIndex + 1);
-                Highlight(selectedIndex);
-            }
-            DebugReport1.SetText("Debug Info: selectedIndex = "+ selectedIndex.ToString());
-            UpdateDirection(selectedIndex);
+            // if (SelectionInput2)
+            // {
+            //     SetSelectedJointIndex(selectedIndex - 1);
+            //     Highlight(selectedIndex);
+            // }
+            // else if (SelectionInput1)
+            // {
+            //     SetSelectedJointIndex(selectedIndex + 1);
+            //     Highlight(selectedIndex);
+            // }
+            // DebugReport1.SetText("Debug Info: selectedIndex = "+ selectedIndex.ToString());
+            // UpdateDirection(selectedIndex);
         }
 
         /// <summary>
@@ -174,59 +181,59 @@ using TMPro;
         /// Sets the direction of movement of the joint on every update
         /// </summary>
         /// <param name="jointIndex">Index of the link selected in the Articulation Chain</param>
-        private void UpdateDirection(int jointIndex)
-        {
-            if (jointIndex < 0 || jointIndex >= articulationChain.Length) 
-            {
-                return;
-            }
+        // private void UpdateDirection(int jointIndex)
+        // {
+        //     if (jointIndex < 0 || jointIndex >= articulationChain.Length) 
+        //     {
+        //         return;
+        //     }
 
-            float moveDirection = (float) 0.0;
+        //     float moveDirection = (float) 0.0;
 
-            if (questConnected){
-                if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp)){
-                    moveDirection = (float) 1;
-                    DebugReport3.SetText("Up button active.");
-                }
-                else if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown)){
-                    moveDirection = (float) -1;
-                    DebugReport3.SetText("Down button active.");
-                }
-                else{
-                    moveDirection = (float) 0;
-                    DebugReport3.SetText("No movement requested.");
-                }
-            }
-            else{
-                moveDirection = Input.GetAxis("Vertical");
-            }
+        //     if (questConnected){
+        //         if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickUp)){
+        //             moveDirection = (float) 1;
+        //             DebugReport3.SetText("Up button active.");
+        //         }
+        //         else if (OVRInput.Get(OVRInput.Button.SecondaryThumbstickDown)){
+        //             moveDirection = (float) -1;
+        //             DebugReport3.SetText("Down button active.");
+        //         }
+        //         else{
+        //             moveDirection = (float) 0;
+        //             DebugReport3.SetText("No movement requested.");
+        //         }
+        //     }
+        //     else{
+        //         moveDirection = Input.GetAxis("Vertical");
+        //     }
             
-            JointControl current = articulationChain[jointIndex].GetComponent<JointControl>();
-            if (previousIndex != jointIndex)
-            {
-                JointControl previous = articulationChain[previousIndex].GetComponent<JointControl>();
-                previous.direction = Unity.Robotics.UrdfImporter.Control.RotationDirection.None;
-                previousIndex = jointIndex;
-            }
+        //     JointControl current = articulationChain[jointIndex].GetComponent<JointControl>();
+        //     if (previousIndex != jointIndex)
+        //     {
+        //         JointControl previous = articulationChain[previousIndex].GetComponent<JointControl>();
+        //         previous.direction = Unity.Robotics.UrdfImporter.Control.RotationDirection.None;
+        //         previousIndex = jointIndex;
+        //     }
 
-            // if (current.controltype != control) 
-            // {
-            //     UpdateControlType(current);
-            // }
+        //     // if (current.controltype != control) 
+        //     // {
+        //     //     UpdateControlType(current);
+        //     // }
 
-            if (moveDirection > 0)
-            {
-                current.direction = Unity.Robotics.UrdfImporter.Control.RotationDirection.Positive;
-            }
-            else if (moveDirection < 0)
-            {
-                current.direction = Unity.Robotics.UrdfImporter.Control.RotationDirection.Negative;
-            }
-            else
-            {
-                current.direction = Unity.Robotics.UrdfImporter.Control.RotationDirection.None;
-            }
-        }
+        //     if (moveDirection > 0)
+        //     {
+        //         current.direction = Unity.Robotics.UrdfImporter.Control.RotationDirection.Positive;
+        //     }
+        //     else if (moveDirection < 0)
+        //     {
+        //         current.direction = Unity.Robotics.UrdfImporter.Control.RotationDirection.Negative;
+        //     }
+        //     else
+        //     {
+        //         current.direction = Unity.Robotics.UrdfImporter.Control.RotationDirection.None;
+        //     }
+        // }
 
         /// <summary>
         /// Stores original color of the part being highlighted
@@ -308,6 +315,49 @@ using TMPro;
             DebugReport2.SetText("Debug Info: "+ controls[1].ToString() + ", " + controls[0].ToString());
             return controls;
         }
+
+        private IEnumerator ReadCSV(){
+        string[] PositionLines = System.IO.File.ReadAllLines("../HandsLoggerWithURDF/Assets/Data/corrected_positions.csv");
+        string[] VelocityLines = System.IO.File.ReadAllLines("../HandsLoggerWithURDF/Assets/Data/corrected_velocities.csv");
+
+        string URDFName = transform.root.gameObject.name;
+        Debug.Log("Root URDF is named "+ URDFName);
+
+        for (int i=0; i<=PositionLines.Length-1; i++){
+            string[] Positions = PositionLines[i].Split(',');
+            string[] Velocities= VelocityLines[i].Split(',');
+
+            int numJoints = Positions.Length;
+            Debug.Log("Number of joints specified");
+            // Debug.Log(PositionLines[i]);
+            // Debug.Log("Line "+i.ToString()+" of preplanned file. Position control.");
+            Debug.Log("Line "+i.ToString()+" of preplanned file. Velocity control.");
+            
+            for (int j=1; j<=numJoints; j++){
+                string linkName = URDFName+"_link_"+j;
+                Debug.Log("Joint link: "+ linkName);
+
+                ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+                var drive = joint.xDrive;
+                Debug.Log("Drive found successfully");
+
+                drive.target = float.Parse(Positions[j-1]);
+                Debug.Log("Setting drive target to "+Positions[j-1]);
+                // drive.targetVelocity = float.Parse(Velocities[j-1]);
+                // Debug.Log("Setting drive target to "+Velocities[j-1]);
+                joint.xDrive = drive;
+                // joint.xDrive.target         = Positions[j-1];
+                // joint.xDrive.targetVelocity = Velocities[j-1];
+                
+                // JointControl current = articulationChain[j-1].GetComponent<JointControl>();
+                
+            }
+            yield return new WaitForSecondsRealtime((float) 0.2);
+
+        }
+    
+    }
+
 
 
 //         public void OnGUI()
