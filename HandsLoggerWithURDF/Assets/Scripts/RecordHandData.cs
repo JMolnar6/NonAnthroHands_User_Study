@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+// using UnityEngine.EventSystems;
 using System.IO;
 
 public class RecordHandData : MonoBehaviour
@@ -16,6 +17,7 @@ public class RecordHandData : MonoBehaviour
     public Button m_StartButton;
 
     private GameObject duplicateHand;
+    private float startTime = 0;
     
     // List<float> nums = new List<float>();
     List<Vector3> pos = new List<Vector3>();
@@ -35,9 +37,12 @@ public class RecordHandData : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if( isRec == true){
-            Debug.Log("Time = " + Time.time);
+        if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
+            startTime = Time.time; 
+            Debug.Log("Time = " + startTime);
+        }
 
+        if (isRec == true){
             Vector3 tempPos = hand.transform.position;
             Quaternion tempRot = hand.transform.rotation;
 
@@ -53,22 +58,26 @@ public class RecordHandData : MonoBehaviour
             tim.Add(Time.time);
             
             Debug.Log("Position at time " + Time.time + " = " + hand.transform.position);
-            Debug.Log("Rotation at time " + Time.time + " = " + hand.transform.rotation);
+            Debug.Log("Rotation at time " + Time.time + " = " + hand.transform.rotation);            
         }
 
-        if ((Time.time > 15) & (!playLaunched)){
-            Debug.Log("Playback sequence initiated.");
-            playLaunched = true;
-            isRec = false;
-            duplicateHand = GameObject.Instantiate(handPrefab, hand.transform.position, hand.transform.rotation);
-            RunIt();
+        if ((Time.time - startTime > 15) & (!playLaunched)){
+                Debug.Log("Recording complete.");
+                playLaunched = true;
+                isRec = false;
+                LogAndConfirm();
         }
     }
 
-    public IEnumerator Playback ()
-    { 
-        // playedNoRep = true;
-        
+
+    public void LogAndConfirm() {
+        WriteLogFile();
+        duplicateHand = GameObject.Instantiate(handPrefab, hand.transform.position, hand.transform.rotation);
+        StartCoroutine("Playback");
+        Reset();
+    }
+
+    private void WriteLogFile(){
         // output log file of user motions and times
         
         Debug.Log("filepath directory = " + Application.persistentDataPath);
@@ -90,7 +99,10 @@ public class RecordHandData : MonoBehaviour
         writer.Flush();
         writer.Close();
 
+    }
 
+    public IEnumerator Playback ()
+    { 
         for (int i = 0; i < pos.Count-1; i+=3) {
 
             duplicateHand.transform.position = pos[i];
@@ -103,14 +115,10 @@ public class RecordHandData : MonoBehaviour
     public void Reset () {
         pos.Clear();
         rot.Clear();
-        // Application.LoadLevel("SciFi Level");
-    }
-    public void RunIt () {
-        StartCoroutine("Playback");
+        tim.Clear();
     }
 
-
-     private void TaskOnClick()
+    private void TaskOnClick()
     {
         //Output this to console when Button1 is clicked
         Debug.Log("Starting now! (hand recorder)");

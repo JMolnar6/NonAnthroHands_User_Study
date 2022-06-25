@@ -3,6 +3,7 @@ using System.Collections;
 //using Unity.Robotics;
 using UnityEngine;
 using UnityEngine.UI;
+// using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using TMPro;
 
@@ -45,8 +46,8 @@ using TMPro;
 
         void Start()
         {
-            //  m_StartButton.onClick.AddListener(TaskOnClick);
-            StartCoroutine(ReadCSV());
+             m_StartButton.onClick.AddListener(TaskOnClick);
+            // StartCoroutine(ReadCSV());
 
             previousIndex = selectedIndex = 1;
             temp_controls = new Vector2(0,0);
