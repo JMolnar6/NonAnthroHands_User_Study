@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 
 public class RecordHandData : MonoBehaviour
 {
-    bool isRec = false;
+    public bool isRec = false;
     bool playLaunched = false;
     
     public bool isLeft = false;
     public GameObject hand;
     public GameObject handPrefab;
+
+    public Button m_StartButton;
 
     private GameObject duplicateHand;
     
@@ -25,7 +28,8 @@ public class RecordHandData : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-          isRec = true;
+        //   isRec = true;
+        m_StartButton.onClick.AddListener(TaskOnClick);
     }
 
     // Update is called once per frame
@@ -52,7 +56,7 @@ public class RecordHandData : MonoBehaviour
             Debug.Log("Rotation at time " + Time.time + " = " + hand.transform.rotation);
         }
 
-        if ((Time.time > 5) & (!playLaunched)){
+        if ((Time.time > 15) & (!playLaunched)){
             Debug.Log("Playback sequence initiated.");
             playLaunched = true;
             isRec = false;
@@ -67,8 +71,9 @@ public class RecordHandData : MonoBehaviour
         
         // output log file of user motions and times
         
-        Debug.Log("filepath directory = " + Application.dataPath);
-        string filePath = Application.dataPath + "/Data/" + "HandMotion";
+        Debug.Log("filepath directory = " + Application.persistentDataPath);
+        // string filePath = Application.persistentDataPath + "/Data/" + "HandMotion";
+        string filePath = Application.persistentDataPath + "/HandMotion";
         if(isLeft){
             filePath = filePath + "_left.csv";
         }
@@ -86,12 +91,12 @@ public class RecordHandData : MonoBehaviour
         writer.Close();
 
 
-        for (int i = 0; i < pos.Count; i+=3) {
+        for (int i = 0; i < pos.Count-1; i+=3) {
 
             duplicateHand.transform.position = pos[i];
             duplicateHand.transform.rotation = rot[i];
 
-            yield return null;
+            yield return new WaitForSecondsRealtime((float) tim[i+1] - tim[i]);
         }
     }
  
@@ -103,4 +108,14 @@ public class RecordHandData : MonoBehaviour
     public void RunIt () {
         StartCoroutine("Playback");
     }
+
+
+     private void TaskOnClick()
+    {
+        //Output this to console when Button1 is clicked
+        Debug.Log("Starting now! (hand recorder)");
+        isRec=true;
+
+    }
+
 }

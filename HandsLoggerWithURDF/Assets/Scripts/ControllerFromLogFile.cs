@@ -2,6 +2,7 @@
 using System.Collections;
 //using Unity.Robotics;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic; // JLM 04/2022
 using TMPro;
 // using Unity.Robotics.UrdfImporter.Control; // JLM 04/2022
@@ -24,7 +25,11 @@ using TMPro;
         private bool questConnected = false;
         public TextMeshPro DebugReport1;
         public TextMeshPro DebugReport2;
-        public TextMeshPro DebugReport3;
+        // public TextMeshPro DebugReport3;
+
+        public Button m_StartButton;
+
+        public float replayRefreshRate = 15;
 
         // [InspectorReadOnly(hideInEditMode: true)]
         public string selectedJoint;
@@ -48,6 +53,9 @@ using TMPro;
 
         void Start()
         {
+            //  m_StartButton.onClick.AddListener(TaskOnClick);
+            StartCoroutine(ReadCSV());
+
             previousIndex = selectedIndex = 1;
             temp_controls = new Vector2(0,0);
             this.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
@@ -62,7 +70,7 @@ using TMPro;
                 currentDrive.forceLimit = forceLimit;
                 joint.xDrive = currentDrive;
             }
-            DisplaySelectedJoint(selectedIndex);
+            // DisplaySelectedJoint(selectedIndex);
             StoreJointColors(selectedIndex);
 
 
@@ -81,11 +89,7 @@ using TMPro;
             }
             else {
                 DebugReport1.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
-            }
-
-            // Need a subroutine that initializes the position of the robot 
-            StartCoroutine(ReadCSV());
-            
+            }            
         }
 
         void SetSelectedJointIndex(int index)
@@ -158,7 +162,7 @@ using TMPro;
             // store colors for the current selected joint
             StoreJointColors(selectedIndex);
 
-            DisplaySelectedJoint(selectedIndex);
+            // DisplaySelectedJoint(selectedIndex);
             Renderer[] rendererList = articulationChain[selectedIndex].transform.GetChild(0).GetComponentsInChildren<Renderer>();
 
             // set the color of the selected join meshes to the highlight color
@@ -168,19 +172,19 @@ using TMPro;
             }
         }
 
-        void DisplaySelectedJoint(int selectedIndex)
-        {
-            if (selectedIndex < 0 || selectedIndex >= articulationChain.Length) 
-            {
-                return;
-            }
-            selectedJoint = articulationChain[selectedIndex].name + " (" + selectedIndex + ")";
-        }
+        // void DisplaySelectedJoint(int selectedIndex)
+        // {
+        //     if (selectedIndex < 0 || selectedIndex >= articulationChain.Length) 
+        //     {
+        //         return;
+        //     }
+        //     selectedJoint = articulationChain[selectedIndex].name + " (" + selectedIndex + ")";
+        // }
 
-        /// <summary>
-        /// Sets the direction of movement of the joint on every update
-        /// </summary>
-        /// <param name="jointIndex">Index of the link selected in the Articulation Chain</param>
+        // // / <summary>
+        // // / Sets the direction of movement of the joint on every update
+        // // / </summary>
+        // // / <param name="jointIndex">Index of the link selected in the Articulation Chain</param>
         // private void UpdateDirection(int jointIndex)
         // {
         //     if (jointIndex < 0 || jointIndex >= articulationChain.Length) 
@@ -262,17 +266,17 @@ using TMPro;
             }
         }
 
-//         public void UpdateControlType(JointControl joint)
-//         {
-//             joint.controltype = control;
-//             if (control == ControlType.PositionControl)
-//             {
-//                 ArticulationDrive drive = joint.joint.xDrive;
-//                 drive.stiffness = stiffness;
-//                 drive.damping = damping;
-//                 joint.joint.xDrive = drive;
-//             }
-//         }
+        // public void UpdateControlType(JointControl joint)
+        // {
+        //     joint.controltype = control;
+        //     if (control == ControlType.PositionControl)
+        //     {
+        //         ArticulationDrive drive = joint.joint.xDrive;
+        //         drive.stiffness = stiffness;
+        //         drive.damping = damping;
+        //         joint.joint.xDrive = drive;
+        //     }
+        // }
 
 // This section modified to be able to take inputs from either keyboard or Oculus - JLM 04/2022
         public Vector2 GatherControls(){
@@ -317,21 +321,21 @@ using TMPro;
         }
 
         private IEnumerator ReadCSV(){
-        string[] PositionLines = System.IO.File.ReadAllLines("../HandsLoggerWithURDF/Assets/Data/corrected_positions.csv");
-        string[] VelocityLines = System.IO.File.ReadAllLines("../HandsLoggerWithURDF/Assets/Data/corrected_velocities.csv");
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_positions.csv");
+        // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
 
         string URDFName = transform.root.gameObject.name;
         Debug.Log("Root URDF is named "+ URDFName);
 
         for (int i=0; i<=PositionLines.Length-1; i++){
             string[] Positions = PositionLines[i].Split(',');
-            string[] Velocities= VelocityLines[i].Split(',');
+            // string[] Velocities= VelocityLines[i].Split(',');
 
             int numJoints = Positions.Length;
             Debug.Log("Number of joints specified");
             // Debug.Log(PositionLines[i]);
-            // Debug.Log("Line "+i.ToString()+" of preplanned file. Position control.");
-            Debug.Log("Line "+i.ToString()+" of preplanned file. Velocity control.");
+            Debug.Log("Line "+i.ToString()+" of preplanned file. Position control.");
+            // Debug.Log("Line "+i.ToString()+" of preplanned file. Velocity control.");
             
             for (int j=1; j<=numJoints; j++){
                 string linkName = URDFName+"_link_"+j;
@@ -352,13 +356,19 @@ using TMPro;
                 // JointControl current = articulationChain[j-1].GetComponent<JointControl>();
                 
             }
-            yield return new WaitForSecondsRealtime((float) 0.2);
+            yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
 
         }
     
     }
 
+    private void TaskOnClick()
+    {
+        //Output this to console when Button1 is clicked
+        Debug.Log("Starting now! (robot motion)");
+        StartCoroutine(ReadCSV());
 
+    }
 
 //         public void OnGUI()
 //         {
