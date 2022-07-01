@@ -9,7 +9,7 @@ public class PosRotRecorder : MonoBehaviour
     public int iteration = 1;
     public Transform go;
 
-    public Button m_StartButton;
+    // public Button RecordButton;
 
     private bool isRec = false;
     private bool playLaunched = false;
@@ -23,7 +23,9 @@ public class PosRotRecorder : MonoBehaviour
     void Start()
     {
         //   isRec = true;
-        m_StartButton.onClick.AddListener(TaskOnClick);
+        Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+        Debug.Log("Record button found");
+        RecordButton.onClick.AddListener(TaskOnClick);
         Debug.Log("Recording name: " + go.name);
     }
 
@@ -32,6 +34,7 @@ public class PosRotRecorder : MonoBehaviour
     {
         if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
             startTime = Time.time; 
+            playLaunched = false;
             Debug.Log("Time = " + startTime);
         }
 
@@ -86,6 +89,9 @@ public class PosRotRecorder : MonoBehaviour
         pos.Clear();
         rot.Clear();
         tim.Clear();
+
+        isRec = false;
+        startTime = (float) 0.0;
     }
 
     private void TaskOnClick()

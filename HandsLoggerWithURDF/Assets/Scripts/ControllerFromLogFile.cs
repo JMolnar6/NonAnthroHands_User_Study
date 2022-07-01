@@ -16,11 +16,12 @@ using TMPro;
         private Vector2 temp_controls;
 
         private bool questConnected = false;
+        // public Button PlayButton;
         public TextMeshPro DebugReport1;
         public TextMeshPro DebugReport2;
         // public TextMeshPro DebugReport3;
 
-        public Button m_StartButton;
+        // public Button RecordButton;
 
         public float replayRefreshRate = 15;
 
@@ -46,7 +47,11 @@ using TMPro;
 
         void Start()
         {
-             m_StartButton.onClick.AddListener(TaskOnClick);
+            Button PlayButton = GameObject.Find("Play Button").GetComponent<Button>();
+            Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+            // Both the Start and Record buttons should initiate animation, so assign them the same listener
+            PlayButton.onClick.AddListener(AnimateURDF);
+            RecordButton.onClick.AddListener(AnimateURDF);
             // StartCoroutine(ReadCSV());
 
             previousIndex = selectedIndex = 1;
@@ -138,7 +143,7 @@ using TMPro;
     
     }
 
-    private void TaskOnClick()
+    private void AnimateURDF()
     {
         //Output this to console when Button1 is clicked
         Debug.Log("Starting now! (robot motion)");

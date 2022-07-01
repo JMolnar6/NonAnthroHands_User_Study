@@ -5,12 +5,14 @@ using UnityEngine.UI;
 
 public class StartButtonHandler : MonoBehaviour
 {
-    public Button m_StartButton;
+    public Button m_PlayButton;
+    public Button m_RecordButton;
 
     // Start is called before the first frame update
     void Start()
     {
-        m_StartButton.onClick.AddListener(TaskOnClick);
+        m_PlayButton.onClick.AddListener(TaskOnClickPlay);
+        m_RecordButton.onClick.AddListener(TaskOnClickRecord);
     }
 
     // Update is called once per frame
@@ -19,9 +21,14 @@ public class StartButtonHandler : MonoBehaviour
         
     }
 
-    private void TaskOnClick()
+    private void TaskOnClickPlay()
     {
-        Button.Destroy(m_StartButton); //Should make the button disappear after being clicked
+        // 
+
+    }
+    private void TaskOnClickRecord()
+    {
+        // 
 
     }
 }
