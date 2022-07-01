@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
 
 
-            GameObject go;
+            // GameObject go;
             // DO STUFF HERE TO URDF
             // if (HandName == "LeftHand"){
             //     for (int i = 1; i<=4; i++){
