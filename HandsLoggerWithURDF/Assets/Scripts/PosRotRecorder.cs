@@ -12,7 +12,7 @@ public class PosRotRecorder : MonoBehaviour
     // public Button RecordButton;
 
     private bool isRec = false;
-    private bool playLaunched = false;
+    private bool playLaunched = true;
     private float startTime = 0;
     
     List<Vector3> pos = new List<Vector3>();
@@ -25,7 +25,7 @@ public class PosRotRecorder : MonoBehaviour
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
         Debug.Log("Record button found");
-        RecordButton.onClick.AddListener(TaskOnClick);
+        RecordButton.onClick.AddListener(TaskOnRecordClick);
         Debug.Log("Recording name: " + go.name);
     }
 
@@ -72,7 +72,7 @@ public class PosRotRecorder : MonoBehaviour
         // Debug.Log("filepath directory = " + Application.persistentDataPath + "/" + go.name + "_Motion_" + iteration + ".csv");
         
         // string filePath = Application.persistentDataPath + "/Data/" + "goMotion";
-        string filePath = Application.persistentDataPath + "/" + go.name + "_Motion_" + iteration + ".csv";
+        string filePath = Application.persistentDataPath + "/" + go.name + "Motion_" + iteration + ".csv";
         Debug.Log("filepath = " + filePath);
         
         StreamWriter writer = new StreamWriter(filePath);
@@ -94,7 +94,7 @@ public class PosRotRecorder : MonoBehaviour
         startTime = (float) 0.0;
     }
 
-    private void TaskOnClick()
+    private void TaskOnRecordClick()
     {
         //Output this to console when Button1 is clicked
         Debug.Log("Starting recording now: " + go.name);
