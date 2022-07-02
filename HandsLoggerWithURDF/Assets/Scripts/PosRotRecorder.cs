@@ -42,8 +42,8 @@ public class PosRotRecorder : MonoBehaviour
         if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
             startTime = Time.time; 
             playLaunched = false;
-            Debug.Log("Time = " + startTime);
-            Debug.Log("End time = " + (startTime+animationTime).ToString());
+            // Debug.Log("Time = " + startTime);
+            // Debug.Log("End time = " + (startTime+animationTime).ToString());
         }
 
         if (isRec == true){
