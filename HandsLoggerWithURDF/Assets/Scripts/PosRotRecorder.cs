@@ -8,12 +8,15 @@ public class PosRotRecorder : MonoBehaviour
 {
     public int iteration = 1;
     public Transform go;
+    // public ControllerFromLogFile fp;
 
     // public Button RecordButton;
 
     private bool isRec = false;
     private bool playLaunched = true;
     private float startTime = 0;
+    private float animationTime = 15;
+    private ControllerFromLogFile controller;
     
     List<Vector3> pos = new List<Vector3>();
     List<Quaternion> rot = new List<Quaternion>();
@@ -24,18 +27,23 @@ public class PosRotRecorder : MonoBehaviour
     {
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
-        Debug.Log("Record button found");
+        // Debug.Log("Record button found");
         RecordButton.onClick.AddListener(TaskOnRecordClick);
-        Debug.Log("Recording name: " + go.name);
+        Debug.Log("Recording: " + go.name);
+
+        controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        animationTime = controller.animationTime;
+        // Debug.Log("Animation runtime = " + animationTime.ToString());
         if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
             startTime = Time.time; 
             playLaunched = false;
             Debug.Log("Time = " + startTime);
+            Debug.Log("End time = " + (startTime+animationTime).ToString());
         }
 
         if (isRec == true){
@@ -46,12 +54,12 @@ public class PosRotRecorder : MonoBehaviour
             rot.Add(tempRot);
             tim.Add(Time.time);
             
-            Debug.Log("Position at time " + Time.time + " = " + go.position);
-            Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
+            // Debug.Log("Position at time " + Time.time + " = " + go.position);
+            // Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
         }
 
-        if ((Time.time - startTime > 15) & (!playLaunched)){
-                Debug.Log("Recording complete.");
+        if ((Time.time > animationTime + startTime) & (!playLaunched)){
+                Debug.Log("Recording complete at " + Time.time.ToString());
                 playLaunched = true;
                 isRec = false;
                 LogAndConfirm();
