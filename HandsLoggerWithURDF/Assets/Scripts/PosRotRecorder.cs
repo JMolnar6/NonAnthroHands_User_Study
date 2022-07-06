@@ -58,7 +58,7 @@ public class PosRotRecorder : MonoBehaviour
             // Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
         }
 
-        if ((Time.time > animationTime + startTime) & (!playLaunched)){
+        if ((Time.time > animationTime + startTime) & (!playLaunched)){ //Something is off here--we're still clipping some of the animation time off
                 Debug.Log("Recording complete at " + Time.time.ToString());
                 playLaunched = true;
                 isRec = false;

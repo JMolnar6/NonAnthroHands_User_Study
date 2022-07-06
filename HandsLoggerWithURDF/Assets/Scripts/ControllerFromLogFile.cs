@@ -15,11 +15,13 @@ public class ControllerFromLogFile : MonoBehaviour {
     private Vector2 temp_controls;
 
     private bool questConnected = false;
-    // public Button PlayButton;
-    public TextMeshPro DebugReport1;
-    public TextMeshPro DebugReport2;
+    private TextMeshPro DebugReport1;
+    private TextMeshPro DebugReport2;
+
+    // public TextMeshPro DebugReport2;
     // public TextMeshPro DebugReport3;
 
+    // public Button PlayButton;
     // public Button RecordButton;
 
     public float replayRefreshRate = 15;
@@ -50,10 +52,14 @@ public class ControllerFromLogFile : MonoBehaviour {
     {
         Button PlayButton = GameObject.Find("Play Button").GetComponent<Button>();
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+        DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
+        DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
+        DebugReport1.SetText("");
+        DebugReport2.SetText("");
         // Both the Start and Record buttons should initiate animation, so assign them the same listener
         PlayButton.onClick.AddListener(AnimateURDF);
         RecordButton.onClick.AddListener(AnimateURDF);
-        // StartCoroutine(ReadCSV());
+        // StartCoroutine(PlayFromCSV());
 
         previousIndex = selectedIndex = 1;
         temp_controls = new Vector2(0,0);
@@ -83,16 +89,15 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         // DebugReport = GameObject.Find("Debug Report").GetComponent<TextMeshPro>();
         if (questConnected){
-            DebugReport1.SetText("Debug Info: Quest is connected");// + ((int) statusUpdate["RedTeamScore"].n));
+            DebugReport2.SetText("Debug Info: Quest is connected");// + ((int) statusUpdate["RedTeamScore"].n));
         }
         else {
-            DebugReport1.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
+            DebugReport2.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
         }            
     }
 
     void SetSelectedJointIndex(int index){
-        if (articulationChain.Length > 0) 
-        {
+        if (articulationChain.Length > 0){
             selectedIndex = (index + articulationChain.Length) % articulationChain.Length;
         }
     }
@@ -102,11 +107,10 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     }
 
-    private IEnumerator ReadCSV(){
+    private IEnumerator PlayFromCSV(){
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_positions.csv");
         // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
         animationTime = PositionLines.Length/replayRefreshRate;
-
 
         string URDFName = transform.root.gameObject.name;
         // Debug.Log("Root URDF is named "+ URDFName);
@@ -140,18 +144,55 @@ public class ControllerFromLogFile : MonoBehaviour {
                 // JointControl current = articulationChain[j-1].GetComponent<JointControl>();
                 
             }
+
+            if (i==PositionLines.Length){
+                Debug.Log("Final animation time: " + Time.time.ToString());
+            }
+
         yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
-
         }
-
     }
 
     private void AnimateURDF()
     {
-        //Output this to console when Button1 is clicked
-        Debug.Log("Starting now! (robot motion)");
-        StartCoroutine(ReadCSV());
+        // If URDF is not already in start position, return it there 
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_positions.csv");
+        string URDFName = transform.root.gameObject.name;
 
+        string[] Positions = PositionLines[1].Split(',');
+        int numJoints = Positions.Length;
+    
+        for (int j=1; j<=numJoints; j++){
+            string linkName = URDFName+"_link_"+j;
+
+            ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+            var drive = joint.xDrive;
+
+            drive.target = float.Parse(Positions[j-1]);
+            joint.xDrive = drive;            
+        }
+
+        // Clear any distracting debug text
+        DebugReport2.SetText("");
+
+        // Begin countdown to animation 
+        StartCoroutine(BeginCountdown());
+    }
+
+    private IEnumerator BeginCountdown(){
+        DebugReport1.SetText("Ready?");
+        yield return new WaitForSecondsRealtime((float) 2.0);
+        DebugReport1.SetText("3");
+        yield return new WaitForSecondsRealtime((float) 1.0);
+        DebugReport1.SetText("2");
+        yield return new WaitForSecondsRealtime((float) 1.0);
+        DebugReport1.SetText("1");
+        yield return new WaitForSecondsRealtime((float) 1.0);
+        DebugReport1.SetText("GO");
+        yield return new WaitForSecondsRealtime((float) 0.5);
+        DebugReport1.SetText("");
+        Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
+        StartCoroutine(PlayFromCSV());
     }
 
 }
