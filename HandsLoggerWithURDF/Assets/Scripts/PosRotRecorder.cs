@@ -58,7 +58,7 @@ public class PosRotRecorder : MonoBehaviour
             // Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
         }
 
-        if ((Time.time > animationTime + startTime) & (!playLaunched)){ //Something is off here--we're still clipping some of the animation time off
+        if ((Time.time > animationTime + startTime) & (!playLaunched)){ 
                 Debug.Log("Recording complete at " + Time.time.ToString());
                 playLaunched = true;
                 isRec = false;
@@ -104,10 +104,17 @@ public class PosRotRecorder : MonoBehaviour
 
     private void TaskOnRecordClick()
     {
-        //Output this to console when Button1 is clicked
-        Debug.Log("Starting recording now: " + go.name);
-        isRec=true;
+        // Wait for countdown to initiate recording: 5.5 sec
+        StartCoroutine(WaitForCountdown());
+        
 
+    }
+    
+    private IEnumerator WaitForCountdown(){
+        yield return new WaitForSecondsRealtime((float) 5.5);
+        //Output this to console when Button1 is clicked
+        Debug.Log("Starting recording now: " + go.name + " at time " + Time.time);
+        isRec=true;
     }
 
 }

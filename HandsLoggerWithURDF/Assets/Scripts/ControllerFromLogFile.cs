@@ -110,7 +110,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     private IEnumerator PlayFromCSV(){
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_positions.csv");
         // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
-        animationTime = PositionLines.Length/replayRefreshRate;
+        // animationTime = PositionLines.Length/replayRefreshRate;
 
         string URDFName = transform.root.gameObject.name;
         // Debug.Log("Root URDF is named "+ URDFName);
@@ -157,6 +157,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     {
         // If URDF is not already in start position, return it there 
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_positions.csv");
+        animationTime = PositionLines.Length/replayRefreshRate;
         string URDFName = transform.root.gameObject.name;
 
         string[] Positions = PositionLines[1].Split(',');
