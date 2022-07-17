@@ -8,6 +8,7 @@ public class PosRotRecorder : MonoBehaviour
 {
     public int iteration = 1;
     public Transform go;
+    public float catchupTime = (float) 2.0;
     // public ControllerFromLogFile fp;
 
     // public Button RecordButton;
@@ -58,7 +59,7 @@ public class PosRotRecorder : MonoBehaviour
             // Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
         }
 
-        if ((Time.time > animationTime + startTime) & (!playLaunched)){ 
+        if ((Time.time > animationTime + startTime + catchupTime) & (!playLaunched)){ 
                 Debug.Log("Recording complete at " + Time.time.ToString());
                 playLaunched = true;
                 isRec = false;
