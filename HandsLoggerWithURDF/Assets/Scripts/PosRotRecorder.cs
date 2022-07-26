@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.IO;
 
-public class PosRotRecorder : MonoBehaviour
+public class PosRotRecorder : MonoBehaviour, IPointerClickHandler
 {
     public int iteration = 1;
     public Transform go;
@@ -29,10 +30,11 @@ public class PosRotRecorder : MonoBehaviour
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
         // Debug.Log("Record button found");
+        // RecordButton.onPointerClick.AddListener(TaskOnRecordClick);
         RecordButton.onClick.AddListener(TaskOnRecordClick);
         Debug.Log("Recording: " + go.name);
 
-        controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
+        controller = GameObject.Find("URDFController").GetComponent<ControllerFromLogFile>();
     }
 
     // Update is called once per frame
@@ -109,6 +111,10 @@ public class PosRotRecorder : MonoBehaviour
         StartCoroutine(WaitForCountdown());
         
 
+    }
+
+    public void OnPointerClick(PointerEventData pointerEventData){
+        TaskOnRecordClick();   
     }
     
     private IEnumerator WaitForCountdown(){

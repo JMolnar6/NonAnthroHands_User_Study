@@ -2,11 +2,12 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 // using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using TMPro;
 
-public class ControllerFromLogFile : MonoBehaviour {
+public class ControllerFromLogFile : MonoBehaviour, IPointerClickHandler {
     public GameObject urdf;
     private ArticulationBody[] articulationChain;
     // Stores original colors of the part being highlighted
@@ -57,6 +58,8 @@ public class ControllerFromLogFile : MonoBehaviour {
         DebugReport1.SetText("");
         DebugReport2.SetText("");
         // Both the Start and Record buttons should initiate animation, so assign them the same listener
+        // PlayButton.onPointerClick.AddListener(AnimateURDF);
+        // RecordButton.onPointerClick.AddListener(AnimateURDF);
         PlayButton.onClick.AddListener(AnimateURDF);
         RecordButton.onClick.AddListener(AnimateURDF);
         // StartCoroutine(PlayFromCSV());
@@ -151,6 +154,10 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
         }
+    }
+
+    public void OnPointerClick(PointerEventData pointerEventData){
+        AnimateURDF();
     }
 
     private void AnimateURDF()
