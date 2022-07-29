@@ -40,7 +40,11 @@ public class JointRecorder : MonoBehaviour
         string headerLine = "Time,";
         foreach (ArticulationBody joint in articulationChain){
             // Debug.Log("Joint name is " + joint.name);
-            headerLine = headerLine+joint.name+",";
+            Debug.Log("DOF count for joint "+joint.name+" is: "+  joint.dofCount.ToString());
+            for (int i=1; i<=joint.dofCount; i++){
+                headerLine = headerLine+joint.name+",";
+            }
+            
         }
         writer.WriteLine(headerLine);
     }
@@ -61,17 +65,22 @@ public class JointRecorder : MonoBehaviour
 
             foreach (ArticulationBody joint in articulationChain)
             {
-                // ArticulationDrive currentDrive = joint.xDrive;
-                joint.GetJointPositions(angles);
+                joint.GetJointPositions(angles); // This technically grabs all joint positions for the entire hierarchy, 
+                                                 // so we don't need to iterate over all joints
+
                 Debug.Log("Joint position at time "+Time.time.ToString()+" is: "+joint.name+" "+angles.ToString());
                 // Debug.Log("Length of angles list is "+angles.Count);
-                
+                for (int i=0; i<angles.Count; i++){
+                    Debug.Log("Angle "+i.ToString()+" is: "+angles[i].ToString());
+                    // angleString = angleString+","+angles[i].ToString();
+                    // Debug.Log("AngleString is: "+angleString);
+                }    
             }
             string angleString = "";
             for (int i=0; i<angles.Count; i++){
                 // Debug.Log("Angle is: "+angles[i].ToString());
                 angleString = angleString+","+angles[i].ToString();
-                Debug.Log("AngleString is: "+angleString);
+                // Debug.Log("AngleString is: "+angleString);
             }
             Debug.Log("Writing this line to file: "+angleString);
             writer.WriteLine(Time.time.ToString()+angleString);

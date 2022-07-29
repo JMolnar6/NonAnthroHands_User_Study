@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
 
+
 public class ControllerFromLogFile : MonoBehaviour {
     public GameObject urdf;
     private ArticulationBody[] articulationChain;
@@ -133,7 +134,7 @@ public class ControllerFromLogFile : MonoBehaviour {
                 var drive = joint.xDrive;
                 // Debug.Log("Drive found successfully");
 
-                drive.target = float.Parse(Positions[j-1]);
+                drive.target = float.Parse(Positions[j-1])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
                 // Debug.Log("Setting drive target to "+Positions[j-1]);
                 // drive.targetVelocity = float.Parse(Velocities[j-1]);
                 // Debug.Log("Setting drive target to "+Velocities[j-1]);
