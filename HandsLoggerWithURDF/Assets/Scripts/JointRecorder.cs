@@ -27,13 +27,13 @@ public class JointRecorder : MonoBehaviour
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
         // Debug.Log("Record button found");
         RecordButton.onClick.AddListener(TaskOnRecordClick);
-        Debug.Log("Recording: " + urdf.name);
+        // Debug.Log("Recording: " + urdf.name);
 
         controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
         
         articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
         
-        StartCoroutine(LaunchCSVfile());
+        LaunchCSVfile();
        
     }
 
@@ -56,10 +56,10 @@ public class JointRecorder : MonoBehaviour
                 joint.GetJointPositions(angles); // This technically grabs all joint positions for the entire hierarchy, 
                                                  // so we don't need to iterate over all joints
 
-                Debug.Log("Joint position at time "+Time.time.ToString()+" is: "+joint.name+" "+angles.ToString());
+                // Debug.Log("Joint position at time "+Time.time.ToString()+" is: "+joint.name+" "+angles.ToString());
                 // Debug.Log("Length of angles list is "+angles.Count);
                 for (int i=0; i<angles.Count; i++){
-                    Debug.Log("Angle "+i.ToString()+" is: "+angles[i].ToString());
+                    // Debug.Log("Angle "+i.ToString()+" is: "+angles[i].ToString());
                     // angleString = angleString+","+angles[i].ToString();
                     // Debug.Log("AngleString is: "+angleString);
                 }    
@@ -70,17 +70,17 @@ public class JointRecorder : MonoBehaviour
                 angleString = angleString+","+angles[i].ToString();
                 // Debug.Log("AngleString is: "+angleString);
             }
-            Debug.Log("Writing this line to file: "+angleString);
+            // Debug.Log("Writing this line to file: "+angleString);
             writer.WriteLine(Time.time.ToString()+angleString);
         }
 
         if ((Time.time > animationTime + startTime) & (!playLaunched)){ 
-                Debug.Log("Recording jointangles complete at " + Time.time.ToString());
+                // Debug.Log("Recording jointangles complete at " + Time.time.ToString());
                 playLaunched = true;
                 isRec = false;
-                Reset();
                 iteration++;
-                Debug.Log("Jointfile Iteration = "+ iteration);
+                // Debug.Log("Jointfile Iteration = "+ iteration);
+                Reset();
         }
     }
  
@@ -94,7 +94,7 @@ public class JointRecorder : MonoBehaviour
         isRec = false;
         startTime = (float) 0.0;
         
-        StartCoroutine(LaunchCSVfile());
+        LaunchCSVfile();
     }
 
     private void TaskOnRecordClick()
@@ -108,26 +108,26 @@ public class JointRecorder : MonoBehaviour
     private IEnumerator WaitForCountdown(){
         yield return new WaitForSecondsRealtime((float) 5.5);
         //Output this to console when Button1 is clicked
-        Debug.Log("Starting recording now: " + urdf.name + " at time " + Time.time);
+        // Debug.Log("Starting recording now: " + urdf.name + " at time " + Time.time);
         isRec=true;
     }
 
-    private IEnumerator LaunchCSVfile(){
+    private void LaunchCSVfile(){
         string filePath = Application.persistentDataPath + "/" + urdf.name + "_JointMotion_" + iteration + ".csv";
-        Debug.Log("filepath = " + filePath);
+        // Debug.Log("filepath = " + filePath);
         
         writer = new StreamWriter(filePath);
         string headerLine = "Time,";
         foreach (ArticulationBody joint in articulationChain){
             // Debug.Log("Joint name is " + joint.name);
-            Debug.Log("DOF count for joint "+joint.name+" is: "+  joint.dofCount.ToString());
+            // Debug.Log("DOF count for joint "+joint.name+" is: "+  joint.dofCount.ToString());
             for (int i=1; i<=joint.dofCount; i++){
                 headerLine = headerLine+joint.name+",";
             }
             
         }
         writer.WriteLine(headerLine);
-        yield return new WaitForSecondsRealtime((float) 0.2);
+        
     }
 
 }
