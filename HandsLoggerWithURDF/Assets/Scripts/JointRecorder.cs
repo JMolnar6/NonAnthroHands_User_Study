@@ -33,20 +33,8 @@ public class JointRecorder : MonoBehaviour
         
         articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
         
-        string filePath = Application.persistentDataPath + "/" + urdf.name + "_JointMotion_" + iteration + ".csv";
-        Debug.Log("filepath = " + filePath);
-        
-        writer = new StreamWriter(filePath);
-        string headerLine = "Time,";
-        foreach (ArticulationBody joint in articulationChain){
-            // Debug.Log("Joint name is " + joint.name);
-            Debug.Log("DOF count for joint "+joint.name+" is: "+  joint.dofCount.ToString());
-            for (int i=1; i<=joint.dofCount; i++){
-                headerLine = headerLine+joint.name+",";
-            }
-            
-        }
-        writer.WriteLine(headerLine);
+        StartCoroutine(LaunchCSVfile());
+       
     }
 
     // Update is called once per frame
@@ -87,12 +75,12 @@ public class JointRecorder : MonoBehaviour
         }
 
         if ((Time.time > animationTime + startTime) & (!playLaunched)){ 
-                Debug.Log("Recording complete at " + Time.time.ToString());
+                Debug.Log("Recording jointangles complete at " + Time.time.ToString());
                 playLaunched = true;
                 isRec = false;
                 Reset();
                 iteration++;
-                Debug.Log("Iteration = "+ iteration);
+                Debug.Log("Jointfile Iteration = "+ iteration);
         }
     }
  
@@ -105,6 +93,8 @@ public class JointRecorder : MonoBehaviour
 
         isRec = false;
         startTime = (float) 0.0;
+        
+        StartCoroutine(LaunchCSVfile());
     }
 
     private void TaskOnRecordClick()
@@ -120,6 +110,24 @@ public class JointRecorder : MonoBehaviour
         //Output this to console when Button1 is clicked
         Debug.Log("Starting recording now: " + urdf.name + " at time " + Time.time);
         isRec=true;
+    }
+
+    private IEnumerator LaunchCSVfile(){
+        string filePath = Application.persistentDataPath + "/" + urdf.name + "_JointMotion_" + iteration + ".csv";
+        Debug.Log("filepath = " + filePath);
+        
+        writer = new StreamWriter(filePath);
+        string headerLine = "Time,";
+        foreach (ArticulationBody joint in articulationChain){
+            // Debug.Log("Joint name is " + joint.name);
+            Debug.Log("DOF count for joint "+joint.name+" is: "+  joint.dofCount.ToString());
+            for (int i=1; i<=joint.dofCount; i++){
+                headerLine = headerLine+joint.name+",";
+            }
+            
+        }
+        writer.WriteLine(headerLine);
+        yield return new WaitForSecondsRealtime((float) 0.2);
     }
 
 }
