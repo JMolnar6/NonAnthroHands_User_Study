@@ -30,7 +30,7 @@ public class PosRotRecorder : MonoBehaviour
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
         // Debug.Log("Record button found");
         RecordButton.onClick.AddListener(TaskOnRecordClick);
-        Debug.Log("Recording: " + go.name);
+        // Debug.Log("Recording: " + go.name);
 
         controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
     }
