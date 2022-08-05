@@ -51,8 +51,9 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     void Start()
     {
-        Button PlayButton = GameObject.Find("Play Button").GetComponent<Button>();
-        Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+        Button PlayButton       = GameObject.Find("Play Button").GetComponent<Button>();
+        Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
+        Button RecordButton     = GameObject.Find("Record Button").GetComponent<Button>();
         DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
         DebugReport1.SetText("");
@@ -60,6 +61,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         // Both the Start and Record buttons should initiate animation, so assign them the same listener
         PlayButton.onClick.AddListener(AnimateURDF);
         RecordButton.onClick.AddListener(AnimateURDF);
+        PlayResultButton.onClick.AddListener(Playback);
         // StartCoroutine(PlayFromCSV());
 
         previousIndex = selectedIndex = 1;
@@ -108,8 +110,8 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     }
 
-    private IEnumerator PlayFromCSV(){
-        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_positions.csv");
+    private IEnumerator PlayFromCSV(String filename, float refreshRate){
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
         // animationTime = PositionLines.Length/replayRefreshRate;
 
@@ -156,8 +158,13 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     private void AnimateURDF()
     {
+        String filename = "corrected_positions.csv";
+        // Clear any distracting debug text
+        DebugReport2.SetText("");
+
         // If URDF is not already in start position, return it there 
-        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_positions.csv");
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        Debug.Log(Application.persistentDataPath);
         animationTime = PositionLines.Length/replayRefreshRate;
         string URDFName = transform.root.gameObject.name;
 
@@ -174,14 +181,11 @@ public class ControllerFromLogFile : MonoBehaviour {
             joint.xDrive = drive;            
         }
 
-        // Clear any distracting debug text
-        DebugReport2.SetText("");
-
         // Begin countdown to animation 
-        StartCoroutine(BeginCountdown());
+        StartCoroutine(BeginCountdown(filename));
     }
 
-    private IEnumerator BeginCountdown(){
+    private IEnumerator BeginCountdown(String filename){
         DebugReport1.SetText("Ready?");
         yield return new WaitForSecondsRealtime((float) 2.0);
         DebugReport1.SetText("3");
@@ -194,7 +198,37 @@ public class ControllerFromLogFile : MonoBehaviour {
         yield return new WaitForSecondsRealtime((float) 0.5);
         DebugReport1.SetText("");
         Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
-        StartCoroutine(PlayFromCSV());
+        StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+    }
+
+    private void Playback()
+    {
+        String filename = "trained_endeff_mean.csv";
+        // Clear any distracting debug text
+        DebugReport2.SetText("");
+        Debug.Log(Application.persistentDataPath);
+
+        // // If URDF is not already in start position, return it there 
+        // string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        // animationTime = PositionLines.Length/replayRefreshRate;
+        // string URDFName = transform.root.gameObject.name;
+        // Debug.Log("URDFName = "+URDFName);
+
+        // string[] Positions = PositionLines[1].Split(',');
+        
+        // int numJoints = Positions.Length;
+        // Debug.Log("numJoints length = "+numJoints.ToString());
+    
+        // for (int j=1; j<=numJoints; j++){
+        //     string linkName = URDFName+"_link_"+j;
+
+        //     ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+        //     var drive = joint.xDrive;
+
+        //     drive.target = float.Parse(Positions[j-1]);
+        //     joint.xDrive = drive;            
+        // }
+        StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
     }
 
 }
