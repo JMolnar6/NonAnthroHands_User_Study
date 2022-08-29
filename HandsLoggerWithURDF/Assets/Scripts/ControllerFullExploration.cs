@@ -40,7 +40,7 @@ public class ControllerFullExploration : MonoBehaviour {
     // public Button PlayButton;
     // public Button RecordButton;
 
-    public float replayRefreshRate = 15;
+    public float playSpeed = 1.5f;
 
     // [InspectorReadOnly(hideInEditMode: true)]
     public string selectedJoint;
@@ -125,10 +125,66 @@ public class ControllerFullExploration : MonoBehaviour {
 
     }
 
-    private IEnumerator PlayFromCSV(String filename, float refreshRate){
+    private IEnumerator AnimateRandomGridSearchTrajectory(float playSpeed){
+        // Figure out the number of joints of the URDF and their joint limits
+        string URDFName = transform.root.gameObject.name;
+        int i = 0;
+        bool moreJoints=true;
+        int numJoints=0;
+
+        while (moreJoints==true){
+            string linkName = URDFName+"_link_"+i;
+            if (GameObject.Find(linkName).GetComponent<ArticulationBody>()){
+                i=i++;
+            }
+            else {
+                numJoints = i;
+                moreJoints=false;
+            }
+        }
+
+        for (int j=1; j<numJoints; j++){
+                string linkName = URDFName+"_link_"+j;
+
+                ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+                var drive = joint.xDrive;
+
+                // How to identify joint limits? Using MoveIt? Can we import this from a file so we're not doing something 
+                //  crazy like copying and pasting values into the code?
+                string filename = URDFName+"_jointlimits.csv";
+                string[] JointLimitLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+
+
+                // drive.target = // CHANGE THIS TO DESIRED TARGET ANGLE: float.Parse(Positions[j-1])*180/(float)Math.PI;
+                // joint.xDrive = drive;
+        }
+
+        // Calculate the number of angles per joint that we'd like to query
+        // Have public flag that indicates whether distal joints should query fewer angles
+        //  than proximal joints
+        // Can use a public flag to override with manual "weights", where each weight informs 
+        //  the number of angles for that particular joint
+
+        // Calculate the length of time that this number of combinations will require, given
+        //  playSpeed. If >5 min (or 300 sec), report the probable time cost and suggest subsampling
+        //  to a rate that will get it down to 5 min. (Alternatively, break it up into shorter 
+        //  motions? I'd still like the total to be <5min. It's an enormous amount of training data, 
+        //  let alone fatigue and ergonomics issues.)
+
+        // Use randSeed to select random and non-repeated combinations of joint angles from the 
+        //  established set of goal angles above. Update the drive state for the angles for each 
+        //  combo, then wait *playSpeed* seconds to move onto the next one.
+
+        // When finished, wait two seconds, then return to home position.
+
+        yield return new WaitForSecondsRealtime(playSpeed);
+
+    }
+
+    private IEnumerator PlayFromCSV(String filename, float playSpeed){
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
-        // animationTime = PositionLines.Length/replayRefreshRate;
+        // animationTime = PositionLines.Length/playSpeed;
 
         string URDFName = transform.root.gameObject.name;
         // Debug.Log("Root URDF is named "+ URDFName);
@@ -167,7 +223,7 @@ public class ControllerFullExploration : MonoBehaviour {
                 Debug.Log("Final animation time: " + Time.time.ToString());
             }
 
-        yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
+        yield return new WaitForSecondsRealtime(playSpeed);
         }
     }
 
@@ -180,7 +236,7 @@ public class ControllerFullExploration : MonoBehaviour {
         // If URDF is not already in start position, return it there 
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         Debug.Log(Application.persistentDataPath);
-        animationTime = PositionLines.Length/replayRefreshRate;
+        animationTime = PositionLines.Length*playSpeed;
         string URDFName = transform.root.gameObject.name;
 
         string[] Positions = PositionLines[1].Split(',');
@@ -213,7 +269,7 @@ public class ControllerFullExploration : MonoBehaviour {
         yield return new WaitForSecondsRealtime((float) 0.5);
         DebugReport1.SetText("");
         Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
-        StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+        StartCoroutine(PlayFromCSV(filename, playSpeed));
     }
 
     private void Playback()
@@ -225,7 +281,7 @@ public class ControllerFullExploration : MonoBehaviour {
 
         // // If URDF is not already in start position, return it there 
         // string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        // animationTime = PositionLines.Length/replayRefreshRate;
+        // animationTime = PositionLines.Length/playSpeed;
         // string URDFName = transform.root.gameObject.name;
         // Debug.Log("URDFName = "+URDFName);
 
@@ -243,7 +299,7 @@ public class ControllerFullExploration : MonoBehaviour {
         //     drive.target = float.Parse(Positions[j-1]);
         //     joint.xDrive = drive;            
         // }
-        StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+        StartCoroutine(PlayFromCSV(filename, playSpeed));
     }
 
 }

@@ -9,6 +9,7 @@ using TMPro;
 
 public class ControllerFromLogFile : MonoBehaviour {
     public GameObject urdf;
+    public GameObject handPrefab;
     private ArticulationBody[] articulationChain;
     // Stores original colors of the part being highlighted
     private Color[] prevColor;
@@ -54,6 +55,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         Button PlayButton       = GameObject.Find("Play Button").GetComponent<Button>();
         Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
         Button RecordButton     = GameObject.Find("Record Button").GetComponent<Button>();
+        Button ReplayHandButton = GameObject.Find("Replay Hand Motion").GetComponent<Button>();
         DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
         DebugReport1.SetText("");
@@ -62,6 +64,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         PlayButton.onClick.AddListener(AnimateURDF);
         RecordButton.onClick.AddListener(AnimateURDF);
         PlayResultButton.onClick.AddListener(Playback);
+        ReplayHandButton.onClick.AddListener(EndEffPlayback);
         // StartCoroutine(PlayFromCSV());
 
         previousIndex = selectedIndex = 1;
@@ -97,6 +100,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         else {
             DebugReport2.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
         }            
+
     }
 
     void SetSelectedJointIndex(int index){
@@ -229,6 +233,39 @@ public class ControllerFromLogFile : MonoBehaviour {
         //     joint.xDrive = drive;            
         // }
         StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+    }
+
+    private void EndEffPlayback()
+    {
+        String filename = "pos_rot_hand.csv";
+        // Clear any distracting debug text
+        DebugReport2.SetText("");
+        Debug.Log(Application.persistentDataPath);
+
+        StartCoroutine(PlaybackHandMotion(filename, replayRefreshRate));
+    }
+
+    private IEnumerator PlaybackHandMotion(string filename, float replayRefreshRate){
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        
+        for (int i=0; i<=PositionLines.Length-1; i++){
+            string[] Positions = PositionLines[i].Split(','); 
+
+            //Do these need to be modified for Unity's inverted y-axis?
+            Vector3 tempPos = new Vector3(float.Parse(Positions[0]),float.Parse(Positions[1]),float.Parse(Positions[2])); 
+            Vector3 tempRot = new Vector3(float.Parse(Positions[3]),float.Parse(Positions[4]),float.Parse(Positions[5]));
+            Debug.Log("Rotation = "+tempRot[0].ToString() + " " + tempRot[1].ToString() + " " + tempRot[2].ToString());
+            handPrefab.transform.position = tempPos;
+                        
+            Quaternion safeRot = Quaternion.Euler(tempRot[0],tempRot[1],tempRot[2]);
+            handPrefab.transform.rotation = safeRot;
+
+            if (i==PositionLines.Length){
+                Debug.Log("Final animation time: " + Time.time.ToString());
+            }
+
+        yield return new WaitForSecondsRealtime((float) 0.5/replayRefreshRate);
+        }
     }
 
 }
