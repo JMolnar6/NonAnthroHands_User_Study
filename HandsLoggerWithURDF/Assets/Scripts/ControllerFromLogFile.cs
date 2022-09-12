@@ -61,8 +61,8 @@ public class ControllerFromLogFile : MonoBehaviour {
         DebugReport1.SetText("");
         DebugReport2.SetText("");
         // Both the Start and Record buttons should initiate animation, so assign them the same listener
-        PlayButton.onClick.AddListener(AnimateURDF);
-        RecordButton.onClick.AddListener(AnimateURDF);
+        PlayButton.onClick.AddListener(delegate{AnimateURDF(false);});
+        RecordButton.onClick.AddListener(delegate{AnimateURDF(true);});
         PlayResultButton.onClick.AddListener(Playback);
         ReplayHandButton.onClick.AddListener(EndEffPlayback);
         // StartCoroutine(PlayFromCSV());
@@ -160,7 +160,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         }
     }
 
-    private void AnimateURDF()
+    private void AnimateURDF(bool countdown)
     {
         String filename = "corrected_positions.csv";
         // Clear any distracting debug text
@@ -186,7 +186,12 @@ public class ControllerFromLogFile : MonoBehaviour {
         }
 
         // Begin countdown to animation 
-        StartCoroutine(BeginCountdown(filename));
+        if (countdown){
+            StartCoroutine(BeginCountdown(filename));
+        }
+        else{
+            StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+        }
     }
 
     private IEnumerator BeginCountdown(String filename){
@@ -241,7 +246,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         // Clear any distracting debug text
         DebugReport2.SetText("");
         Debug.Log(Application.persistentDataPath);
-
+        Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         StartCoroutine(PlaybackHandMotion(filename, replayRefreshRate));
     }
 
@@ -253,11 +258,11 @@ public class ControllerFromLogFile : MonoBehaviour {
 
             //Do these need to be modified for Unity's inverted y-axis?
             Vector3 tempPos = new Vector3(float.Parse(Positions[0]),float.Parse(Positions[1]),float.Parse(Positions[2])); 
-            Vector3 tempRot = new Vector3(float.Parse(Positions[3]),float.Parse(Positions[4]),float.Parse(Positions[5]));
+            Vector3 tempRot = new Vector3(float.Parse(Positions[3])*180/(float)Math.PI,float.Parse(Positions[4])*180/(float)Math.PI,float.Parse(Positions[5])*180/(float)Math.PI);
             Debug.Log("Rotation = "+tempRot[0].ToString() + " " + tempRot[1].ToString() + " " + tempRot[2].ToString());
             handPrefab.transform.position = tempPos;
                         
-            Quaternion safeRot = Quaternion.Euler(tempRot[0],tempRot[1],tempRot[2]);
+            Quaternion safeRot = Quaternion.Euler(tempRot[0],-tempRot[2],tempRot[1]);
             handPrefab.transform.rotation = safeRot;
 
             if (i==PositionLines.Length){
