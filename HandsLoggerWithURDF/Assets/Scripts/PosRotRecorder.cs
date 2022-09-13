@@ -15,6 +15,7 @@ public class PosRotRecorder : MonoBehaviour
 
     private bool isRec = false;
     private bool playLaunched = true;
+    private bool hitRecord = true;
     private float startTime = 0;
     private float animationTime = 15;
     private ControllerFromLogFile controller;
@@ -28,8 +29,10 @@ public class PosRotRecorder : MonoBehaviour
     {
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+        Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
         // Debug.Log("Record button found");
-        RecordButton.onClick.AddListener(TaskOnRecordClick);
+        RecordButton.onClick.AddListener(delegate{TaskOnRecordClick(true);});
+        PlayResultButton.onClick.AddListener(delegate{TaskOnRecordClick(false);});
         // Debug.Log("Recording: " + go.name);
 
         controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
@@ -81,7 +84,14 @@ public class PosRotRecorder : MonoBehaviour
         // Debug.Log("filepath directory = " + Application.persistentDataPath + "/" + go.name + "_Motion_" + iteration + ".csv");
         
         // string filePath = Application.persistentDataPath + "/Data/" + "goMotion";
-        string filePath = Application.persistentDataPath + "/" + go.name + "Motion_" + iteration + ".csv";
+        string filePath = "";
+        if (hitRecord){
+            filePath = Application.persistentDataPath + "/" + go.name + "Motion_" + iteration + ".csv";
+        }
+        else{
+            filePath = Application.persistentDataPath + "/" + go.name + "Playback.csv";
+        }
+        
         Debug.Log("filepath = " + filePath);
         
         StreamWriter writer = new StreamWriter(filePath);
@@ -103,10 +113,18 @@ public class PosRotRecorder : MonoBehaviour
         startTime = (float) 0.0;
     }
 
-    private void TaskOnRecordClick()
+    private void TaskOnRecordClick(bool initRecord)
     {
-        // Wait for countdown to initiate recording: 5.5 sec
-        StartCoroutine(WaitForCountdown());
+        if (initRecord){
+            hitRecord = true;
+            // Wait for countdown to initiate recording: 5.5 sec
+            StartCoroutine(WaitForCountdown());
+        }
+        else{
+            hitRecord = false;
+            Debug.Log("Starting recording now: " + go.name + " at time " + Time.time);
+            isRec = true;
+        }
         
 
     }
