@@ -9,6 +9,7 @@ public class PosRotRecorder : MonoBehaviour
     public int iteration = 1;
     public Transform go;
     public float catchupTime = (float) 2.0;
+    public bool allowPlaybackRecording = false;
     // public ControllerFromLogFile fp;
 
     // public Button RecordButton;
@@ -123,7 +124,9 @@ public class PosRotRecorder : MonoBehaviour
         else{
             hitRecord = false;
             Debug.Log("Starting recording now: " + go.name + " at time " + Time.time);
-            isRec = true;
+            if (allowPlaybackRecording){
+                isRec = true;
+            }
         }
         
 

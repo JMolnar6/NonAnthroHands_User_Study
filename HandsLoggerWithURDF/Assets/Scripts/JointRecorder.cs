@@ -25,8 +25,10 @@ public class JointRecorder : MonoBehaviour
     {
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+        Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
         // Debug.Log("Record button found");
         RecordButton.onClick.AddListener(TaskOnRecordClick);
+        PlayResultButton.onClick.AddListener(TaskOnPlayResultClick);
         // Debug.Log("Recording: " + urdf.name);
 
         controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
@@ -40,8 +42,8 @@ public class JointRecorder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        animationTime = controller.animationTime;
-        // Debug.Log("Animation runtime = " + animationTime.ToString());
+        animationTime = controller.animationTime; //Note that this doesn't get updated until after the first "record"
+        Debug.Log("Animation runtime = " + animationTime.ToString());
         if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
             startTime = Time.time; 
             playLaunched = false;
@@ -101,8 +103,11 @@ public class JointRecorder : MonoBehaviour
     {
         // Wait for countdown to initiate recording: 5.5 sec
         StartCoroutine(WaitForCountdown());
-        
+    }
 
+    private void TaskOnPlayResultClick()
+    {
+        isRec=true;
     }
     
     private IEnumerator WaitForCountdown(){

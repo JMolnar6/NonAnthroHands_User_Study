@@ -35,6 +35,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     public int startJoint = 3; //If the first few joints of the URDF includes a root and a base, 
                                 // increment the startJoint number so that the position and velocity
                                 // commands will apply to the first moveable joint
+    public bool debugHandMotion = false;
 
     // public ControlType control = PositionControl;
     public float stiffness;
@@ -47,7 +48,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     public float animationTime;
     
 
-    [Tooltip("Color to highlight the currently selected join")]
+    [Tooltip("Color to highlight the currently selected joint")]
     public Color highLightColor = new Color(1.0f, 0, 0, 1.0f);
 
     void Start()
