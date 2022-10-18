@@ -6,22 +6,10 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
 
-// The object of this script is, instead of reading from a log file, to generate a set of poses (waypoints) 
-// that span a reasonable range of positions and orientations utilizing all DoF of the URDF. To do this, 
-// we select a few sample angles for each DOF (two at the extremes of the joint, with num_subsamples 
-// throughout the range) and randomly combine them (the random seed can be set for consistency across runs.)
-// Our goal is to have a movement that spans 30sec-5min of movement, which can be demonstrated eight or ten 
-// times. Shorter movements may not be comprehensive, but a 5min test would ideally show a good sampling of
-// poses. The num_subsamples may be selected to facilitate this. Also note that, depending on joint 
-// configuration, proximal joints may be better subsampled at higher resolution than distal joints or vice
-// versa, because of their relative influence on the end-effector (if there is one) or gross/fine motor control.
-
-// But also note that data is being taken continuously throughout the motion, and not just at waypoints. A 
-// good multi-pose movement will balance the speed so that jerking is unnecessary and a quality set of samples
-// can be taken between (hopefully relatively few) waypoints.
 
 public class ControllerFullExploration : MonoBehaviour {
     public GameObject urdf;
+    public GameObject handPrefab;
     private ArticulationBody[] articulationChain;
     // Stores original colors of the part being highlighted
     private Color[] prevColor;
@@ -31,6 +19,7 @@ public class ControllerFullExploration : MonoBehaviour {
     private bool questConnected = false;
     private TextMeshPro DebugReport1;
     private TextMeshPro DebugReport2;
+    private List<GameObject> Buttons;
 
     private int randSeed = 3162;
 
@@ -40,7 +29,7 @@ public class ControllerFullExploration : MonoBehaviour {
     // public Button PlayButton;
     // public Button RecordButton;
 
-    public float playSpeed = 1.5f;
+    public float replayRefreshRate = 15;
 
     // [InspectorReadOnly(hideInEditMode: true)]
     public string selectedJoint;
@@ -49,11 +38,12 @@ public class ControllerFullExploration : MonoBehaviour {
     public int startJoint = 3; //If the first few joints of the URDF includes a root and a base, 
                                 // increment the startJoint number so that the position and velocity
                                 // commands will apply to the first moveable joint
+    public bool debugHandMotion = false;
 
     // public ControlType control = PositionControl;
-    public float stiffness;
-    public float damping;
-    public float forceLimit;
+    public float stiffness = 100000f;
+    public float damping = 10000f;
+    public float forceLimit = 10000f;
     public float speed = 5f; // Units: degree/s
     public float torque = 100f; // Units: Nm or N
     public float acceleration = 5f;// Units: m/s^2 / degree/s^2
@@ -61,22 +51,58 @@ public class ControllerFullExploration : MonoBehaviour {
     public float animationTime;
     
 
-    [Tooltip("Color to highlight the currently selected join")]
+    [Tooltip("Color to highlight the currently selected joint")]
     public Color highLightColor = new Color(1.0f, 0, 0, 1.0f);
 
     void Start()
     {
-        Button PlayButton       = GameObject.Find("Play Button").GetComponent<Button>();
-        Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
-        Button RecordButton     = GameObject.Find("Record Button").GetComponent<Button>();
+        ConnectToQuest();
+
+        Buttons.Add(GameObject.Find("Play Button"));
+        Buttons.Add(GameObject.Find("Play Result Button"));
+        Buttons.Add(GameObject.Find("Record Button"));
+        Buttons.Add(GameObject.Find("Replay Hand Motion"));
+
+        // Would rather have study start occur after an opening screen, with participant ID info,
+        // a small survey, and robot selection. Possibly also a tutorial (separate scene)
+        StartStudy();
+
+    }
+
+    void Update(){
+        OVRInput.Update();
+    }
+
+    private void StartStudy(){
+
+        for (int i=0;i<Buttons.Count-1;i++){ //Exclude the "Replay Hand Motion" button; useful only for debug
+            Buttons[i].SetActive(true);
+        }
+
+        Button PlayButton       = Buttons[0].GetComponent<Button>();        
+        Button PlayResultButton = Buttons[1].GetComponent<Button>();
+        Button RecordButton     = Buttons[2].GetComponent<Button>();
+        Button ReplayHandButton = Buttons[3].GetComponent<Button>();
+
+
         DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
         DebugReport1.SetText("");
         DebugReport2.SetText("");
         // Both the Start and Record buttons should initiate animation, so assign them the same listener
-        PlayButton.onClick.AddListener(AnimateURDF);
-        RecordButton.onClick.AddListener(AnimateURDF);
+        PlayButton.onClick.AddListener(delegate{AnimateURDF(false);});
+        RecordButton.onClick.AddListener(delegate{AnimateURDF(true);});
         PlayResultButton.onClick.AddListener(Playback);
+
+        if (debugHandMotion==false){
+            handPrefab.SetActive(false);
+            GameObject ReplayHandButtonObject = GameObject.Find("Replay Hand Motion");
+            ReplayHandButtonObject.SetActive(false);
+        }
+        else{
+            ReplayHandButton.onClick.AddListener(EndEffPlayback);
+        }
+
         // StartCoroutine(PlayFromCSV());
 
         previousIndex = selectedIndex = 1;
@@ -95,7 +121,10 @@ public class ControllerFullExploration : MonoBehaviour {
             currentDrive.forceLimit = forceLimit;
             joint.xDrive = currentDrive;
         }
-    
+
+    }
+
+    private void ConnectToQuest(){
         // Check for Oculus Quest connection - JLM 04/2022
         var inputDevices = new List<UnityEngine.XR.InputDevice>();
         UnityEngine.XR.InputDevices.GetDevices(inputDevices);
@@ -112,6 +141,7 @@ public class ControllerFullExploration : MonoBehaviour {
         else {
             DebugReport2.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
         }            
+
     }
 
     void SetSelectedJointIndex(int index){
@@ -120,9 +150,163 @@ public class ControllerFullExploration : MonoBehaviour {
         }
     }
 
-    void Update(){
-        OVRInput.Update();
+    private IEnumerator PlayFromCSV(String filename, float refreshRate){
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
+        // animationTime = PositionLines.Length/replayRefreshRate;
 
+        string URDFName = transform.root.gameObject.name;
+        // Debug.Log("Root URDF is named "+ URDFName);
+
+        for (int i=0; i<=PositionLines.Length-1; i++){
+            string[] Positions = PositionLines[i].Split(',');
+            // string[] Velocities= VelocityLines[i].Split(',');
+
+            int numJoints = Positions.Length;
+            // Debug.Log("Number of joints specified");
+            // Debug.Log(PositionLines[i]);
+            // Debug.Log("Line "+i.ToString()+" of preplanned file. Position control.");
+            // Debug.Log("Line "+i.ToString()+" of preplanned file. Velocity control.");
+            
+            for (int j=1; j<=numJoints; j++){
+                string linkName = URDFName+"_link_"+j;
+                // Debug.Log("Joint link: "+ linkName);
+
+                ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+                var drive = joint.xDrive;
+                // Debug.Log("Drive found successfully");
+
+                drive.target = float.Parse(Positions[j-1])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
+                // Debug.Log("Setting drive target to "+Positions[j-1]);
+                // drive.targetVelocity = float.Parse(Velocities[j-1]);
+                // Debug.Log("Setting drive target to "+Velocities[j-1]);
+                joint.xDrive = drive;
+                // joint.xDrive.target         = Positions[j-1];
+                // joint.xDrive.targetVelocity = Velocities[j-1];
+                
+                // JointControl current = articulationChain[j-1].GetComponent<JointControl>();
+                
+            }
+
+            if (i==PositionLines.Length){
+                Debug.Log("Final animation time: " + Time.time.ToString());
+            }
+
+        yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
+        }
+    }
+
+    private void AnimateURDF(bool countdown)
+    {
+        String filename = "corrected_positions.csv";
+        // Clear any distracting debug text
+        DebugReport2.SetText("");
+
+        // If URDF is not already in start position, return it there 
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        Debug.Log(Application.persistentDataPath);
+        animationTime = PositionLines.Length/replayRefreshRate;
+        string URDFName = transform.root.gameObject.name;
+
+        string[] Positions = PositionLines[1].Split(',');
+        int numJoints = Positions.Length;
+    
+        for (int j=1; j<=numJoints; j++){
+            string linkName = URDFName+"_link_"+j;
+
+            ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+            var drive = joint.xDrive;
+
+            drive.target = float.Parse(Positions[j-1]);
+            joint.xDrive = drive;            
+        }
+
+        // Begin countdown to animation 
+        if (countdown){
+            StartCoroutine(BeginCountdown(filename));
+        }
+        else{
+            StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+        }
+    }
+
+    private IEnumerator BeginCountdown(String filename){
+        DebugReport1.SetText("Ready?");
+        yield return new WaitForSecondsRealtime((float) 2.0);
+        DebugReport1.SetText("3");
+        yield return new WaitForSecondsRealtime((float) 1.0);
+        DebugReport1.SetText("2");
+        yield return new WaitForSecondsRealtime((float) 1.0);
+        DebugReport1.SetText("1");
+        yield return new WaitForSecondsRealtime((float) 1.0);
+        DebugReport1.SetText("GO");
+        yield return new WaitForSecondsRealtime((float) 0.5);
+        DebugReport1.SetText("");
+        Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
+        StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+    }
+
+    private void Playback()
+    {
+        String filename = "trained_endeff_mean.csv";
+        // Clear any distracting debug text
+        DebugReport2.SetText("");
+        Debug.Log(Application.persistentDataPath);
+
+        // // If URDF is not already in start position, return it there 
+        // string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        // animationTime = PositionLines.Length/replayRefreshRate;
+        // string URDFName = transform.root.gameObject.name;
+        // Debug.Log("URDFName = "+URDFName);
+
+        // string[] Positions = PositionLines[1].Split(',');
+        
+        // int numJoints = Positions.Length;
+        // Debug.Log("numJoints length = "+numJoints.ToString());
+    
+        // for (int j=1; j<=numJoints; j++){
+        //     string linkName = URDFName+"_link_"+j;
+
+        //     ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+        //     var drive = joint.xDrive;
+
+        //     drive.target = float.Parse(Positions[j-1]);
+        //     joint.xDrive = drive;            
+        // }
+        StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+    }
+
+    private void EndEffPlayback()
+    {
+        String filename = "pos_rot_hand.csv";
+        // Clear any distracting debug text
+        DebugReport2.SetText("");
+        Debug.Log(Application.persistentDataPath);
+        Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        StartCoroutine(PlaybackHandMotion(filename, replayRefreshRate));
+    }
+
+    private IEnumerator PlaybackHandMotion(string filename, float replayRefreshRate){
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        
+        for (int i=0; i<=PositionLines.Length-1; i++){
+            string[] Positions = PositionLines[i].Split(','); 
+
+            //Do these need to be modified for Unity's inverted y-axis?
+            Vector3 tempPos = new Vector3(float.Parse(Positions[0]),float.Parse(Positions[1]),float.Parse(Positions[2])); 
+            Vector3 tempRot = new Vector3(float.Parse(Positions[3])*180/(float)Math.PI,float.Parse(Positions[4])*180/(float)Math.PI,float.Parse(Positions[5])*180/(float)Math.PI);
+            Debug.Log("Rotation = "+tempRot[0].ToString() + " " + tempRot[1].ToString() + " " + tempRot[2].ToString());
+            handPrefab.transform.position = tempPos;
+                        
+            Quaternion safeRot = Quaternion.Euler(tempRot[0],-tempRot[2],tempRot[1]);
+            handPrefab.transform.rotation = safeRot;
+
+            if (i==PositionLines.Length){
+                Debug.Log("Final animation time: " + Time.time.ToString());
+            }
+
+        yield return new WaitForSecondsRealtime((float) 0.5/replayRefreshRate);
+        }
     }
 
     private IEnumerator AnimateRandomGridSearchTrajectory(float playSpeed){
@@ -181,125 +365,5 @@ public class ControllerFullExploration : MonoBehaviour {
 
     }
 
-    private IEnumerator PlayFromCSV(String filename, float playSpeed){
-        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
-        // animationTime = PositionLines.Length/playSpeed;
-
-        string URDFName = transform.root.gameObject.name;
-        // Debug.Log("Root URDF is named "+ URDFName);
-
-        for (int i=0; i<=PositionLines.Length-1; i++){
-            string[] Positions = PositionLines[i].Split(',');
-            // string[] Velocities= VelocityLines[i].Split(',');
-
-            int numJoints = Positions.Length;
-            // Debug.Log("Number of joints specified");
-            // Debug.Log(PositionLines[i]);
-            // Debug.Log("Line "+i.ToString()+" of preplanned file. Position control.");
-            // Debug.Log("Line "+i.ToString()+" of preplanned file. Velocity control.");
-            
-            for (int j=1; j<=numJoints; j++){
-                string linkName = URDFName+"_link_"+j;
-                // Debug.Log("Joint link: "+ linkName);
-
-                ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
-                var drive = joint.xDrive;
-                // Debug.Log("Drive found successfully");
-
-                drive.target = float.Parse(Positions[j-1])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
-                // Debug.Log("Setting drive target to "+Positions[j-1]);
-                // drive.targetVelocity = float.Parse(Velocities[j-1]);
-                // Debug.Log("Setting drive target to "+Velocities[j-1]);
-                joint.xDrive = drive;
-                // joint.xDrive.target         = Positions[j-1];
-                // joint.xDrive.targetVelocity = Velocities[j-1];
-                
-                // JointControl current = articulationChain[j-1].GetComponent<JointControl>();
-                
-            }
-
-            if (i==PositionLines.Length){
-                Debug.Log("Final animation time: " + Time.time.ToString());
-            }
-
-        yield return new WaitForSecondsRealtime(playSpeed);
-        }
-    }
-
-    private void AnimateURDF()
-    {
-        String filename = "corrected_positions.csv";
-        // Clear any distracting debug text
-        DebugReport2.SetText("");
-
-        // If URDF is not already in start position, return it there 
-        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        Debug.Log(Application.persistentDataPath);
-        animationTime = PositionLines.Length*playSpeed;
-        string URDFName = transform.root.gameObject.name;
-
-        string[] Positions = PositionLines[1].Split(',');
-        int numJoints = Positions.Length;
     
-        for (int j=1; j<=numJoints; j++){
-            string linkName = URDFName+"_link_"+j;
-
-            ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
-            var drive = joint.xDrive;
-
-            drive.target = float.Parse(Positions[j-1]);
-            joint.xDrive = drive;            
-        }
-
-        // Begin countdown to animation 
-        StartCoroutine(BeginCountdown(filename));
-    }
-
-    private IEnumerator BeginCountdown(String filename){
-        DebugReport1.SetText("Ready?");
-        yield return new WaitForSecondsRealtime((float) 2.0);
-        DebugReport1.SetText("3");
-        yield return new WaitForSecondsRealtime((float) 1.0);
-        DebugReport1.SetText("2");
-        yield return new WaitForSecondsRealtime((float) 1.0);
-        DebugReport1.SetText("1");
-        yield return new WaitForSecondsRealtime((float) 1.0);
-        DebugReport1.SetText("GO");
-        yield return new WaitForSecondsRealtime((float) 0.5);
-        DebugReport1.SetText("");
-        Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
-        StartCoroutine(PlayFromCSV(filename, playSpeed));
-    }
-
-    private void Playback()
-    {
-        String filename = "trained_endeff_mean.csv";
-        // Clear any distracting debug text
-        DebugReport2.SetText("");
-        Debug.Log(Application.persistentDataPath);
-
-        // // If URDF is not already in start position, return it there 
-        // string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        // animationTime = PositionLines.Length/playSpeed;
-        // string URDFName = transform.root.gameObject.name;
-        // Debug.Log("URDFName = "+URDFName);
-
-        // string[] Positions = PositionLines[1].Split(',');
-        
-        // int numJoints = Positions.Length;
-        // Debug.Log("numJoints length = "+numJoints.ToString());
-    
-        // for (int j=1; j<=numJoints; j++){
-        //     string linkName = URDFName+"_link_"+j;
-
-        //     ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
-        //     var drive = joint.xDrive;
-
-        //     drive.target = float.Parse(Positions[j-1]);
-        //     joint.xDrive = drive;            
-        // }
-        StartCoroutine(PlayFromCSV(filename, playSpeed));
-    }
-
 }
