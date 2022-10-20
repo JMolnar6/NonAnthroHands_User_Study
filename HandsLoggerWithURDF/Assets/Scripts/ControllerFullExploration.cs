@@ -32,12 +32,16 @@ public class ControllerFullExploration : MonoBehaviour {
     public float replayRefreshRate = 15;
 
     // [InspectorReadOnly(hideInEditMode: true)]
-    public string selectedJoint;
+    public string selectedJoint= "1";
     // [HideInInspector]
-    public int selectedIndex;
+    public int selectedIndex=1;
     public int startJoint = 3; //If the first few joints of the URDF includes a root and a base, 
                                 // increment the startJoint number so that the position and velocity
                                 // commands will apply to the first moveable joint
+
+                                // FIXME: This will need to be different per robot. Also, robot URDFs will need 
+                                //  to have links renamed to be numerical
+
     public bool debugHandMotion = false;
 
     // public ControlType control = PositionControl;
@@ -56,12 +60,17 @@ public class ControllerFullExploration : MonoBehaviour {
 
     void Start()
     {
-        ConnectToQuest();
+        DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
+        DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
+        DebugReport1.SetText("");
+        DebugReport2.SetText("");
 
         Buttons.Add(GameObject.Find("Play Button"));
         Buttons.Add(GameObject.Find("Play Result Button"));
         Buttons.Add(GameObject.Find("Record Button"));
         Buttons.Add(GameObject.Find("Replay Hand Motion"));
+
+        ConnectToQuest();
 
         // Would rather have study start occur after an opening screen, with participant ID info,
         // a small survey, and robot selection. Possibly also a tutorial (separate scene)
@@ -84,23 +93,17 @@ public class ControllerFullExploration : MonoBehaviour {
         Button RecordButton     = Buttons[2].GetComponent<Button>();
         Button ReplayHandButton = Buttons[3].GetComponent<Button>();
 
-
-        DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
-        DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
-        DebugReport1.SetText("");
-        DebugReport2.SetText("");
-        // Both the Start and Record buttons should initiate animation, so assign them the same listener
+        // Both the Start and Record buttons should initiate animation, so assign them the same listener. The 
+        //  argument true/false tells whether or not to begin with a countdown (and whether to save the motion
+        //  files after)
         PlayButton.onClick.AddListener(delegate{AnimateURDF(false);});
         RecordButton.onClick.AddListener(delegate{AnimateURDF(true);});
         PlayResultButton.onClick.AddListener(Playback);
+        ReplayHandButton.onClick.AddListener(EndEffPlayback);
 
         if (debugHandMotion==false){
             handPrefab.SetActive(false);
-            GameObject ReplayHandButtonObject = GameObject.Find("Replay Hand Motion");
-            ReplayHandButtonObject.SetActive(false);
-        }
-        else{
-            ReplayHandButton.onClick.AddListener(EndEffPlayback);
+            Buttons[3].SetActive(false);
         }
 
         // StartCoroutine(PlayFromCSV());
