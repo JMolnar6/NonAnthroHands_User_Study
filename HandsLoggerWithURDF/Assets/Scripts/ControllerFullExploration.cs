@@ -17,7 +17,7 @@ public class ControllerFullExploration : MonoBehaviour {
     private Vector2 temp_controls;
 
     private TextMeshPro DebugReport1;
-    private List<GameObject> Buttons;
+    private List<GameObject> Buttons = new List<GameObject>();
 
     private int randSeed = 3162;
 
@@ -40,7 +40,7 @@ public class ControllerFullExploration : MonoBehaviour {
     public float stiffness = 100000f;
     public float damping = 10000f;
     public float forceLimit = 10000f;
-    public float speed = 5f; // Units: degree/s
+    public float speed = 15f; // Units: degree/s
     public float torque = 100f; // Units: Nm or N
     public float acceleration = 5f;// Units: m/s^2 / degree/s^2
 
@@ -54,6 +54,8 @@ public class ControllerFullExploration : MonoBehaviour {
     {
         DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
         DebugReport1.SetText("");
+
+        Button PlayButton       = GameObject.Find("Play Button").GetComponent<Button>();
 
         ConfigureButtons();
         // After buttons are configured (StartButtonHandler in EventManager), 
