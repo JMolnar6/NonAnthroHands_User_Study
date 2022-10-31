@@ -16,18 +16,10 @@ public class ControllerFullExploration : MonoBehaviour {
     private int previousIndex;
     private Vector2 temp_controls;
 
-    private bool questConnected = false;
     private TextMeshPro DebugReport1;
-    private TextMeshPro DebugReport2;
     private List<GameObject> Buttons;
 
     private int randSeed = 3162;
-
-    // public TextMeshPro DebugReport2;
-    // public TextMeshPro DebugReport3;
-
-    // public Button PlayButton;
-    // public Button RecordButton;
 
     public float replayRefreshRate = 15;
 
@@ -61,21 +53,15 @@ public class ControllerFullExploration : MonoBehaviour {
     void Start()
     {
         DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
-        DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
         DebugReport1.SetText("");
-        DebugReport2.SetText("");
 
-        Buttons.Add(GameObject.Find("Play Button"));
-        Buttons.Add(GameObject.Find("Play Result Button"));
-        Buttons.Add(GameObject.Find("Record Button"));
-        Buttons.Add(GameObject.Find("Replay Hand Motion"));
+        ConfigureButtons();
+        // After buttons are configured (StartButtonHandler in EventManager), 
+        //  the Welcome button will take users to demographic/participant ID info,
+        //  and the study will begin after the user clicks the "begin" button
 
-        ConnectToQuest();
-
-        // Would rather have study start occur after an opening screen, with participant ID info,
-        // a small survey, and robot selection. Possibly also a tutorial (separate scene)
-        StartStudy();
-
+        // Robots.Add(GameObject.Find("Play Button"));
+        
     }
 
     void Update(){
@@ -127,24 +113,20 @@ public class ControllerFullExploration : MonoBehaviour {
 
     }
 
-    private void ConnectToQuest(){
-        // Check for Oculus Quest connection - JLM 04/2022
-        var inputDevices = new List<UnityEngine.XR.InputDevice>();
-        UnityEngine.XR.InputDevices.GetDevices(inputDevices);
+    private void ConfigureButtons(){
+        Buttons.Add(GameObject.Find("Play Button"));
+        Buttons.Add(GameObject.Find("Play Result Button"));
+        Buttons.Add(GameObject.Find("Record Button"));
+        Buttons.Add(GameObject.Find("Replay Hand Motion"));
+        Buttons.Add(GameObject.Find("Begin Study Button"));
 
-        foreach (var device in inputDevices){
-            // Debug.Log(string.Format("Device found h name '{0}' and role '{1}'", device.name, device.characteristics.ToString()));
-            questConnected = true;
-        }
+        Button BeginButton = Buttons[4].GetComponent<Button>();
+        BeginButton.onClick.AddListener(TaskOnClickBegin);
 
-        // DebugReport = GameObject.Find("Debug Report").GetComponent<TextMeshPro>();
-        if (questConnected){
-            DebugReport2.SetText("Debug Info: Quest is connected");// + ((int) statusUpdate["RedTeamScore"].n));
-        }
-        else {
-            DebugReport2.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
-        }            
+    }
 
+    private void TaskOnClickBegin(){
+        StartStudy();
     }
 
     void SetSelectedJointIndex(int index){
@@ -203,7 +185,7 @@ public class ControllerFullExploration : MonoBehaviour {
     {
         String filename = "corrected_positions.csv";
         // Clear any distracting debug text
-        DebugReport2.SetText("");
+        // DebugReport2.SetText("");
 
         // If URDF is not already in start position, return it there 
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
@@ -253,7 +235,7 @@ public class ControllerFullExploration : MonoBehaviour {
     {
         String filename = "trained_endeff_mean.csv";
         // Clear any distracting debug text
-        DebugReport2.SetText("");
+        // DebugReport2.SetText("");
         Debug.Log(Application.persistentDataPath);
 
         // // If URDF is not already in start position, return it there 
@@ -283,7 +265,7 @@ public class ControllerFullExploration : MonoBehaviour {
     {
         String filename = "pos_rot_hand.csv";
         // Clear any distracting debug text
-        DebugReport2.SetText("");
+        // DebugReport2.SetText("");
         Debug.Log(Application.persistentDataPath);
         Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         StartCoroutine(PlaybackHandMotion(filename, replayRefreshRate));
