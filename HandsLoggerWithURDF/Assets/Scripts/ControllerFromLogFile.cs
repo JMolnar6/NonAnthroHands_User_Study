@@ -65,8 +65,17 @@ public class ControllerFromLogFile : MonoBehaviour {
         PlayButton.onClick.AddListener(delegate{AnimateURDF(false);});
         RecordButton.onClick.AddListener(delegate{AnimateURDF(true);});
         PlayResultButton.onClick.AddListener(Playback);
-        ReplayHandButton.onClick.AddListener(EndEffPlayback);
+        
         // StartCoroutine(PlayFromCSV());
+
+        if (debugHandMotion==false){
+            handPrefab.SetActive(false);
+            GameObject ReplayHandButtonObject = GameObject.Find("Replay Hand Motion");
+            ReplayHandButtonObject.SetActive(false);
+        }
+        else{
+            ReplayHandButton.onClick.AddListener(EndEffPlayback);
+        }
 
         previousIndex = selectedIndex = 1;
         temp_controls = new Vector2(0,0);

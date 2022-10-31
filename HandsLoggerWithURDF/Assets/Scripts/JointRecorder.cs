@@ -13,7 +13,8 @@ public class JointRecorder : MonoBehaviour
     private bool playLaunched = true;
     private float startTime = 0;
     private float animationTime = 15;
-    private ControllerFromLogFile controller;
+    // private ControllerFromLogFile controller;
+    private ControllerFullExploration controller;
     private ArticulationBody[] articulationChain;
     private StreamWriter writer;
     
@@ -31,7 +32,7 @@ public class JointRecorder : MonoBehaviour
         PlayResultButton.onClick.AddListener(TaskOnPlayResultClick);
         // Debug.Log("Recording: " + urdf.name);
 
-        controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
+        controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();
         
         articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
         
