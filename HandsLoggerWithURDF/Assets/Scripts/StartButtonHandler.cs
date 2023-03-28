@@ -107,7 +107,7 @@ public class StartButtonHandler : MonoBehaviour
         }
 
         // Now, load the first robot and initialize the controller and any other pieces that may be necessary
-        // Robot1.instantiate(Transform = )
+        Instantiate(Robot1, new Vector3(0,0,0), Quaternion.identity);
         
     }
 
