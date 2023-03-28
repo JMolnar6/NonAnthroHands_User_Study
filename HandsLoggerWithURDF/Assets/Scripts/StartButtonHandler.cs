@@ -7,14 +7,20 @@ using TMPro;
 public class StartButtonHandler : MonoBehaviour
 {
     public int ParticipantID = 0;
+    public bool clicked = false;
 
     private TextMeshPro DebugReport2;
 
     // private List<GameObject> Buttons;
     private GameObject Canvas;
 
-    private GameObject m_WelcomeButton;
-    private GameObject m_BeginButton;
+    private GameObject WelcomeButton;
+    private GameObject BeginButton;
+    private GameObject RecordButton;
+    private GameObject PlayButton;
+    private GameObject PlayResultButton;
+    private GameObject ReplayButton;
+    private List<GameObject> Buttons = new List<GameObject>();
 
     private bool questConnected = false;
 
@@ -29,16 +35,35 @@ public class StartButtonHandler : MonoBehaviour
     {
         Canvas = GameObject.Find("Canvas");
 
-        m_WelcomeButton = GameObject.Find("Welcome Button");
-        m_BeginButton   = GameObject.Find("Begin Study Button");
-        m_WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
-        m_BeginButton.GetComponent<Button>().onClick.AddListener(TaskOnClickBegin);
-        // m_WelcomeButton.onClick.AddListener(TaskOnClickOpen);
-        // m_BeginButton.onClick.AddListener(TaskOnClickBegin);
+        WelcomeButton = GameObject.Find("Welcome Button");
+        BeginButton   = GameObject.Find("Begin Study Button");
+        RecordButton  = GameObject.Find("Record Button");
+        PlayButton    = GameObject.Find("Play Button");
+        PlayResultButton = GameObject.Find("Replay Hand Motion");
+        ReplayButton  = GameObject.Find("Play Result Button");
 
-        m_WelcomeButton.GetComponent<Button>().enabled = true; 
+        Buttons.Add(RecordButton);
+        Buttons.Add(PlayButton);
+        Buttons.Add(PlayResultButton);
+        Buttons.Add(ReplayButton);
+
+        WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
+        BeginButton.GetComponent<Button>().onClick.AddListener(TaskOnClickBegin);
+        BeginButton.transform.localScale = new Vector3(0,0,0);
+        // WelcomeButton.onClick.AddListener(TaskOnClickOpen);
+        // BeginButton.onClick.AddListener(TaskOnClickBegin);
+
+        WelcomeButton.GetComponent<Button>().enabled = true; 
+
+        // If you want to include any instructions before the user gets started, do that here, now.
+        // Remember that it's easier to read instructions if the debug info is on a canvas background
+        // that's at least halfway non-transparent (you can make a pretty one or a plain one; doesn't much matter)
         
-        m_BeginButton.GetComponent<Button>().enabled = false;
+        BeginButton.GetComponent<Button>().enabled = false;
+        foreach (GameObject Button in Buttons){
+            Button.transform.localScale = new Vector3(0, 0, 0);
+        }
+
 
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
         DebugReport2.SetText("");
@@ -54,19 +79,35 @@ public class StartButtonHandler : MonoBehaviour
 
     private void TaskOnClickOpen(){
         // You'll want to collect participant info here: ID, height, armspan, demographic or background info?
-        m_WelcomeButton.SetActive(false);
+        WelcomeButton.SetActive(false);
         DebugReport2.SetText("");
+        clicked = true;
 
-        m_BeginButton.GetComponent<Button>().enabled = true;
-                                    
+        // Info needed from partiicpant: height, wingspan, participant ID number
+        // At the end of each robot: will get info about control scheme reasoning
+        GatherParticipantInfo();
 
+        BeginButton.GetComponent<Button>().enabled = true;
+        BeginButton.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
 
     }
+
     private void TaskOnClickBegin()
     {
         // Close demographic info, open first robot (and possibly a demo)
-        m_BeginButton.SetActive(false);
+        BeginButton.GetComponent<Button>().enabled=false;
+        BeginButton.SetActive(false);
 
+        foreach (GameObject Button in Buttons){
+            if (Button!=PlayResultButton && Button!=ReplayButton){ // These buttons useful for viewing user motion or pre-synthesized robot commands; 
+                                                                   //  do not include in normal operation
+                Button.GetComponent<Button>().transform.localScale = new Vector3(0.5f,0.5f,0.5f);
+            }
+            
+        }
+
+        // Now, load the first robot and initialize the controller and any other pieces that may be necessary
+        // Robot1.instantiate(Transform = )
         
     }
 
@@ -80,13 +121,31 @@ public class StartButtonHandler : MonoBehaviour
             questConnected = true;
         }
 
-        // DebugReport = GameObject.Find("Debug Report").GetComponent<TextMeshPro>();
         if (questConnected){
-            DebugReport2.SetText("Debug Info: Quest is connected");// + ((int) statusUpdate["RedTeamScore"].n));
+            // DebugReport2.SetText("Debug Info: Quest is connected");
+            Debug.Log("Debug Info: Quest is connected");
         }
         else {
-            DebugReport2.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
+            // DebugReport2.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");
+            Debug.Log("Debug Info: Quest is not connected; listening for keyboard input");
         }            
+
+    }
+
+    private void GatherParticipantInfo(){
+        // Provide mark for person to stand on (optional)
+
+        // Set debug instructions to tell the person to stand straight and stretch their arms out to either side
+        // (ideally with animation)
+
+
+
+        // Wait for hands and head to stop moving, then take data OR have the participant pull on the trigger 
+        // (or press any button?) to collect data. Leave markers in VR space to mark where the person's hands were
+        // and allow them to retake if necessary.
+
+        // Also have a GUI that allows numerical keyboard input: participant ID will be used in the names of all files saved
+        // ParticipantID = input("Please enter your ID number here: \n");
 
     }
 }
