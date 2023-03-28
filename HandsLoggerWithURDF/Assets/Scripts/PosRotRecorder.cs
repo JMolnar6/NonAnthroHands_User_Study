@@ -19,7 +19,9 @@ public class PosRotRecorder : MonoBehaviour
     private bool hitRecord = true;
     private float startTime = 0;
     private float animationTime = 15;
-    private ControllerFromLogFile controller;
+    // private ControllerFromLogFile controller;
+    private ControllerFullExploration controller;
+    private StartButtonHandler startHandler;
     
     List<Vector3> pos = new List<Vector3>();
     List<Quaternion> rot = new List<Quaternion>();
@@ -31,43 +33,46 @@ public class PosRotRecorder : MonoBehaviour
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
         Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
+        StartButtonHandler startHandler = GameObject.Find("Event System").GetComponent<StartButtonHandler>();
         // Debug.Log("Record button found");
         RecordButton.onClick.AddListener(delegate{TaskOnRecordClick(true);});
         PlayResultButton.onClick.AddListener(delegate{TaskOnRecordClick(false);});
         // Debug.Log("Recording: " + go.name);
-
-        controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        animationTime = controller.animationTime;
-        // Debug.Log("Animation runtime = " + animationTime.ToString());
-        if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
-            startTime = Time.time; 
-            playLaunched = false;
-            // Debug.Log("Time = " + startTime);
-            // Debug.Log("End time = " + (startTime+animationTime).ToString());
-        }
+        if(startHandler.clicked==true){
+            // controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
+            controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();
+            animationTime = controller.animationTime;
+            // Debug.Log("Animation runtime = " + animationTime.ToString());
+            if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
+                startTime = Time.time; 
+                playLaunched = false;
+                // Debug.Log("Time = " + startTime);
+                // Debug.Log("End time = " + (startTime+animationTime).ToString());
+            }
 
-        if (isRec == true){
-            Vector3 tempPos = go.position;
-            Quaternion tempRot = go.rotation;
+            if (isRec == true){
+                Vector3 tempPos = go.position;
+                Quaternion tempRot = go.rotation;
 
-            pos.Add(tempPos);
-            rot.Add(tempRot);
-            tim.Add(Time.time);
-            
-            // Debug.Log("Position at time " + Time.time + " = " + go.position);
-            // Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
-        }
+                pos.Add(tempPos);
+                rot.Add(tempRot);
+                tim.Add(Time.time);
+                
+                // Debug.Log("Position at time " + Time.time + " = " + go.position);
+                // Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
+            }
 
-        if ((Time.time > animationTime + startTime + catchupTime) & (!playLaunched)){ 
-                Debug.Log("Recording complete at " + Time.time.ToString());
-                playLaunched = true;
-                isRec = false;
-                LogAndConfirm();
+            if ((Time.time > animationTime + startTime + catchupTime) & (!playLaunched)){ 
+                    Debug.Log("Recording complete at " + Time.time.ToString());
+                    playLaunched = true;
+                    isRec = false;
+                    LogAndConfirm();
+            }
         }
     }
 
