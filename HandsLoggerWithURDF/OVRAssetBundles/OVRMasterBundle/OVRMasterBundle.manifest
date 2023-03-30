@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 251434047
+CRC: 182289573
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
@@ -16,6 +16,7 @@ AssetBundleManifest:
         Dependency_3: asset_mat0
         Dependency_4: asset_ttf0
         Dependency_5: asset_exr0
+        Dependency_6: asset_inputactions0
     Info_2:
       Name: asset_dae0
       Dependencies: {}
@@ -80,4 +81,7 @@ AssetBundleManifest:
       Dependencies: {}
     Info_18:
       Name: asset_anim0
+      Dependencies: {}
+    Info_19:
+      Name: asset_inputactions0
       Dependencies: {}

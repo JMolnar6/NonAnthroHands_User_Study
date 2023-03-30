@@ -35,6 +35,9 @@ public class StartButtonHandler : MonoBehaviour
     {
         Canvas = GameObject.Find("Canvas");
 
+        // Buttons = GameObject.Find("Button");
+        var Buttons = GameObject.FindGameObjectsWithTag("button");
+
         WelcomeButton = GameObject.Find("Welcome Button");
         BeginButton   = GameObject.Find("Begin Study Button");
         RecordButton  = GameObject.Find("Record Button");
@@ -42,17 +45,13 @@ public class StartButtonHandler : MonoBehaviour
         // PlayResultButton = GameObject.Find("Replay Hand Motion");
         // ReplayButton  = GameObject.Find("Play Result Button");
 
-        Buttons.Add(RecordButton);
-        Buttons.Add(PlayButton);
+        // Buttons.Add(RecordButton);
+        // Buttons.Add(PlayButton);
         // Buttons.Add(PlayResultButton);
         // Buttons.Add(ReplayButton);
 
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
         BeginButton.GetComponent<Button>().onClick.AddListener(TaskOnClickBegin);
-        BeginButton.transform.localScale = new Vector3(0,0,0);
-        // WelcomeButton.onClick.AddListener(TaskOnClickOpen);
-        // BeginButton.onClick.AddListener(TaskOnClickBegin);
-
         WelcomeButton.GetComponent<Button>().enabled = true; 
 
         // If you want to include any instructions before the user gets started, do that here, now.
@@ -63,6 +62,7 @@ public class StartButtonHandler : MonoBehaviour
         foreach (GameObject Button in Buttons){
             Button.transform.localScale = new Vector3(0, 0, 0);
         }
+        WelcomeButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
 
 
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
