@@ -18,8 +18,8 @@ public class StartButtonHandler : MonoBehaviour
     private GameObject BeginButton;
     private GameObject RecordButton;
     private GameObject PlayButton;
-    private GameObject PlayResultButton;
-    private GameObject ReplayButton;
+    // private GameObject PlayResultButton;
+    // private GameObject ReplayButton;
     private List<GameObject> Buttons = new List<GameObject>();
 
     private bool questConnected = false;
@@ -39,13 +39,13 @@ public class StartButtonHandler : MonoBehaviour
         BeginButton   = GameObject.Find("Begin Study Button");
         RecordButton  = GameObject.Find("Record Button");
         PlayButton    = GameObject.Find("Play Button");
-        PlayResultButton = GameObject.Find("Replay Hand Motion");
-        ReplayButton  = GameObject.Find("Play Result Button");
+        // PlayResultButton = GameObject.Find("Replay Hand Motion");
+        // ReplayButton  = GameObject.Find("Play Result Button");
 
         Buttons.Add(RecordButton);
         Buttons.Add(PlayButton);
-        Buttons.Add(PlayResultButton);
-        Buttons.Add(ReplayButton);
+        // Buttons.Add(PlayResultButton);
+        // Buttons.Add(ReplayButton);
 
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
         BeginButton.GetComponent<Button>().onClick.AddListener(TaskOnClickBegin);
@@ -88,7 +88,7 @@ public class StartButtonHandler : MonoBehaviour
         GatherParticipantInfo();
 
         BeginButton.GetComponent<Button>().enabled = true;
-        BeginButton.transform.localScale = new Vector3(0.5f,0.5f,0.5f);
+        BeginButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
 
     }
 
@@ -99,13 +99,13 @@ public class StartButtonHandler : MonoBehaviour
         BeginButton.SetActive(false);
 
         foreach (GameObject Button in Buttons){
-            if (Button!=PlayResultButton && Button!=ReplayButton){ // These buttons useful for viewing user motion or pre-synthesized robot commands; 
+            // if (Button!=PlayResultButton && Button!=ReplayButton){ // These buttons useful for viewing user motion or pre-synthesized robot commands; 
                                                                    //  do not include in normal operation
-                Button.GetComponent<Button>().transform.localScale = new Vector3(0.5f,0.5f,0.5f);
-            }
+                Button.GetComponent<Button>().transform.localScale = new Vector3(0.025f,0.025f,0.025f);
+            // }
             
         }
-
+        PlayButton.GetComponent<Button>().enabled = true;
         // Now, load the first robot and initialize the controller and any other pieces that may be necessary
         Instantiate(Robot1, new Vector3(0,0,0), Quaternion.identity);
         

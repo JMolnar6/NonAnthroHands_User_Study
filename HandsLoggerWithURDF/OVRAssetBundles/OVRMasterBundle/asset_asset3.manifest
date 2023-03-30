@@ -1,0 +1,37 @@
+ManifestFileVersion: 0
+CRC: 2838875020
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 7029d35e807948824923229defab1be9
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 78b4eb24b215c292a3fbe4dfa013d0e8
+HashAppended: 0
+ClassTypes:
+- Class: 43
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/URDF/anki_description/meshes/cozmo_lift_25.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_44.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_14.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_37.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_65.asset
+- Assets/URDF/meshes/Cylinder.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_26.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_20.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_83.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_78.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_84.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_52.asset
+- Assets/URDF/kinova_description/meshes/finger_distal_1.asset
+- Assets/URDF/kinova_description/meshes/forearm_2.asset
+- Assets/URDF/anki_description/meshes/body3_2.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_7.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_49.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_46.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_19.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_64.asset
+- Assets/URDF/kinova_description/meshes/hand_3finger_1.asset
+Dependencies: []

@@ -1,0 +1,46 @@
+ManifestFileVersion: 0
+CRC: 1936134945
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 28180be82d92ef6dbe00e91d4647a302
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 78b4eb24b215c292a3fbe4dfa013d0e8
+HashAppended: 0
+ClassTypes:
+- Class: 43
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/URDF/anki_description/meshes/cozmo_lift_76.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_18.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_51.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_28.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_32.asset
+- Assets/URDF/anki_description/meshes/cozmo_head_1.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_69.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_80.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_4.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_43.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_66.asset
+- Assets/URDF/kinova_description/meshes/base_2.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_55.asset
+- Assets/URDF/kinova_description/meshes/finger_distal_2.asset
+- Assets/URDF/kinova_description/meshes/shoulder_1.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_45.asset
+- Assets/URDF/kinova_description/meshes/base_3.asset
+- Assets/URDF/kinova_description/meshes/forearm_1.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_3.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_60.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_33.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_71.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_42.asset
+- Assets/URDF/kinova_description/meshes/wrist_spherical_1_1.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_23.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_13.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_12.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_57.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_86.asset
+- Assets/URDF/anki_description/meshes/cozmo_lift_53.asset
+Dependencies: []

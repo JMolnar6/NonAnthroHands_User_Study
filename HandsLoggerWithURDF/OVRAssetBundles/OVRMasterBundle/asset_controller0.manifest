@@ -1,0 +1,27 @@
+ManifestFileVersion: 0
+CRC: 3561684305
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 9638e009daec6e00feda555a52befa02
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: fdf6c57a251b9f6ec27bdd2fe01b033c
+HashAppended: 0
+ClassTypes:
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Animation/j2s6s300.controller
+- Assets/Oculus/VR/Meshes/OculusTouchForQuestAndRiftS/Animation/OculusTouchQuestAndRiftSLeftAnimation.controller
+- Assets/Oculus/VR/Meshes/OculusTouchForQuest2/Animation/OculusTouchQuest2LeftAnimation.controller
+- Assets/Oculus/VR/Meshes/OculusTouchForRift/Animation/OculusTouchRiftRightAnimation.controller
+- Assets/Oculus/VR/Meshes/OculusTouchForQuestAndRiftS/Animation/OculusTouchQuestAndRiftSRightAnimation.controller
+- Assets/Oculus/VR/Meshes/OculusTouchForQuest2/Animation/OculusTouchQuest2RightAnimation.controller
+- Assets/Oculus/VR/Meshes/OculusTouchForRift/Animation/OculusTouchRiftLeftAnimation.controller
+Dependencies:
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_anim0
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_fbx0

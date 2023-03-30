@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 2919236685
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: f680e2305e4267afd11ec77843e09830
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 9a2ca7bdbd1871f7131daf57de908e0c
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Oculus/Spatializer/scenes/sounds/sine.wav
+- Assets/Oculus/SampleFramework/Core/HandsInteraction/Audio/ButtonDown.wav
+Dependencies: []

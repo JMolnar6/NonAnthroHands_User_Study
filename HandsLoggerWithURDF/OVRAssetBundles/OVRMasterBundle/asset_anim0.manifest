@@ -1,0 +1,17 @@
+ManifestFileVersion: 0
+CRC: 1815950785
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ec8ca2b981de3b0d88a8ad19e1e9b37c
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: af57576da81d5d3ce45807ac11234de6
+HashAppended: 0
+ClassTypes:
+- Class: 74
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Animation/jacotest.anim
+Dependencies: []

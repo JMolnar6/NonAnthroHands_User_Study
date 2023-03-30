@@ -1,0 +1,128 @@
+ManifestFileVersion: 0
+CRC: 1953686738
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: f4b5de1f9764f46f269d316906dbda49
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 023cecd78f8178f9c1236312c099991b
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 20
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 64
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 81
+  Script: {instanceID: 0}
+- Class: 90
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: 7e933e81d3c20c74ea6fdc708a67e3a5, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: cb7623a8f0b49cf4dbaa40aea4d4be64, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 54c16b381e28e8d479237771d234dbae, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 8b2685e7e7719cd43814f41f35664c0b, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 73eac66b128fc8749a21623225c34541, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5cc5c234723e3a54d8dd09b131117743, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: d607ea46a579d44c4b19a6322ce4b9b2, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 76add797bdb1d8c4b8276633f6e67167, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: ac27124318cf8e84aa7350c2ac1cdb80, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1d7b05fb2a710034a8aaf18cf1544733, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: df9f338034892c44ebb62d97894772f1, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 674a40251fe8ad841b18517ac5209957, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 63b6193734b4c8444bcfdf4e9953fe2b, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: f450ab68e882f4a4ea9f360b761f3439, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 00f3402a2ea5bff4880c0313515240cd, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5178bc8574ce2bf4388e787a2e2af326, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 074632cab556f5b408839af8574308df, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1979861ab4ec1cd409bd51b9205b1086, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fba5fd74d37a6cf4284698624eb8f6aa, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1c0c8ba1123c5f949b20e50d5dd6afe4, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fbf4c79288754864b8d522b69f4b52a8, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: e9090ae501ff9cd459bec5271d40249c, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5b6e27abb4aa1a64bbcf79a845601047, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 503a700890420e7419d0fb92f964eb57, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 46398bc5d6905ad429a6d2d973afe002, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 2609c54f376cffc4da1ab9401cc1a36f, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: aed62bf3ae2456c408f247f96808ce96, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fae53a797b5479c43b9a3aeac7e35e5c, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 7631001c063f69d4495bca90731abab2, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 137
+  Script: {instanceID: 0}
+- Class: 171741748
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Oculus/VR/Prefabs/OVRHandPrefab.prefab
+- Assets/Prefabs/j2s6s300.prefab
+- Assets/Oculus/VR/Prefabs/OVRCustomHandPrefab_R.prefab
+- Assets/Oculus/Avatar/Content/Prefabs/LocalAvatar.prefab
+- Assets/Prefabs/tentacle_combined.prefab
+- Assets/Prefabs/Reachy.prefab
+- Assets/Oculus/VR/Prefabs/OVRCameraRig.prefab
+- Assets/Oculus/VR/Prefabs/OVRControllerPrefab.prefab
+- Assets/Prefabs/Cozmo.prefab
+Dependencies:
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_asset0
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_asset1
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_asset2
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_asset3
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_controller0
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_dae0
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_fbx0
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_mat0
+- C:/Users/jmoln/Documents/Projects/HandsLoggerWithURDF/HandsLoggerWithURDF/OVRAssetBundles/OVRMasterBundle/asset_resources

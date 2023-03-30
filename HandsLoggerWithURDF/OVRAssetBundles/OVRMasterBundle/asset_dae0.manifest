@@ -1,0 +1,57 @@
+ManifestFileVersion: 0
+CRC: 2392876019
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 68083c940f4b8a879c80e8ee4f08fc9d
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: f64856a3d606b613608cbf22df470c60
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/URDF/kinova_description/meshes/finger_proximal.dae
+- Assets/URDF/reachy_description/meshes/l_gripper_finger.dae
+- Assets/URDF/reachy_description/meshes/forearm.dae
+- Assets/URDF/kinova_description/meshes/finger_distal.dae
+- Assets/URDF/reachy_description/meshes/antenna.dae
+- Assets/URDF/anki_description/meshes/cozmo_belt.dae
+- Assets/URDF/reachy_description/meshes/shoulder.dae
+- Assets/URDF/reachy_description/meshes/r_gripper_thumb.dae
+- Assets/URDF/reachy_description/meshes/head.dae
+- Assets/URDF/reachy_description/meshes/orbita_arm.dae
+- Assets/URDF/kinova_description/meshes/wrist_spherical_1.dae
+- Assets/URDF/reachy_description/meshes/shoulder_x.dae
+- Assets/URDF/kinova_description/meshes/arm.dae
+- Assets/URDF/kinova_description/meshes/ring_big.dae
+- Assets/URDF/reachy_description/meshes/torso.dae
+- Assets/URDF/reachy_description/meshes/wrist2hand.dae
+- Assets/URDF/reachy_description/meshes/wrist.dae
+- Assets/URDF/kinova_description/meshes/base.dae
+- Assets/URDF/reachy_description/meshes/upper_arm.dae
+- Assets/URDF/kinova_description/meshes/shoulder.dae
+- Assets/URDF/kinova_description/meshes/wrist_spherical_2.dae
+- Assets/URDF/reachy_description/meshes/l_gripper_thumb.dae
+- Assets/URDF/kinova_description/meshes/forearm.dae
+- Assets/URDF/kinova_description/meshes/hand_3finger.dae
+- Assets/URDF/kinova_description/meshes/ring_small.dae
+- Assets/URDF/reachy_description/meshes/r_gripper_finger.dae
+- Assets/URDF/anki_description/meshes/cozmo_head.dae
+- Assets/URDF/anki_description/meshes/body3.dae
+- Assets/URDF/anki_description/meshes/cozmo_lift.dae
+Dependencies: []

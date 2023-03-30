@@ -1,0 +1,17 @@
+ManifestFileVersion: 0
+CRC: 2105251590
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: d43258698493cdee9752ba717a1e945a
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 2c040cef7601b3c05f2f6ecddfcec8c0
+HashAppended: 0
+ClassTypes:
+- Class: 89
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Scenes/SampleScene/ReflectionProbe-0.exr
+Dependencies: []
