@@ -20,7 +20,7 @@ public class StartButtonHandler : MonoBehaviour
     private GameObject PlayButton;
     // private GameObject PlayResultButton;
     // private GameObject ReplayButton;
-    private List<GameObject> Buttons = new List<GameObject>();
+    private List<GameObject> ButtonsList = new List<GameObject>();
 
     private bool questConnected = false;
 
@@ -36,7 +36,7 @@ public class StartButtonHandler : MonoBehaviour
         Canvas = GameObject.Find("Canvas");
 
         // Buttons = GameObject.Find("Button");
-        var Buttons = GameObject.FindGameObjectsWithTag("button");
+        GameObject[] Buttons = GameObject.FindGameObjectsWithTag("button");
 
         WelcomeButton = GameObject.Find("Welcome Button");
         BeginButton   = GameObject.Find("Begin Study Button");
@@ -51,19 +51,19 @@ public class StartButtonHandler : MonoBehaviour
         // Buttons.Add(ReplayButton);
 
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
-        BeginButton.GetComponent<Button>().onClick.AddListener(TaskOnClickBegin);
         WelcomeButton.GetComponent<Button>().enabled = true; 
-
+        BeginButton.GetComponent<Button>().onClick.AddListener(TaskOnClickBegin);
+        BeginButton.GetComponent<Button>().enabled = false;
+        
+        foreach (GameObject Button in Buttons){
+            Button.transform.localScale = new Vector3(0, 0, 0);
+            ButtonsList.Add(Button);
+        }
+        WelcomeButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
+        
         // If you want to include any instructions before the user gets started, do that here, now.
         // Remember that it's easier to read instructions if the debug info is on a canvas background
         // that's at least halfway non-transparent (you can make a pretty one or a plain one; doesn't much matter)
-        
-        BeginButton.GetComponent<Button>().enabled = false;
-        foreach (GameObject Button in Buttons){
-            Button.transform.localScale = new Vector3(0, 0, 0);
-        }
-        WelcomeButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
-
 
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
         DebugReport2.SetText("");
@@ -98,12 +98,8 @@ public class StartButtonHandler : MonoBehaviour
         BeginButton.GetComponent<Button>().enabled=false;
         BeginButton.SetActive(false);
 
-        foreach (GameObject Button in Buttons){
-            // if (Button!=PlayResultButton && Button!=ReplayButton){ // These buttons useful for viewing user motion or pre-synthesized robot commands; 
-                                                                   //  do not include in normal operation
-                Button.GetComponent<Button>().transform.localScale = new Vector3(0.025f,0.025f,0.025f);
-            // }
-            
+        foreach (GameObject Button in ButtonsList){
+            Button.GetComponent<Button>().transform.localScale = new Vector3(0.025f,0.025f,0.025f);            
         }
         PlayButton.GetComponent<Button>().enabled = true;
         // Now, load the first robot and initialize the controller and any other pieces that may be necessary
