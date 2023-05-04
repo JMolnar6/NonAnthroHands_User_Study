@@ -81,7 +81,6 @@ public class StartButtonHandler : MonoBehaviour
         // You'll want to collect participant info here: ID, height, armspan, demographic or background info?
         WelcomeButton.SetActive(false);
         DebugReport2.SetText("");
-        clicked = true;
 
         // Info needed from partiicpant: height, wingspan, participant ID number
         // At the end of each robot: will get info about control scheme reasoning
@@ -97,6 +96,7 @@ public class StartButtonHandler : MonoBehaviour
         // Close demographic info, open first robot (and possibly a demo)
         BeginButton.GetComponent<Button>().enabled=false;
         BeginButton.SetActive(false);
+        clicked = true;
 
         foreach (GameObject Button in ButtonsList){
             Button.GetComponent<Button>().transform.localScale = new Vector3(0.025f,0.025f,0.025f);            

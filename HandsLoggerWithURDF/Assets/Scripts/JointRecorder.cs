@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,9 +28,11 @@ public class JointRecorder : MonoBehaviour
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
         Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
+        PlayResultButton.onClick.AddListener(TaskOnPlayResultClick);
+        
         // Debug.Log("Record button found");
         RecordButton.onClick.AddListener(TaskOnRecordClick);
-        PlayResultButton.onClick.AddListener(TaskOnPlayResultClick);
+        
         // Debug.Log("Recording: " + urdf.name);
 
         controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();

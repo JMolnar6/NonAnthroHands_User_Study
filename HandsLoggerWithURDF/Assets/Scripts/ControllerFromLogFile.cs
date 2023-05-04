@@ -36,6 +36,7 @@ public class ControllerFromLogFile : MonoBehaviour {
                                 // increment the startJoint number so that the position and velocity
                                 // commands will apply to the first moveable joint
     public bool debugHandMotion = false;
+    public bool playFinalMotion = false;
 
     // public ControlType control = PositionControl;
     public float stiffness;
@@ -64,17 +65,26 @@ public class ControllerFromLogFile : MonoBehaviour {
         // Both the Start and Record buttons should initiate animation, so assign them the same listener
         PlayButton.onClick.AddListener(delegate{AnimateURDF(false);});
         RecordButton.onClick.AddListener(delegate{AnimateURDF(true);});
-        PlayResultButton.onClick.AddListener(Playback);
+        
         
         // StartCoroutine(PlayFromCSV());
 
+        if (playFinalMotion==false){
+            GameObject PlayResultButtonObject = GameObject.Find("Play Result Button");
+            PlayResultButtonObject.SetActive(false);
+        }
+        else{
+            PlayResultButton.onClick.AddListener(Playback);
+        }
+
         if (debugHandMotion==false){
-            handPrefab.SetActive(false);
+            // handPrefab.SetActive(false);
             GameObject ReplayHandButtonObject = GameObject.Find("Replay Hand Motion");
             ReplayHandButtonObject.SetActive(false);
         }
         else{
             ReplayHandButton.onClick.AddListener(EndEffPlayback);
+            // handPrefab.Instantiate();
         }
 
         previousIndex = selectedIndex = 1;

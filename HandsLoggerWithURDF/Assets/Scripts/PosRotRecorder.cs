@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+
 
 public class PosRotRecorder : MonoBehaviour
 {
@@ -19,8 +21,8 @@ public class PosRotRecorder : MonoBehaviour
     private bool hitRecord = true;
     private float startTime = 0;
     private float animationTime = 15;
-    // private ControllerFromLogFile controller;
-    private ControllerFullExploration controller;
+    private ControllerFromLogFile controller;
+    // private ControllerFullExploration controller;
     private StartButtonHandler startHandler;
     
     List<Vector3> pos = new List<Vector3>();
@@ -32,20 +34,21 @@ public class PosRotRecorder : MonoBehaviour
     {
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
-        Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
-        StartButtonHandler startHandler = GameObject.Find("Event System").GetComponent<StartButtonHandler>();
-        // Debug.Log("Record button found");
         RecordButton.onClick.AddListener(delegate{TaskOnRecordClick(true);});
+        
+        Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
         PlayResultButton.onClick.AddListener(delegate{TaskOnRecordClick(false);});
-        // Debug.Log("Recording: " + go.name);
+        
+        startHandler = GameObject.Find("Event System").GetComponent<StartButtonHandler>();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
         if(startHandler.clicked==true){
-            // controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
-            controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();
+            controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
+            // controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();
             animationTime = controller.animationTime;
             // Debug.Log("Animation runtime = " + animationTime.ToString());
             if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
