@@ -134,12 +134,11 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     }
 
-    private IEnumerator PlayFromCSV(String filename, float refreshRate){
+    private IEnumerator PlayFromCSV(String URDFName, String filename, float refreshRate){
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
         // animationTime = PositionLines.Length/replayRefreshRate;
 
-        string URDFName = transform.root.gameObject.name;
         // Debug.Log("Root URDF is named "+ URDFName);
 
         for (int i=0; i<=PositionLines.Length-1; i++){
@@ -188,9 +187,14 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         // If URDF is not already in start position, return it there 
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        if (PositionLines.Length>0){
+            Debug.Log("Control log file successfully read");
+        }
         Debug.Log(Application.persistentDataPath);
         animationTime = PositionLines.Length/replayRefreshRate;
         string URDFName = transform.root.gameObject.name;
+        URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+        Debug.Log("URDF Name = "+URDFName);
 
         string[] Positions = PositionLines[1].Split(',');
         int numJoints = Positions.Length;
@@ -207,14 +211,14 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         // Begin countdown to animation 
         if (countdown){
-            StartCoroutine(BeginCountdown(filename));
+            StartCoroutine(BeginCountdown(URDFName, filename));
         }
         else{
-            StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+            StartCoroutine(PlayFromCSV(URDFName, filename, replayRefreshRate));
         }
     }
 
-    private IEnumerator BeginCountdown(String filename){
+    private IEnumerator BeginCountdown(String URDFName, String filename){
         DebugReport1.SetText("Ready?");
         yield return new WaitForSecondsRealtime((float) 2.0);
         DebugReport1.SetText("3");
@@ -227,7 +231,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         yield return new WaitForSecondsRealtime((float) 0.5);
         DebugReport1.SetText("");
         Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
-        StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+        StartCoroutine(PlayFromCSV(URDFName, filename, replayRefreshRate));
     }
 
     private void Playback()
@@ -236,6 +240,9 @@ public class ControllerFromLogFile : MonoBehaviour {
         // Clear any distracting debug text
         DebugReport2.SetText("");
         Debug.Log(Application.persistentDataPath);
+
+        string URDFName = transform.root.gameObject.name;
+        URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
 
         // // If URDF is not already in start position, return it there 
         // string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
@@ -257,7 +264,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         //     drive.target = float.Parse(Positions[j-1]);
         //     joint.xDrive = drive;            
         // }
-        StartCoroutine(PlayFromCSV(filename, replayRefreshRate));
+        StartCoroutine(PlayFromCSV(URDFName, filename, replayRefreshRate));
     }
 
     private void EndEffPlayback()
