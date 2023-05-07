@@ -20,6 +20,11 @@ public class ControllerFromLogFile : MonoBehaviour {
     private TextMeshPro DebugReport1;
     private TextMeshPro DebugReport2;
 
+    private int selectedIndex;
+    public int gesture_num = 0; // 0-based indexing? Double-check after gesture generation
+    // private int demo_num = 1;
+    // private PosRotRecorder data_recorder;
+
     // public TextMeshPro DebugReport2;
     // public TextMeshPro DebugReport3;
 
@@ -31,7 +36,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     // [InspectorReadOnly(hideInEditMode: true)]
     public string selectedJoint;
     // [HideInInspector]
-    public int selectedIndex;
+    
     public int startJoint = 3; //If the first few joints of the URDF includes a root and a base, 
                                 // increment the startJoint number so that the position and velocity
                                 // commands will apply to the first moveable joint
@@ -131,7 +136,6 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     void Update(){
         OVRInput.Update();
-
     }
 
     private IEnumerator PlayFromCSV(String URDFName, String filename, float refreshRate){
@@ -181,7 +185,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     private void AnimateURDF(bool countdown)
     {
-        String filename = "corrected_positions.csv";
+        String filename = "corrected_positions_"+gesture_num.ToString()+".csv";
         // Clear any distracting debug text
         DebugReport2.SetText("");
 

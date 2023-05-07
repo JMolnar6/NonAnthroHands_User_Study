@@ -47,7 +47,7 @@ public class JointRecorder : MonoBehaviour
     void Update()
     {
         animationTime = controller.animationTime; //Note that this doesn't get updated until after the first "record"
-        Debug.Log("Animation runtime = " + animationTime.ToString());
+        // Debug.Log("Animation runtime = " + animationTime.ToString());
         if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
             startTime = Time.time; 
             playLaunched = false;

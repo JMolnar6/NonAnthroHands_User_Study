@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class StartButtonHandler : MonoBehaviour
+public class EventSystemManager : MonoBehaviour
 {
     public int ParticipantID = 0;
     public bool clicked = false;
@@ -17,15 +17,6 @@ public class StartButtonHandler : MonoBehaviour
     private GameObject Canvas;
     private int demo_num = 1;
     private PosRotRecorder data_recorder;
-
-    private GameObject WelcomeButton;
-    private GameObject BeginButton;
-    private GameObject RecordButton;
-    private GameObject PlayButton;
-    // private GameObject PlayResultButton;
-    // private GameObject ReplayButton;
-    private Button PreviousButton;
-    private Button NextButton;
     
     private List<GameObject> ButtonsList = new List<GameObject>();
 
@@ -46,21 +37,9 @@ public class StartButtonHandler : MonoBehaviour
         // Buttons = GameObject.Find("Button");
         GameObject[] Buttons = GameObject.FindGameObjectsWithTag("button");
 
-        WelcomeButton = GameObject.Find("Welcome Button");
-        BeginButton   = GameObject.Find("Begin Study Button");
-        RecordButton  = GameObject.Find("Record Button");
-        PlayButton    = GameObject.Find("Play Button");
-        // PlayResultButton = GameObject.Find("Replay Hand Motion");
-        // ReplayButton  = GameObject.Find("Play Result Button");
-
-        // Buttons.Add(RecordButton);
-        // Buttons.Add(PlayButton);
-        // Buttons.Add(PlayResultButton);
-        // Buttons.Add(ReplayButton);
-
-        Button PreviousButton   = GameObject.Find("Previous Button").GetComponent<Button>();
-        Button NextButton       = GameObject.Find("Next Button").GetComponent<Button>();
-
+        GameObject WelcomeButton = GameObject.Find("Welcome Button");
+        GameObject BeginButton   = GameObject.Find("Begin Study Button");
+        
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
         WelcomeButton.GetComponent<Button>().enabled = true; 
         BeginButton.GetComponent<Button>().onClick.AddListener(TaskOnClickBegin);
@@ -94,6 +73,7 @@ public class StartButtonHandler : MonoBehaviour
 
     private void TaskOnClickOpen(){
         // You'll want to collect participant info here: ID, height, armspan, demographic or background info?
+        GameObject WelcomeButton = GameObject.Find("Welcome Button");
         WelcomeButton.SetActive(false);
         DebugReport2.SetText("");
 
@@ -101,6 +81,7 @@ public class StartButtonHandler : MonoBehaviour
         // At the end of each robot: will get info about control scheme reasoning
         GatherParticipantInfo();
 
+        GameObject BeginButton   = GameObject.Find("Begin Study Button");
         BeginButton.GetComponent<Button>().enabled = true;
         BeginButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
 
@@ -109,13 +90,19 @@ public class StartButtonHandler : MonoBehaviour
     private void TaskOnClickBegin()
     {
         // Close demographic info, open first robot (and possibly a demo)
+        GameObject BeginButton   = GameObject.Find("Begin Study Button");
         BeginButton.GetComponent<Button>().enabled=false;
         BeginButton.SetActive(false);
         clicked = true;
 
         foreach (GameObject Button in ButtonsList){
+            //Skip "previous" and "next" here--make them visible after all demos for that gesture have been recorded
+            if ((Button.name == "Previous") || (Button.name=="Next")) {
+                continue;
+            }
             Button.GetComponent<Button>().transform.localScale = new Vector3(0.025f,0.025f,0.025f);            
         }
+        GameObject PlayButton   = GameObject.Find("Play Button");
         PlayButton.GetComponent<Button>().enabled = true;
         // Now, load the first robot and initialize the controller and any other pieces that may be necessary
         Instantiate(Robot1, new Vector3(0,0,0), Quaternion.identity);
