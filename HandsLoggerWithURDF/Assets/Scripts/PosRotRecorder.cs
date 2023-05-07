@@ -23,7 +23,7 @@ public class PosRotRecorder : MonoBehaviour
     private float animationTime = 15;
     private ControllerFromLogFile controller;
     // private ControllerFullExploration controller;
-    private EventSystemManager startHandler;
+    private EventSystemManager eventHandler;
     
     List<Vector3> pos = new List<Vector3>();
     List<Quaternion> rot = new List<Quaternion>();
@@ -39,14 +39,14 @@ public class PosRotRecorder : MonoBehaviour
         Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
         PlayResultButton.onClick.AddListener(delegate{TaskOnRecordClick(false);});
         
-        startHandler = GameObject.Find("Event System").GetComponent<EventSystemManager>();
+        eventHandler = GameObject.Find("Event System").GetComponent<EventSystemManager>();
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(startHandler.clicked==true){
+        if(eventHandler.clicked==true){
             controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
             // controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();
             animationTime = controller.animationTime;
@@ -77,6 +77,8 @@ public class PosRotRecorder : MonoBehaviour
                     LogAndConfirm();
             }
         }
+
+
     }
 
 
