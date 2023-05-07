@@ -14,10 +14,11 @@ public class JointRecorder : MonoBehaviour
     private bool playLaunched = true;
     private float startTime = 0;
     private float animationTime = 15;
-    // private ControllerFromLogFile controller;
-    private ControllerFullExploration controller;
+    private ControllerFromLogFile controller;
+    // private ControllerFullExploration controller;
     private ArticulationBody[] articulationChain;
     private StreamWriter writer;
+    
     
     List<float> angles = new List<float>();
     List<float> tim = new List<float>();    
@@ -35,7 +36,7 @@ public class JointRecorder : MonoBehaviour
         
         // Debug.Log("Recording: " + urdf.name);
 
-        controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();
+        controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
         
         articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
         
@@ -122,7 +123,7 @@ public class JointRecorder : MonoBehaviour
     }
 
     private void LaunchCSVfile(){
-        string filePath = Application.persistentDataPath + "/" + urdf.name + "_JointMotion_" + iteration + ".csv";
+        string filePath = Application.persistentDataPath + "/" + urdf.name + "_JointMotion_gesture_" + controller.gesture_num.ToString() + "_" + iteration + ".csv";
         // Debug.Log("filepath = " + filePath);
         
         writer = new StreamWriter(filePath);

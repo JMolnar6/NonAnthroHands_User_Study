@@ -224,15 +224,11 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     private IEnumerator BeginCountdown(String URDFName, String filename){
         DebugReport1.SetText("Ready?");
-        yield return new WaitForSecondsRealtime((float) 2.0);
-        DebugReport1.SetText("3");
         yield return new WaitForSecondsRealtime((float) 1.0);
-        DebugReport1.SetText("2");
-        yield return new WaitForSecondsRealtime((float) 1.0);
-        DebugReport1.SetText("1");
+        DebugReport1.SetText("Set");
         yield return new WaitForSecondsRealtime((float) 1.0);
         DebugReport1.SetText("GO");
-        yield return new WaitForSecondsRealtime((float) 0.5);
+        yield return new WaitForSecondsRealtime((float) 1.0);
         DebugReport1.SetText("");
         Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
         StartCoroutine(PlayFromCSV(URDFName, filename, replayRefreshRate));

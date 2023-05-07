@@ -90,12 +90,12 @@ public class PosRotRecorder : MonoBehaviour
     private void WriteLogFile(){
         // output log file of user motions and times
         
-        // Debug.Log("filepath directory = " + Application.persistentDataPath + "/" + go.name + "_Motion_" + iteration + ".csv");
+        // Debug.Log("filepath directory = " + Application.persistentDataPath + "/" + go.name + "_Motion_gesture_" + controller.gesture_num.ToString() + "_" + iteration + ".csv");
         
         // string filePath = Application.persistentDataPath + "/Data/" + "goMotion";
         string filePath = "";
         if (hitRecord){
-            filePath = Application.persistentDataPath + "/" + go.name + "Motion_" + iteration + ".csv";
+            filePath = Application.persistentDataPath + "/" + go.name + "Motion_gesture_" + controller.gesture_num.ToString() + "_" + iteration + ".csv";
         }
         else{
             filePath = Application.persistentDataPath + "/" + go.name + "Playback.csv";
