@@ -17,7 +17,8 @@ public class EventSystemManager : MonoBehaviour
     // private List<GameObject> Buttons;
     private GameObject Canvas;
     private int demo_num = 1;
-    private PosRotRecorder data_recorder;
+    private PosRotRecorder data_recorder; //Need to expand this; currently focusing only on Right Hand but could be grabbing all in the scene
+    private JointRecorder robot_recorder;
     private ControllerFromLogFile controller;
     
     private List<GameObject> ButtonsList = new List<GameObject>();
@@ -29,7 +30,7 @@ public class EventSystemManager : MonoBehaviour
     public GameObject Robot2;
     public GameObject Robot3;
     public GameObject Robot4;
-    public int demo_max = 5;
+    public int demo_max = 1; // Temp for faster debugging. Should = 5
 
 
     // Start is called before the first frame update
@@ -76,9 +77,12 @@ public class EventSystemManager : MonoBehaviour
     void Update()
     {
         demo_num = data_recorder.iteration;
+        DebugReport2.SetText("Demo num: "+demo_num.ToString());
 
         if (demo_num > demo_max){
-            demo_num = 1;
+            data_recorder.iteration  = 1;
+            robot_recorder.iteration = 1;
+            
             Debug.Log("On to the next gesture!");
             DebugReport1.SetText("On to the next gesture!");
             GameObject NextButton = GameObject.Find("Next");
@@ -120,12 +124,16 @@ public class EventSystemManager : MonoBehaviour
         GameObject PlayButton   = GameObject.Find("Play Button");
         PlayButton.GetComponent<Button>().enabled = true;
         // Now, load the first robot and initialize the controller and any other pieces that may be necessary
-        Instantiate(Robot1, new Vector3(0,0,0), Quaternion.identity);
-        // Controller is instantiated with the prefab, already attached. Let's grab it
-        controller = Robot1.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
-        controller.gesture_num=0;
-        Debug.Log("Controller acquired: true? Gesture num is "+controller.gesture_num.ToString());
+        var robot1 = Instantiate(Robot1, new Vector3(0,0,0), Quaternion.identity);
         
+        // Controller is instantiated with the prefab, already attached. Let's grab it
+        controller = robot1.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
+        gesture_num = controller.gesture_num;        
+
+        string URDFName = controller.transform.root.gameObject.name;
+        // URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+        Debug.Log("URDF Name = "+URDFName);
+        robot_recorder = GameObject.Find(URDFName).GetComponent<JointRecorder>();
     }
 
     private void ConnectToQuest(){
@@ -168,11 +176,14 @@ public class EventSystemManager : MonoBehaviour
 
     private void TaskOnClickNext(){
         DebugReport1.SetText("");
-        controller.gesture_num = gesture_num+1;
+        Debug.Log("DR 1 text cleared");
         gesture_num = gesture_num+1;
         Debug.Log("Moving on to gesture number " + gesture_num.ToString());
+        controller.gesture_num=gesture_num;
+        Debug.Log("Set gesture number " + gesture_num.ToString() + " in controller, theoretically.");
 
         GameObject NextButton   = GameObject.Find("Next");   
+        Debug.Log("Next button identified: " + NextButton);
         NextButton.transform.localScale = new Vector3(0,0,0);
         NextButton.GetComponent<Button>().enabled = false;
     }

@@ -183,6 +183,17 @@ public class ControllerFromLogFile : MonoBehaviour {
         }
     }
 
+    // public void SetGestureNum(int num) {
+    //     this.gesture_num = num;
+    //     GestureNumber = num;
+    //     Debug.Log("Setting Gesture Number in Controller File to "+GestureNumber.ToString());
+    // }
+    
+    // public int GetGestureNum() {
+    //     Debug.Log("Getting Gesture Number from Controller File: "+GestureNumber.ToString());
+    //     return GestureNumber;
+    // }
+
     private void AnimateURDF(bool countdown)
     {
         String filename = "corrected_positions_"+gesture_num.ToString()+".csv";
