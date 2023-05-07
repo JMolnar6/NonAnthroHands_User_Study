@@ -141,7 +141,7 @@ public class PosRotRecorder : MonoBehaviour
     }
     
     private IEnumerator WaitForCountdown(){
-        yield return new WaitForSecondsRealtime((float) 5.5);
+        yield return new WaitForSecondsRealtime((float) 3.0);
         //Output this to console when Button1 is clicked
         Debug.Log("Starting recording now: " + go.name + " at time " + Time.time);
         isRec=true;

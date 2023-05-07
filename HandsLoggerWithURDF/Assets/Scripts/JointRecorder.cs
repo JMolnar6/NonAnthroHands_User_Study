@@ -116,7 +116,7 @@ public class JointRecorder : MonoBehaviour
     }
     
     private IEnumerator WaitForCountdown(){
-        yield return new WaitForSecondsRealtime((float) 5.5);
+        yield return new WaitForSecondsRealtime((float) 3.0); //Change this if you change the countdown in the ControllerLogFile
         //Output this to console when Button1 is clicked
         // Debug.Log("Starting recording now: " + urdf.name + " at time " + Time.time);
         isRec=true;
