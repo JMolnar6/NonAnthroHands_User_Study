@@ -9,7 +9,7 @@ public class EventSystemManager : MonoBehaviour
     public int ParticipantID = 0;
     public bool clicked = false;
 
-    private int gesture_num = 0; // 0-based indexing? Double-check after gesture generation
+    private int gesture_num = 1; // 0-based indexing? Double-check after gesture generation
 
     private TextMeshPro DebugReport1;
     private TextMeshPro DebugReport2;
@@ -63,6 +63,7 @@ public class EventSystemManager : MonoBehaviour
         // that's at least halfway non-transparent (you can make a pretty one or a plain one; doesn't much matter)
 
         DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
+        DebugReport1.SetText("");
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
         DebugReport2.SetText("");
 
