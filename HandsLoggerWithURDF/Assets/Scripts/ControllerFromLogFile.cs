@@ -20,8 +20,8 @@ public class ControllerFromLogFile : MonoBehaviour {
     private TextMeshPro DebugReport1;
     private TextMeshPro DebugReport2;
 
-    private int selectedIndex;
-    public int gesture_num = 0; // 0-based indexing? Double-check after gesture generation
+    private int selectedIndex = 1;
+    public int gesture_num = 1; // 0-based indexing? Double-check after gesture generation
     // private int demo_num = 1;
     // private PosRotRecorder data_recorder;
 
@@ -34,7 +34,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     public float replayRefreshRate = 15;
 
     // [InspectorReadOnly(hideInEditMode: true)]
-    public string selectedJoint;
+    // public string selectedJoint;
     // [HideInInspector]
     
     public int startJoint = 3; //If the first few joints of the URDF includes a root and a base, 

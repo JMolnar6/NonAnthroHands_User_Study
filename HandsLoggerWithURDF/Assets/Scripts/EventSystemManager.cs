@@ -7,38 +7,40 @@ using TMPro;
 public class EventSystemManager : MonoBehaviour
 {
     public int ParticipantID = 0;
-    public bool clicked = false;
+    public bool begin = false;
 
-    private int gesture_num = 1; // 0-based indexing? Double-check after gesture generation
+    private bool questConnected = false;
 
+    private bool gesture_not_robot = true;
+
+    private GameObject Canvas;
     private TextMeshPro DebugReport1;
     private TextMeshPro DebugReport2;
-
-    // private List<GameObject> Buttons;
-    private GameObject Canvas;
-    private int demo_num = 1;
+    
     private PosRotRecorder data_recorder; //Need to expand this; currently focusing only on Right Hand but could be grabbing all in the scene
     private JointRecorder robot_recorder;
     private ControllerFromLogFile controller;
     
+    public GameObject[] Robots;
+    private GameObject robot;
+
+    // private GameObject[] Buttons;
     private List<GameObject> ButtonsList = new List<GameObject>();
 
-    private bool questConnected = false;
-
-    // public GameObject Canvas;
-    public GameObject Robot1;
-    public GameObject Robot2;
-    public GameObject Robot3;
-    public GameObject Robot4;
+    private int robot_num = 0;
+    private int demo_num = 1;
     public int demo_max = 1; // Temp for faster debugging. Should = 5
+    
+    private int gesture_num = 1; // 0-based indexing? Double-check after gesture generation
+    public int gesture_max = 10; // Set this to whatever the number of gestures/set is
+    
+
 
 
     // Start is called before the first frame update
     void Start()
     {
         Canvas = GameObject.Find("Canvas");
-
-        // Buttons = GameObject.Find("Button");
         GameObject[] Buttons = GameObject.FindGameObjectsWithTag("button");
 
         GameObject WelcomeButton = GameObject.Find("Welcome Button");
@@ -58,6 +60,8 @@ public class EventSystemManager : MonoBehaviour
         }
         WelcomeButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
         
+        // Debug.Log("Robots = " + Robots[1]);
+
         // If you want to include any instructions before the user gets started, do that here, now.
         // Remember that it's easier to read instructions if the debug info is on a canvas background
         // that's at least halfway non-transparent (you can make a pretty one or a plain one; doesn't much matter)
@@ -83,13 +87,26 @@ public class EventSystemManager : MonoBehaviour
         if (demo_num > demo_max){
             data_recorder.iteration  = 1;
             robot_recorder.iteration = 1;
-            
-            Debug.Log("On to the next gesture!");
-            DebugReport1.SetText("On to the next gesture!");
+
+            if (gesture_num > gesture_max){
+                // Swap out robots, or swap out gesture sets? I think we said each user got their own gesture set, not all of them
+                gesture_num = 1;
+                gesture_not_robot = false;
+
+                Debug.Log("On to the next robot!");
+                DebugReport1.SetText("On to the next robot!");
+                }
+            else{
+                Debug.Log("On to the next gesture!");
+                DebugReport1.SetText("On to the next gesture!");
+            }
+
             GameObject NextButton = GameObject.Find("Next");
             NextButton.GetComponent<Button>().enabled = true;
             NextButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
         }
+
+        
     }
 
     private void TaskOnClickOpen(){
@@ -113,11 +130,14 @@ public class EventSystemManager : MonoBehaviour
         // Close demographic info, open first robot (and possibly a demo)
         GameObject BeginButton   = GameObject.Find("Begin Study Button");   
         BeginButton.SetActive(false);
-        clicked = true;
+        begin = true;
 
         foreach (GameObject Button in ButtonsList){
             //Skip "previous" and "next" here--make them visible after all demos for that gesture have been recorded
             if ((Button.name == "Previous") || (Button.name=="Next")) {
+                continue;
+            }
+            if ((Button.name == "Play Result Button") || (Button.name=="Replay Hand Motion")) {
                 continue;
             }
             Button.GetComponent<Button>().transform.localScale = new Vector3(0.025f,0.025f,0.025f);            
@@ -125,10 +145,11 @@ public class EventSystemManager : MonoBehaviour
         GameObject PlayButton   = GameObject.Find("Play Button");
         PlayButton.GetComponent<Button>().enabled = true;
         // Now, load the first robot and initialize the controller and any other pieces that may be necessary
-        var robot1 = Instantiate(Robot1, new Vector3(0,0,0), Quaternion.identity);
+        
+        robot = Instantiate(Robots[0], new Vector3(0,0,0), Quaternion.identity);
         
         // Controller is instantiated with the prefab, already attached. Let's grab it
-        controller = robot1.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
+        controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
         gesture_num = controller.gesture_num;        
 
         string URDFName = controller.transform.root.gameObject.name;
@@ -177,15 +198,23 @@ public class EventSystemManager : MonoBehaviour
 
     private void TaskOnClickNext(){
         DebugReport1.SetText("");
-        Debug.Log("DR 1 text cleared");
-        gesture_num = gesture_num+1;
-        Debug.Log("Moving on to gesture number " + gesture_num.ToString());
-        controller.gesture_num=gesture_num;
-        Debug.Log("Set gesture number " + gesture_num.ToString() + " in controller, theoretically.");
+
+        if (gesture_not_robot){    
+            gesture_num = gesture_num+1;
+            controller.gesture_num=gesture_num;
+        }
+        else{
+            gesture_not_robot = true;
+            robot_num = robot_num+1;
+            controller.gesture_num=gesture_num;
+            Destroy(robot);
+            robot = Instantiate(Robots[robot_num], new Vector3(0,0,0), Quaternion.identity);
+        }
 
         GameObject NextButton   = GameObject.Find("Next");   
         Debug.Log("Next button identified: " + NextButton);
         NextButton.transform.localScale = new Vector3(0,0,0);
         NextButton.GetComponent<Button>().enabled = false;
+
     }
 }
