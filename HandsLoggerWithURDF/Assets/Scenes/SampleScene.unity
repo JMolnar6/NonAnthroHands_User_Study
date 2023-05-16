@@ -1084,6 +1084,7 @@ MonoBehaviour:
   - {fileID: 1288749552819972490, guid: bc336f7563d53904d905ef62dabef9c0, type: 3}
   - {fileID: 7042205152094455518, guid: 98795f48e01623146a7f7e391faa8dd7, type: 3}
   - {fileID: 7009348342243171546, guid: 5c403091395643047b998ff1bc8da8f3, type: 3}
+  startjoint_nums: 03000000010000000100000001000000
   demo_max: 1
   gesture_max: 1
 --- !u!1 &424666882
@@ -2053,8 +2054,8 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 1, y: 1, z: 1}
+  - {x: 1, y: 1, z: 1}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.005
@@ -2075,7 +2076,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 1, g: 0, b: 0, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -2227,7 +2228,7 @@ MonoBehaviour:
   m_RotateSpeed: 180
   m_TranslateSpeed: 1
   m_AnchorRotateReferenceFrame: {fileID: 0}
-  m_AnchorRotationMode: 0
+  m_AnchorRotationMode: 1
 --- !u!114 &838946803
 MonoBehaviour:
   m_ObjectHideFlags: 0

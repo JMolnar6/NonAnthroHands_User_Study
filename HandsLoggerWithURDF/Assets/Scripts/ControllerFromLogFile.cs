@@ -13,8 +13,6 @@ public class ControllerFromLogFile : MonoBehaviour {
     private ArticulationBody[] articulationChain;
     // Stores original colors of the part being highlighted
     private Color[] prevColor;
-    private int previousIndex;
-    private Vector2 temp_controls;
 
     private bool questConnected = false;
     private TextMeshPro DebugReport1;
@@ -60,9 +58,8 @@ public class ControllerFromLogFile : MonoBehaviour {
     void Start()
     {
         Button PlayButton       = GameObject.Find("Play Button").GetComponent<Button>();
-        Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
         Button RecordButton     = GameObject.Find("Record Button").GetComponent<Button>();
-        Button ReplayHandButton = GameObject.Find("Replay Hand Motion").GetComponent<Button>();
+        
         DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
         DebugReport1.SetText("");
@@ -79,6 +76,7 @@ public class ControllerFromLogFile : MonoBehaviour {
             PlayResultButtonObject.SetActive(false);
         }
         else{
+            Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
             PlayResultButton.onClick.AddListener(Playback);
         }
 
@@ -88,27 +86,13 @@ public class ControllerFromLogFile : MonoBehaviour {
             ReplayHandButtonObject.SetActive(false);
         }
         else{
+            Button ReplayHandButton = GameObject.Find("Replay Hand Motion").GetComponent<Button>();
             ReplayHandButton.onClick.AddListener(EndEffPlayback);
             // handPrefab.Instantiate();
         }
 
-        previousIndex = selectedIndex = 1;
-        temp_controls = new Vector2(0,0);
-        // this.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
-        urdf.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
-        // articulationChain = this.GetComponentsInChildren<ArticulationBody>();
-        articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
-        int defDyanmicVal = 10;
-        foreach (ArticulationBody joint in articulationChain)
-        {
-            joint.gameObject.AddComponent<JointControl>();
-            joint.jointFriction = defDyanmicVal;
-            joint.angularDamping = defDyanmicVal;
-            ArticulationDrive currentDrive = joint.xDrive;
-            currentDrive.forceLimit = forceLimit;
-            joint.xDrive = currentDrive;
-        }
-    
+        SetUpRobot();
+
         // Check for Oculus Quest connection - JLM 04/2022
         var inputDevices = new List<UnityEngine.XR.InputDevice>();
         UnityEngine.XR.InputDevices.GetDevices(inputDevices);
@@ -150,8 +134,8 @@ public class ControllerFromLogFile : MonoBehaviour {
             // string[] Velocities= VelocityLines[i].Split(',');
 
             int numJoints = Positions.Length;
-            // Debug.Log("Number of joints specified");
-            // Debug.Log(PositionLines[i]);
+            // Debug.Log("Number of joints specified: "+numJoints.ToString());
+            // Debug.Log(PositionLines[i].ToString());
             // Debug.Log("Line "+i.ToString()+" of preplanned file. Position control.");
             // Debug.Log("Line "+i.ToString()+" of preplanned file. Velocity control.");
             
@@ -194,6 +178,26 @@ public class ControllerFromLogFile : MonoBehaviour {
     //     return GestureNumber;
     // }
 
+    private void SetUpRobot(){
+        selectedIndex = 1;
+        // this.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
+        urdf.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
+        // articulationChain = this.GetComponentsInChildren<ArticulationBody>();
+        articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
+        int defDyanmicVal = 10;
+        foreach (ArticulationBody joint in articulationChain)
+        {
+            Debug.Log("joint = " + joint.ToString());
+            joint.gameObject.AddComponent<JointControl>();
+            joint.jointFriction = defDyanmicVal;
+            joint.angularDamping = defDyanmicVal;
+            ArticulationDrive currentDrive = joint.xDrive;
+            currentDrive.forceLimit = forceLimit;
+            joint.xDrive = currentDrive;
+        }
+
+    }
+
     private void AnimateURDF(bool countdown)
     {
         String filename = "corrected_positions_"+gesture_num.ToString()+".csv";
@@ -203,7 +207,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         // If URDF is not already in start position, return it there 
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         if (PositionLines.Length>0){
-            Debug.Log("Control log file successfully read");
+            // Debug.Log("Control log file successfully read");
         }
         Debug.Log(Application.persistentDataPath);
         animationTime = PositionLines.Length/replayRefreshRate;

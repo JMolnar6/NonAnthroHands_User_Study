@@ -28,6 +28,7 @@ public class JointRecorder : MonoBehaviour
     {
         //   isRec = true;
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+        // Add script here that checks for the existence or desirability of the Play Result Button first
         Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
         PlayResultButton.onClick.AddListener(TaskOnPlayResultClick);
         
@@ -39,6 +40,8 @@ public class JointRecorder : MonoBehaviour
         controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
         
         articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
+        Debug.Log(articulationChain.ToString());
+        
         
         LaunchCSVfile();
        

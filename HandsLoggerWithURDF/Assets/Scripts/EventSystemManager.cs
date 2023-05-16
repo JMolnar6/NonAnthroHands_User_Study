@@ -28,6 +28,7 @@ public class EventSystemManager : MonoBehaviour
     private List<GameObject> ButtonsList = new List<GameObject>();
 
     private int robot_num = 0;
+    public int[] startjoint_nums;
     private int demo_num = 1;
     public int demo_max = 1; // Temp for faster debugging. Should = 5
     
@@ -88,7 +89,7 @@ public class EventSystemManager : MonoBehaviour
             data_recorder.iteration  = 1;
             robot_recorder.iteration = 1;
 
-            if (gesture_num > gesture_max){
+            if (gesture_num >= gesture_max){
                 // Swap out robots, or swap out gesture sets? I think we said each user got their own gesture set, not all of them
                 gesture_num = 1;
                 gesture_not_robot = false;
@@ -150,7 +151,8 @@ public class EventSystemManager : MonoBehaviour
         
         // Controller is instantiated with the prefab, already attached. Let's grab it
         controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
-        gesture_num = controller.gesture_num;        
+        gesture_num = controller.gesture_num; //Allows us to set a gesture in the public edit field for debug       
+        controller.startJoint = startjoint_nums[0];
 
         string URDFName = controller.transform.root.gameObject.name;
         // URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
@@ -206,9 +208,11 @@ public class EventSystemManager : MonoBehaviour
         else{
             gesture_not_robot = true;
             robot_num = robot_num+1;
-            controller.gesture_num=gesture_num;
             Destroy(robot);
             robot = Instantiate(Robots[robot_num], new Vector3(0,0,0), Quaternion.identity);
+            controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
+            controller.startJoint = startjoint_nums[robot_num];
+            controller.gesture_num=gesture_num;
         }
 
         GameObject NextButton   = GameObject.Find("Next");   
