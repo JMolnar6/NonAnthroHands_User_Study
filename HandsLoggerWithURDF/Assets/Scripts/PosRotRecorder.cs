@@ -46,7 +46,7 @@ public class PosRotRecorder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(eventHandler.clicked==true){
+        if(eventHandler.begin==true){
             controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
             // controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();
             animationTime = controller.animationTime;
