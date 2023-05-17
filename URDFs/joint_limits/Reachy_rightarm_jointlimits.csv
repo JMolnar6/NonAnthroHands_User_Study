@@ -1,0 +1,7 @@
+﻿Name,"Range (min, deg)","Range (max, deg)",,Default start position (Unity)
+r_shoulder_pitch,-150.0003508,90,,0
+r_shoulder_roll,-180,10,,0
+r_arm_yaw,-90,90,,0
+r_elbow_pitch,-125,0,,0
+r_forearm_yaw,-100,100,,0
+r_wrist_pitch,-45,45,,0

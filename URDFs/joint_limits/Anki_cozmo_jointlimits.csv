@@ -1,0 +1,7 @@
+﻿Name,"Range (min, deg)","Range (max, deg)",,Default start position (Unity)
+base_head,-30,10,,0
+base_lift,-45,0,,0
+left_wheel_rear,-180,180,,0
+left_wheel_front,-180,180,,0
+right_wheel_rear,-180,180,,0
+right_wheel_front,-180,180,,0
