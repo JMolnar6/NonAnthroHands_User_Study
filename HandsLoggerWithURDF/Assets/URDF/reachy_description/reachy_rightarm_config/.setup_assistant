@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: reachy_description
+    relative_path: reachy.urdf
+    xacro_args: ""
+  SRDF:
+    relative_path: config/reachy.srdf
+  CONFIG:
+    author_name: Jennifer Molnar
+    author_email: jmolnar@gatech.edu
+    generated_timestamp: 1684354165

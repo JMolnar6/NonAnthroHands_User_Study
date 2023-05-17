@@ -1,0 +1,40 @@
+arm_position_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - r_shoulder_pitch
+    - r_shoulder_roll
+    - r_arm_yaw
+    - r_elbow_pitch
+    - r_forearm_yaw
+    - r_wrist_pitch
+  gains:
+    r_shoulder_pitch:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_shoulder_roll:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_arm_yaw:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_elbow_pitch:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_forearm_yaw:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_wrist_pitch:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1

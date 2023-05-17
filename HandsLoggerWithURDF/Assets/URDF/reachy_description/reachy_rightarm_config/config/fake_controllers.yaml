@@ -1,0 +1,18 @@
+controller_list:
+  - name: fake_right_arm_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - r_shoulder_pitch
+      - r_shoulder_roll
+      - r_arm_yaw
+      - r_elbow_pitch
+      - r_forearm_yaw
+      - r_wrist_pitch
+  - name: fake_right_hand_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - r_wrist_roll
+      - r_gripper
+initial:  # Define initial robot poses per group
+  - group: right_arm
+    pose: hang_straight

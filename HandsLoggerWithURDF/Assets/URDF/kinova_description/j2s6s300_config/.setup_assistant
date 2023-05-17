@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: kinova_description
+    relative_path: urdf/j2s6s300_standalone.urdf
+    xacro_args: ""
+  SRDF:
+    relative_path: config/j2s6s300.srdf
+  CONFIG:
+    author_name: Jennifer Molnar
+    author_email: jmolnar@gatech.edu
+    generated_timestamp: 1684260821
