@@ -124,40 +124,27 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     private IEnumerator PlayFromCSV(String URDFName, String filename, float refreshRate){
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        // string[] VelocityLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/corrected_velocities.csv");
-        // animationTime = PositionLines.Length/replayRefreshRate;
-
-        // Debug.Log("Root URDF is named "+ URDFName);
 
         for (int i=0; i<=PositionLines.Length-1; i++){
             string[] Positions = PositionLines[i].Split(',');
-            // string[] Velocities= VelocityLines[i].Split(',');
-
             int numJoints = Positions.Length;
-            // Debug.Log("Number of joints specified: "+numJoints.ToString());
-            // Debug.Log(PositionLines[i].ToString());
-            // Debug.Log("Line "+i.ToString()+" of preplanned file. Position control.");
-            // Debug.Log("Line "+i.ToString()+" of preplanned file. Velocity control.");
             
-            // for (int j=1; j<=numJoints; j++){
             int j=0;
             foreach (ArticulationBody joint in articulationChain){
-                // string linkName = URDFName+"_link_"+(j+1).ToString();
-                // Debug.Log("Joint link: "+ linkName);
-
                 // ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
                 var drive = joint.xDrive;
-                // Debug.Log("Drive found successfully");
 
                 drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
-                // Debug.Log("Setting drive target to "+Positions[j-1]);
-                // drive.targetVelocity = float.Parse(Velocities[j-1]);
-                // Debug.Log("Setting drive target to "+Velocities[j-1]);
+                // joint.xDrive.target         = Positions[j];
+                // Debug.Log("Setting drive target to "+Positions[j]);
                 joint.xDrive = drive;
-                // joint.xDrive.target         = Positions[j-1];
-                // joint.xDrive.targetVelocity = Velocities[j-1];
                 
-                // JointControl current = articulationChain[j-1].GetComponent<JointControl>();
+
+                // drive.targetVelocity = float.Parse(Velocities[j]);
+                // Debug.Log("Setting drive target to "+Velocities[j]);
+                // joint.xDrive.targetVelocity = Velocities[j];
+                
+                // JointControl current = articulationChain[j].GetComponent<JointControl>();
                 j=j+1;
             }
 
@@ -194,17 +181,14 @@ public class ControllerFromLogFile : MonoBehaviour {
         Debug.Log("URDF Name = "+URDFName);
         String filename = URDFName+"_joints.csv";
         string[] JointNames = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        if (JointNames.Length>0){
-            Debug.Log("Joint names file successfully read: "+ JointNames.Length.ToString()+ " lines.");
-        }
-        // Make an if statement matching against all jointnames possible from the ..._joints.csv file
-        // Skip joints that are not listed
+        // if (JointNames.Length>0){
+            // Debug.Log("Joint names file successfully read: "+ JointNames.Length.ToString()+ " lines.");
+        // }
+        
+        // Skip joints that are not listed in the ..._joints.csv file
         for (int i = 0; i<JointNames.Length; i++){
             string jointname = JointNames[i];
-            // Debug.Log("joint name read from file = " + jointname);
             foreach (ArticulationBody joint in tempArticulationChain){
-                Debug.Log("Does "+joint.ToString().Substring(0, joint.ToString().IndexOf("(")-1)+" match "+jointname+"?");
-                // DEBUG HERE: strings are same but boolean is stil false
                 if (joint.ToString().Substring(0, joint.ToString().IndexOf("(")-1)==jointname){
                     articulationChain.Add(joint);
                     Debug.Log("Added joint "+jointname+" to articulationChain.");
@@ -214,7 +198,6 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         foreach (ArticulationBody joint in articulationChain)
         {
-            Debug.Log("joint = " + joint.ToString());
             joint.gameObject.AddComponent<JointControl>();
             joint.jointFriction = defDyanmicVal;
             joint.angularDamping = defDyanmicVal;
@@ -227,33 +210,26 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     private void AnimateURDF(bool countdown)
     {
-        String filename = "corrected_positions_"+gesture_num.ToString()+".csv";
+        string URDFName = transform.root.gameObject.name;
+        URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+        String filename = URDFName + "_corrected_positions_"+gesture_num.ToString()+".csv";
+        Debug.Log("Reading from "+Application.persistentDataPath+"/"+filename);
         // Clear any distracting debug text
         DebugReport2.SetText("");
 
         // If URDF is not already in start position, return it there 
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        if (PositionLines.Length>0){
-            // Debug.Log("Control log file successfully read");
-        }
-        Debug.Log(Application.persistentDataPath);
+        // if (PositionLines.Length>0){
+        //     // Debug.Log("Control log file successfully read");
+        // }
         animationTime = PositionLines.Length/replayRefreshRate;
-        string URDFName = transform.root.gameObject.name;
-        URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
-        Debug.Log("URDF Name = "+URDFName);
 
         string[] Positions = PositionLines[1].Split(',');
         int numJoints = Positions.Length;
     
         int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
-        foreach (ArticulationBody joint in articulationChain){
-        // for (int j=1; j<=numJoints; j++){
-            // string linkName = URDFName+"_link_"+j;
-
-            // ArticulationBody joint = GameObject.Find(tempjoint.ToString()).GetComponent<ArticulationBody>();
-           
+        foreach (ArticulationBody joint in articulationChain){           
             var drive = joint.xDrive;
-
             drive.target = float.Parse(Positions[j]);
             joint.xDrive = drive;            
             j=j+1;
@@ -285,31 +261,9 @@ public class ControllerFromLogFile : MonoBehaviour {
         String filename = "trained_endeff_mean.csv";
         // Clear any distracting debug text
         DebugReport2.SetText("");
-        Debug.Log(Application.persistentDataPath);
 
         string URDFName = transform.root.gameObject.name;
         URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
-
-        // // If URDF is not already in start position, return it there 
-        // string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        // animationTime = PositionLines.Length/replayRefreshRate;
-        // string URDFName = transform.root.gameObject.name;
-        // Debug.Log("URDFName = "+URDFName);
-
-        // string[] Positions = PositionLines[1].Split(',');
-        
-        // int numJoints = Positions.Length;
-        // Debug.Log("numJoints length = "+numJoints.ToString());
-    
-        // for (int j=1; j<=numJoints; j++){
-        //     string linkName = URDFName+"_link_"+j;
-
-        //     ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
-        //     var drive = joint.xDrive;
-
-        //     drive.target = float.Parse(Positions[j-1]);
-        //     joint.xDrive = drive;            
-        // }
         StartCoroutine(PlayFromCSV(URDFName, filename, replayRefreshRate));
     }
 
@@ -318,7 +272,6 @@ public class ControllerFromLogFile : MonoBehaviour {
         String filename = "pos_rot_hand.csv";
         // Clear any distracting debug text
         DebugReport2.SetText("");
-        Debug.Log(Application.persistentDataPath);
         Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
         StartCoroutine(PlaybackHandMotion(filename, replayRefreshRate));
     }
