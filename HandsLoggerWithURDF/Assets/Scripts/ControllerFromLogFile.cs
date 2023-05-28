@@ -10,7 +10,7 @@ using TMPro;
 public class ControllerFromLogFile : MonoBehaviour {
     public GameObject urdf;
     public GameObject handPrefab;
-    private ArticulationBody[] articulationChain;
+    private List<ArticulationBody> articulationChain = new List<ArticulationBody>();
     // Stores original colors of the part being highlighted
     private Color[] prevColor;
 
@@ -73,7 +73,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         if (playFinalMotion==false){
             GameObject PlayResultButtonObject = GameObject.Find("Play Result Button");
-            PlayResultButtonObject.SetActive(false);
+            PlayResultButtonObject.transform.localScale = new Vector3(0, 0, 0);
         }
         else{
             Button PlayResultButton = GameObject.Find("Play Result Button").GetComponent<Button>();
@@ -83,7 +83,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         if (debugHandMotion==false){
             // handPrefab.SetActive(false);
             GameObject ReplayHandButtonObject = GameObject.Find("Replay Hand Motion");
-            ReplayHandButtonObject.SetActive(false);
+            ReplayHandButtonObject.transform.localScale = new Vector3(0, 0, 0);
         }
         else{
             Button ReplayHandButton = GameObject.Find("Replay Hand Motion").GetComponent<Button>();
@@ -113,8 +113,8 @@ public class ControllerFromLogFile : MonoBehaviour {
     }
 
     void SetSelectedJointIndex(int index){
-        if (articulationChain.Length > 0){
-            selectedIndex = (index + articulationChain.Length) % articulationChain.Length;
+        if (articulationChain.Count > 0){
+            selectedIndex = (index + articulationChain.Count) % articulationChain.Count;
         }
     }
 
@@ -139,15 +139,17 @@ public class ControllerFromLogFile : MonoBehaviour {
             // Debug.Log("Line "+i.ToString()+" of preplanned file. Position control.");
             // Debug.Log("Line "+i.ToString()+" of preplanned file. Velocity control.");
             
-            for (int j=1; j<=numJoints; j++){
-                string linkName = URDFName+"_link_"+j;
+            // for (int j=1; j<=numJoints; j++){
+            int j=0;
+            foreach (ArticulationBody joint in articulationChain){
+                // string linkName = URDFName+"_link_"+(j+1).ToString();
                 // Debug.Log("Joint link: "+ linkName);
 
-                ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+                // ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
                 var drive = joint.xDrive;
                 // Debug.Log("Drive found successfully");
 
-                drive.target = float.Parse(Positions[j-1])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
+                drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
                 // Debug.Log("Setting drive target to "+Positions[j-1]);
                 // drive.targetVelocity = float.Parse(Velocities[j-1]);
                 // Debug.Log("Setting drive target to "+Velocities[j-1]);
@@ -156,7 +158,7 @@ public class ControllerFromLogFile : MonoBehaviour {
                 // joint.xDrive.targetVelocity = Velocities[j-1];
                 
                 // JointControl current = articulationChain[j-1].GetComponent<JointControl>();
-                
+                j=j+1;
             }
 
             if (i==PositionLines.Length){
@@ -183,8 +185,33 @@ public class ControllerFromLogFile : MonoBehaviour {
         // this.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
         urdf.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
         // articulationChain = this.GetComponentsInChildren<ArticulationBody>();
-        articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
+        ArticulationBody[] tempArticulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
         int defDyanmicVal = 10;
+
+        // Make a file containing the joints that you're interested in so that you can screen out all others
+        string URDFName = transform.root.gameObject.name;
+        URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+        Debug.Log("URDF Name = "+URDFName);
+        String filename = URDFName+"_joints.csv";
+        string[] JointNames = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        if (JointNames.Length>0){
+            Debug.Log("Joint names file successfully read: "+ JointNames.Length.ToString()+ " lines.");
+        }
+        // Make an if statement matching against all jointnames possible from the ..._joints.csv file
+        // Skip joints that are not listed
+        for (int i = 0; i<JointNames.Length; i++){
+            string jointname = JointNames[i];
+            // Debug.Log("joint name read from file = " + jointname);
+            foreach (ArticulationBody joint in tempArticulationChain){
+                Debug.Log("Does "+joint.ToString().Substring(0, joint.ToString().IndexOf("(")-1)+" match "+jointname+"?");
+                // DEBUG HERE: strings are same but boolean is stil false
+                if (joint.ToString().Substring(0, joint.ToString().IndexOf("(")-1)==jointname){
+                    articulationChain.Add(joint);
+                    Debug.Log("Added joint "+jointname+" to articulationChain.");
+                }
+            }
+        }        
+
         foreach (ArticulationBody joint in articulationChain)
         {
             Debug.Log("joint = " + joint.ToString());
@@ -218,14 +245,18 @@ public class ControllerFromLogFile : MonoBehaviour {
         string[] Positions = PositionLines[1].Split(',');
         int numJoints = Positions.Length;
     
-        for (int j=1; j<=numJoints; j++){
-            string linkName = URDFName+"_link_"+j;
+        int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
+        foreach (ArticulationBody joint in articulationChain){
+        // for (int j=1; j<=numJoints; j++){
+            // string linkName = URDFName+"_link_"+j;
 
-            ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+            // ArticulationBody joint = GameObject.Find(tempjoint.ToString()).GetComponent<ArticulationBody>();
+           
             var drive = joint.xDrive;
 
-            drive.target = float.Parse(Positions[j-1]);
+            drive.target = float.Parse(Positions[j]);
             joint.xDrive = drive;            
+            j=j+1;
         }
 
         // Begin countdown to animation 
