@@ -47,6 +47,8 @@ public class EventSystemManager : MonoBehaviour
         GameObject WelcomeButton = GameObject.Find("Welcome Button");
         GameObject BeginButton   = GameObject.Find("Begin Study Button");
         GameObject NextButton    = GameObject.Find("Next");
+
+        
         
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
         WelcomeButton.GetComponent<Button>().enabled = true; 
