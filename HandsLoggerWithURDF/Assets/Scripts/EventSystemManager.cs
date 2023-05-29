@@ -18,6 +18,7 @@ public class EventSystemManager : MonoBehaviour
     private TextMeshPro DebugReport2;
     
     private PosRotRecorder data_recorder; //Need to expand this; currently focusing only on Right Hand but could be grabbing all in the scene
+    // private List<PosRotRecorder> motiontrackers = new List<PosRotRecorder>();
     private JointRecorder robot_recorder;
     private ControllerFromLogFile controller;
     
@@ -48,7 +49,7 @@ public class EventSystemManager : MonoBehaviour
         GameObject BeginButton   = GameObject.Find("Begin Study Button");
         GameObject NextButton    = GameObject.Find("Next");
 
-        
+
         
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
         WelcomeButton.GetComponent<Button>().enabled = true; 
@@ -75,8 +76,8 @@ public class EventSystemManager : MonoBehaviour
         DebugReport2.SetText("");
 
         ConnectToQuest();
-
         data_recorder = GameObject.Find("RightHandAnchor").GetComponent<PosRotRecorder>();
+        
         demo_num = data_recorder.iteration;
         Debug.Log("Demo num = "+demo_num.ToString());
     }
@@ -88,8 +89,12 @@ public class EventSystemManager : MonoBehaviour
         DebugReport2.SetText("Demo num: "+demo_num.ToString());
 
         if (demo_num > demo_max){
-            data_recorder.iteration  = 1;
-            robot_recorder.iteration = 1;
+            PosRotRecorder[] motiontrackers = GameObject.FindObjectsOfType<PosRotRecorder>();
+            foreach (PosRotRecorder motiontracker in motiontrackers){
+                motiontracker.iteration = 1;
+            }
+            // data_recorder.iteration  = 1;
+            // robot_recorder.iteration = 1;
 
             if (gesture_num >= gesture_max){
                 // Swap out robots, or swap out gesture sets? I think we said each user got their own gesture set, not all of them
