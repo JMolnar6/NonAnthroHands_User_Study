@@ -11,8 +11,8 @@ public class ControllerFromLogFile : MonoBehaviour {
     public GameObject urdf;
     public GameObject handPrefab;
     private List<ArticulationBody> articulationChain = new List<ArticulationBody>();
-    // Stores original colors of the part being highlighted
-    private Color[] prevColor;
+    private bool hasMoved = false;
+
 
     private bool questConnected = false;
     private TextMeshPro DebugReport1;
@@ -35,9 +35,6 @@ public class ControllerFromLogFile : MonoBehaviour {
     // public string selectedJoint;
     // [HideInInspector]
     
-    public int startJoint = 3; //If the first few joints of the URDF includes a root and a base, 
-                                // increment the startJoint number so that the position and velocity
-                                // commands will apply to the first moveable joint
     public bool debugHandMotion = false;
     public bool playFinalMotion = false;
 
@@ -122,7 +119,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         OVRInput.Update();
     }
 
-    private IEnumerator PlayFromCSV(String URDFName, String filename, float refreshRate){
+    private IEnumerator PlayFromCSV(String URDFName, String filename){
         Debug.Log("Filename for BeginCountdown method:" + filename);
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
 
@@ -169,6 +166,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     // }
 
     private void SetUpRobot(){
+        hasMoved = false;
         selectedIndex = 1;
         // this.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
         urdf.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
@@ -246,8 +244,12 @@ public class ControllerFromLogFile : MonoBehaviour {
         if (countdown){
             StartCoroutine(BeginCountdown(URDFName, filename));
         }
+        else if (hasMoved == false){
+            StartCoroutine(PlayFromCSV(URDFName, filename));
+            hasMoved = true;
+        }
         else{
-            StartCoroutine(PlayFromCSV(URDFName, filename, replayRefreshRate));
+            StartCoroutine(PauseBeforeStart(URDFName, filename));
         }
     }
 
@@ -261,7 +263,12 @@ public class ControllerFromLogFile : MonoBehaviour {
         yield return new WaitForSecondsRealtime((float) 1.0);
         DebugReport1.SetText("");
         Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
-        StartCoroutine(PlayFromCSV(URDFName, filename, replayRefreshRate));
+        StartCoroutine(PlayFromCSV(URDFName, filename));
+    }
+
+    private IEnumerator PauseBeforeStart(String URDFName, String filename){
+        yield return new WaitForSecondsRealtime((float) 1.0);
+        StartCoroutine(PlayFromCSV(URDFName, filename));
     }
 
     private void Playback()
@@ -272,7 +279,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         string URDFName = transform.root.gameObject.name;
         URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
-        StartCoroutine(PlayFromCSV(URDFName, filename, replayRefreshRate));
+        StartCoroutine(PlayFromCSV(URDFName, filename));
     }
 
     private void EndEffPlayback()
@@ -281,10 +288,10 @@ public class ControllerFromLogFile : MonoBehaviour {
         // Clear any distracting debug text
         DebugReport2.SetText("");
         Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        StartCoroutine(PlaybackHandMotion(filename, replayRefreshRate));
+        StartCoroutine(PlaybackHandMotion(filename));
     }
 
-    private IEnumerator PlaybackHandMotion(string filename, float replayRefreshRate){
+    private IEnumerator PlaybackHandMotion(string filename){
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         
         for (int i=0; i<=PositionLines.Length-1; i++){

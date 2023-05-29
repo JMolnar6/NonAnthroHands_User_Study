@@ -159,7 +159,7 @@ public class EventSystemManager : MonoBehaviour
         // Controller is instantiated with the prefab, already attached. Let's grab it
         controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
         gesture_num = controller.gesture_num; //Allows us to set a gesture in the public edit field for debug       
-        controller.startJoint = startjoint_nums[0];
+        // controller.startJoint = startjoint_nums[0];
 
         string URDFName = controller.transform.root.gameObject.name;
         // URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
@@ -218,7 +218,7 @@ public class EventSystemManager : MonoBehaviour
             Destroy(robot);
             robot = Instantiate(Robots[robot_num], new Vector3(0,0,0), Quaternion.identity);
             controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
-            controller.startJoint = startjoint_nums[robot_num];
+            // controller.startJoint = startjoint_nums[robot_num];
             controller.gesture_num=gesture_num;
         }
 
