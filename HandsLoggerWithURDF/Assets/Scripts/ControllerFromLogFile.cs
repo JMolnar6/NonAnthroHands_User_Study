@@ -42,10 +42,10 @@ public class ControllerFromLogFile : MonoBehaviour {
     public bool playFinalMotion = false;
 
     // public ControlType control = PositionControl;
-    public float stiffness;
-    public float damping;
-    public float forceLimit;
-    public float speed = 5f; // Units: degree/s
+    public float stiffness = 100000;
+    public float damping = 100000;
+    public float forceLimit = 10000;  
+    public float speed = 15f; // Units: degree/s
     public float torque = 100f; // Units: Nm or N
     public float acceleration = 5f;// Units: m/s^2 / degree/s^2
 
@@ -123,6 +123,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     }
 
     private IEnumerator PlayFromCSV(String URDFName, String filename, float refreshRate){
+        Debug.Log("Filename for BeginCountdown method:" + filename);
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
 
         for (int i=0; i<=PositionLines.Length-1; i++){
@@ -136,7 +137,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
                 drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
                 // joint.xDrive.target         = Positions[j];
-                // Debug.Log("Setting drive target to "+Positions[j]);
+                Debug.Log("Setting drive "+joint.ToString() +" target to "+drive.target.ToString());
                 joint.xDrive = drive;
                 
 
@@ -173,7 +174,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         urdf.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
         // articulationChain = this.GetComponentsInChildren<ArticulationBody>();
         ArticulationBody[] tempArticulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
-        int defDyanmicVal = 10;
+        // int defDyanmicVal = 10;
 
         // Make a file containing the joints that you're interested in so that you can screen out all others
         string URDFName = transform.root.gameObject.name;
@@ -193,16 +194,20 @@ public class ControllerFromLogFile : MonoBehaviour {
                     articulationChain.Add(joint);
                     Debug.Log("Added joint "+jointname+" to articulationChain.");
                 }
+                else {
+                    // Set joint target to 0 so it doesn't wobble, or increase stiffness and damping to something like 100000
+                }
             }
         }        
 
         foreach (ArticulationBody joint in articulationChain)
         {
             joint.gameObject.AddComponent<JointControl>();
-            joint.jointFriction = defDyanmicVal;
-            joint.angularDamping = defDyanmicVal;
+            // joint.jointFriction = defDyanmicVal;
+            // joint.angularDamping = defDyanmicVal;
             ArticulationDrive currentDrive = joint.xDrive;
             currentDrive.forceLimit = forceLimit;
+
             joint.xDrive = currentDrive;
         }
 
@@ -219,10 +224,11 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         // If URDF is not already in start position, return it there 
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-        // if (PositionLines.Length>0){
-        //     // Debug.Log("Control log file successfully read");
-        // }
+        if (PositionLines.Length>0){
+            Debug.Log("Control log file successfully read");
+        }
         animationTime = PositionLines.Length/replayRefreshRate;
+        Debug.Log("Animation time = "+animationTime.ToString());
 
         string[] Positions = PositionLines[1].Split(',');
         int numJoints = Positions.Length;
@@ -232,6 +238,7 @@ public class ControllerFromLogFile : MonoBehaviour {
             var drive = joint.xDrive;
             drive.target = float.Parse(Positions[j]);
             joint.xDrive = drive;            
+            Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
             j=j+1;
         }
 
@@ -245,6 +252,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     }
 
     private IEnumerator BeginCountdown(String URDFName, String filename){
+        Debug.Log("Filename for BeginCountdown method:" + filename);
         DebugReport1.SetText("Ready?");
         yield return new WaitForSecondsRealtime((float) 1.0);
         DebugReport1.SetText("Set");

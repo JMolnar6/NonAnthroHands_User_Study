@@ -4381,9 +4381,9 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: -125.019394
     upperLimit: 0
-    stiffness: 0
-    damping: 0
-    forceLimit: 10
+    stiffness: 100000
+    damping: 100000
+    forceLimit: 10000
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -4516,9 +4516,9 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: -89.95438
     upperLimit: 89.95438
-    stiffness: 0
-    damping: 0
-    forceLimit: 10
+    stiffness: 100000
+    damping: 100000
+    forceLimit: 10000
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -5605,9 +5605,9 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: -44.97719
     upperLimit: 44.97719
-    stiffness: 0
-    damping: 0
-    forceLimit: 10
+    stiffness: 100000
+    damping: 100000
+    forceLimit: 10000
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -7638,9 +7638,9 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: -150.00035
     upperLimit: 89.95438
-    stiffness: 0
-    damping: 0
-    forceLimit: 10
+    stiffness: 100000
+    damping: 100000
+    forceLimit: 10000
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -7984,7 +7984,7 @@ ArticulationBody:
   m_Enabled: 1
   m_Mass: 1
   m_ParentAnchorPosition: {x: 0, y: 0, z: 0}
-  m_ParentAnchorRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_ParentAnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
   m_AnchorPosition: {x: 0, y: 0, z: 0}
   m_AnchorRotation: {x: 0, y: 0, z: 0.70710677, w: -0.70710677}
   m_ComputeParentAnchor: 1
@@ -9026,9 +9026,9 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: -179.90875
     upperLimit: 9.969466
-    stiffness: 0
-    damping: 0
-    forceLimit: 10
+    stiffness: 100000
+    damping: 100000
+    forceLimit: 10000
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -9478,9 +9478,9 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: -99.98114
     upperLimit: 99.98114
-    stiffness: 0
-    damping: 0
-    forceLimit: 10
+    stiffness: 100000
+    damping: 100000
+    forceLimit: 10000
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -9899,10 +9899,10 @@ MonoBehaviour:
   startJoint: 3
   debugHandMotion: 0
   playFinalMotion: 0
-  stiffness: 0
-  damping: 0
-  forceLimit: 0
-  speed: 5
+  stiffness: 100000
+  damping: 10000
+  forceLimit: 10000
+  speed: 15
   torque: 100
   acceleration: 5
   animationTime: 0
