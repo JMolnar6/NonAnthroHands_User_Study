@@ -1,7 +1,7 @@
-﻿Name,"Range (min, deg)","Range (max, deg)",,Default start position (Unity)
-r_shoulder_pitch,-150.0003508,90,,0
-r_shoulder_roll,-180,10,,0
-r_arm_yaw,-90,90,,0
-r_elbow_pitch,-125,0,,0
-r_forearm_yaw,-100,100,,0
-r_wrist_pitch,-45,45,,0
+﻿Name,"Range (min, deg)","Range (max, deg)",,Default start position (Unity),,,,,,
+r_shoulder_pitch,-150.0003508,90,,0,,,,,-2.618000001,1.570796327
+r_shoulder_roll,-180,10,,0,,,,,-3.141592654,0.174532925
+r_arm_yaw,-90,90,,0,,,,,-1.570796327,1.570796327
+r_elbow_pitch,-125,0,,0,,,,,-2.181661565,0
+r_forearm_yaw,-100,100,,0,,,,,-1.745329252,1.745329252
+r_wrist_pitch,-45,45,,0,,,,,-0.785398163,0.785398163
