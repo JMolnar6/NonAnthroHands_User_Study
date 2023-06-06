@@ -5072,8 +5072,8 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: 0
     upperLimit: 86.516624
-    stiffness: 0
-    damping: 0
+    stiffness: 100000
+    damping: 100000
     forceLimit: 2
     target: 0
     targetVelocity: 0
@@ -5757,8 +5757,8 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: 0
     upperLimit: 86.516624
-    stiffness: 0
-    damping: 0
+    stiffness: 100000
+    damping: 100000
     forceLimit: 2
     target: 0
     targetVelocity: 0
@@ -7048,11 +7048,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   urdf: {fileID: 3671922608385142336}
   handPrefab: {fileID: 0}
+  gesture_num: 1
   replayRefreshRate: 15
-  selectedJoint: 1
-  selectedIndex: 1
   startJoint: 3
   debugHandMotion: 0
+  playFinalMotion: 0
   stiffness: 100000
   damping: 10000
   forceLimit: 10000
@@ -7205,8 +7205,8 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: 0
     upperLimit: 86.516624
-    stiffness: 0
-    damping: 0
+    stiffness: 100000
+    damping: 100000
     forceLimit: 2
     target: 0
     targetVelocity: 0

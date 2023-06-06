@@ -49,7 +49,8 @@ public class PosRotRecorder : MonoBehaviour
         if(eventHandler.begin==true){
             controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
             // controller = GameObject.Find("Controller").GetComponent<ControllerFullExploration>();
-            animationTime = controller.animationTime;
+            //Animation time = the amount of time it will take to run the animation
+            animationTime = controller.animationTime; 
             // Debug.Log("Animation runtime = " + animationTime.ToString());
             if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
                 startTime = Time.time; 
@@ -69,8 +70,10 @@ public class PosRotRecorder : MonoBehaviour
                 // Debug.Log("Position at time " + Time.time + " = " + go.position);
                 // Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
             }
-
-            if ((Time.time > animationTime + startTime + catchupTime) & (!playLaunched)){ 
+            // The end time needs to equal the animationTime + 1 sec at the beginning between 
+            //  "GO" and when the robot starts its movement. "Catchuptime" will add a (currently 2sec) 
+            //  buffer afterwards.
+            if ((Time.time > startTime + animationTime + 1.0 + catchupTime) & (!playLaunched)){ 
                     Debug.Log("Recording complete at " + Time.time.ToString());
                     playLaunched = true;
                     isRec = false;
@@ -143,6 +146,10 @@ public class PosRotRecorder : MonoBehaviour
     }
     
     private IEnumerator WaitForCountdown(){
+        // The time to wait here should reflect the amount of time the countdown takes.
+        // Start recording at 2 seconds: "ready + 1 sec + set + 1 sec + GO" 
+        // The amount of time the animation takes should have a 1 second buffer,
+        //  since the robot doesn't start moving until 1 sec after "GO" (currently)
         yield return new WaitForSecondsRealtime((float) 3.0);
         //Output this to console when Button1 is clicked
         Debug.Log("Starting recording now: " + go.name + " at time " + Time.time);

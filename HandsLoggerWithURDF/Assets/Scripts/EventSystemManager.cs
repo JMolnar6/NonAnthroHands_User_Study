@@ -18,6 +18,7 @@ public class EventSystemManager : MonoBehaviour
     private TextMeshPro DebugReport2;
     
     private PosRotRecorder data_recorder; //Need to expand this; currently focusing only on Right Hand but could be grabbing all in the scene
+    // private List<PosRotRecorder> motiontrackers = new List<PosRotRecorder>();
     private JointRecorder robot_recorder;
     private ControllerFromLogFile controller;
     
@@ -48,7 +49,7 @@ public class EventSystemManager : MonoBehaviour
         GameObject BeginButton   = GameObject.Find("Begin Study Button");
         GameObject NextButton    = GameObject.Find("Next");
 
-        
+
         
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
         WelcomeButton.GetComponent<Button>().enabled = true; 
@@ -75,8 +76,8 @@ public class EventSystemManager : MonoBehaviour
         DebugReport2.SetText("");
 
         ConnectToQuest();
-
         data_recorder = GameObject.Find("RightHandAnchor").GetComponent<PosRotRecorder>();
+        
         demo_num = data_recorder.iteration;
         Debug.Log("Demo num = "+demo_num.ToString());
     }
@@ -88,8 +89,12 @@ public class EventSystemManager : MonoBehaviour
         DebugReport2.SetText("Demo num: "+demo_num.ToString());
 
         if (demo_num > demo_max){
-            data_recorder.iteration  = 1;
-            robot_recorder.iteration = 1;
+            PosRotRecorder[] motiontrackers = GameObject.FindObjectsOfType<PosRotRecorder>();
+            foreach (PosRotRecorder motiontracker in motiontrackers){
+                motiontracker.iteration = 1;
+            }
+            // data_recorder.iteration  = 1;
+            // robot_recorder.iteration = 1;
 
             if (gesture_num >= gesture_max){
                 // Swap out robots, or swap out gesture sets? I think we said each user got their own gesture set, not all of them
@@ -154,7 +159,7 @@ public class EventSystemManager : MonoBehaviour
         // Controller is instantiated with the prefab, already attached. Let's grab it
         controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
         gesture_num = controller.gesture_num; //Allows us to set a gesture in the public edit field for debug       
-        controller.startJoint = startjoint_nums[0];
+        // controller.startJoint = startjoint_nums[0];
 
         string URDFName = controller.transform.root.gameObject.name;
         // URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
@@ -213,7 +218,7 @@ public class EventSystemManager : MonoBehaviour
             Destroy(robot);
             robot = Instantiate(Robots[robot_num], new Vector3(0,0,0), Quaternion.identity);
             controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
-            controller.startJoint = startjoint_nums[robot_num];
+            // controller.startJoint = startjoint_nums[robot_num];
             controller.gesture_num=gesture_num;
         }
 
