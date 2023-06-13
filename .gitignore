@@ -42,3 +42,5 @@ HandsLoggerWithURDF/Assets/URDF/kinova_description/j2s6s300_config/launch/stomp_
 HandsLoggerWithURDF/Assets/URDF/kinova_description/j2s6s300_config/launch/trajectory_execution.launch.xml.meta
 HandsLoggerWithURDF/Assets/URDF/kinova_description/j2s6s300_config/launch/warehouse_settings.launch.xml.meta
 HandsLoggerWithURDF/Assets/URDF/kinova_description/j2s6s300_config/launch/warehouse.launch.meta
+*.meta
+*.txt

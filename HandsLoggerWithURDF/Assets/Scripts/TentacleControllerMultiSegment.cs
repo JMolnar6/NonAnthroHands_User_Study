@@ -16,8 +16,8 @@ public class TentacleControllerMultiSegment : MonoBehaviour {
     private Vector3[] vertices;
     
     //public Spline spline; //Should match the spline being used to generate the tentacle
-    public GameObject baseSegmentBottom = null;
-    public GameObject tipSegmentBottom = null;
+    public GameObject baseSegmentRoot = null;
+    public GameObject tipSegmentRoot = null;
 
     public GameObject targetBase = null;
     public GameObject poleBase = null;
@@ -64,13 +64,13 @@ public class TentacleControllerMultiSegment : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        Contort(targetBase, poleBase, 0);
-        Contort(targetTip, poleTip, 1);
+        StartCoroutine(Contort(targetBase, poleBase, baseSegmentRoot, 0));
+        StartCoroutine(Contort(targetTip, poleTip, tipSegmentRoot, 1));
 
 
     }
 
-    public void Contort(GameObject target, GameObject pole, int keyboardZone){
+    public IEnumerator Contort(GameObject target, GameObject pole, GameObject segmentRoot, int keyboardZone){
         Vector3 controls = new Vector3();
 
     // Here is where you can build your own hardware I/O method to pull in 3dof that will control
@@ -107,15 +107,15 @@ public class TentacleControllerMultiSegment : MonoBehaviour {
 
         Vector3 position = kinematics[0];  //transform position of target/tip
         Vector3 direction = kinematics[1]; // transform position of pole
-        Debug.Log("target location "+ keyboardZone + " = "+ kinematics[0]);
-        Debug.Log("poleBase location "+ keyboardZone + " = "+ kinematics[1]);
+        // Debug.Log("target location "+ keyboardZone + " = "+ kinematics[0]);
+        // Debug.Log("pole location "+ keyboardZone + " = "+ kinematics[1]);
 
         // Debug.Log(string.Format("position is: ", position.ToString()));
         // Debug.Log(string.Format("direction is: ", direction.ToString()));
 
         //  base_length = Sqrt(x^2+y^2+z^2)
-        float base_length = Mathf.Sqrt(Mathf.Pow(position.x,2)+Mathf.Pow(position.y,2)+Mathf.Pow(position.z,2));
-        // float base_length = 0f; //INSERTED FOR DEBUGGING PURPOSES. THE target IS NO LONGER REQUIRED TO BE WITHIN THE UNIT SPHERE, SO THIS SHOULD BE IRRELEVANT ANYWAY
+        float base_length = Mathf.Sqrt(Mathf.Pow(position.x-segmentRoot.transform.position.x,2)+Mathf.Pow(position.y-segmentRoot.transform.position.y,2)+Mathf.Pow(position.z-segmentRoot.transform.position.z,2));
+        // float base_length = 0f; //INSERTED FOR DEBUGGING PURPOSES. THE segmentRoot IS NO LONGER REQUIRED TO BE WITHIN THE UNIT SPHERE, SO THIS SHOULD BE IRRELEVANT ANYWAY
 
             // Stop and check to see if tentacle tip has been moved out of bounds
             if (base_length<=tentacleLength){
@@ -124,10 +124,10 @@ public class TentacleControllerMultiSegment : MonoBehaviour {
                 // ~ QCP DIRECTION DETERMINATION: ~
                 // The control points, or "directions" for node0 and node1, are points 2/3 of the way towards the QCP on 
                 //  a line from the node to the QCP
-                Vector3 rotation = baseSegmentBottom.transform.eulerAngles;
+                Vector3 rotation = segmentRoot.transform.eulerAngles;
                 Debug.Log("Rotation = "+rotation);
 
-                Vector3 qcposition = GetQCPos(base_length, position, rotation);
+                Vector3 qcposition = GetQCPos(base_length, position, rotation, segmentRoot);
 
                 // Position  of node0: always (0,0,0)
                 // Direction of node0: 
@@ -157,7 +157,7 @@ public class TentacleControllerMultiSegment : MonoBehaviour {
         // Insert your own I/O method for a different hardware controller. Should return a Vector3. 
         //  Comment the particular 
         // Optional 4-DOF and 6-DOF controls for tentacle are described ***
-        
+        yield return new WaitForSecondsRealtime(0.0f);
     }
 
 
@@ -251,7 +251,7 @@ public class TentacleControllerMultiSegment : MonoBehaviour {
     }
 
     
-    private Vector3 GetQCPos(float base_length, Vector3 position, Vector3 rotation){
+    private Vector3 GetQCPos(float base_length, Vector3 position, Vector3 rotation, GameObject root){
         // Algorithm: 
         // If changing position will make spline.Length>tentacleLength, do not change position.
         // (The tentacle's length will not stay absolutely constant, but we will position the control point so that
@@ -287,7 +287,7 @@ public class TentacleControllerMultiSegment : MonoBehaviour {
             
         Vector3 height = new Vector3((float) base_length/2, h, (float) 0.0);
         // Vector3 tempPos = spline.nodes[0].Position + height;
-        Vector3 tempPos = baseSegmentBottom.transform.position + height; // Useful if the tentacle is anchored to a moving object, i.e. the user's arm
+        Vector3 tempPos = root.transform.position + height; // Useful if the tentacle is anchored to a moving object, i.e. the user's arm
         // Vector3 tempPos = new Vector3(0,0,0) + height; // If the tentacle is anchored in space, we don't need the GameObject transform.
         // Unity uses a left-hand coordinate system. All angles about the z axis are negative
         Matrix4x4 Zrotation = rotateZ(angle2);
@@ -500,4 +500,5 @@ public class TentacleControllerMultiSegment : MonoBehaviour {
         // Gizmos.DrawSphere(vertices[i], 0.1f);
     // }
     }
+
 }

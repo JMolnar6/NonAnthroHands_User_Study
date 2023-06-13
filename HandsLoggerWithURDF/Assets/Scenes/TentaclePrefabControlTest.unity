@@ -681,9 +681,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57dc16681893e1a40a8825379c23012e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tentacleLength: 0.325
-  baseSegmentBottom: {fileID: 281579842}
-  tipSegmentBottom: {fileID: 1988130513}
+  tentacleLength: 0.7
+  baseSegmentRoot: {fileID: 281579842}
+  tipSegmentRoot: {fileID: 1792870375}
   targetBase: {fileID: 1183596004}
   poleBase: {fileID: 932187809}
   targetTip: {fileID: 604310331}
@@ -703,8 +703,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tentacleLength: 0.325
-  baseSegmentBottom: {fileID: 0}
-  tipSegmentBottom: {fileID: 0}
+  baseSegmentRoot: {fileID: 0}
+  tipSegmentRoot: {fileID: 0}
   targetBase: {fileID: 0}
   poleBase: {fileID: 0}
   targetTip: {fileID: 0}
@@ -734,6 +734,11 @@ MonoBehaviour:
   Iterations: 10
   Delta: 0.001
   SnapBackStrength: 1
+--- !u!1 &1792870375 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3893104690399332660, guid: 98795f48e01623146a7f7e391faa8dd7, type: 3}
+  m_PrefabInstance: {fileID: 1806964110}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1806964110
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -927,11 +932,6 @@ MonoBehaviour:
   pole: {fileID: 197858423}
   schemeSelection: 2
   speed: 0.01
---- !u!1 &1988130513 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3893104690399332660, guid: 98795f48e01623146a7f7e391faa8dd7, type: 3}
-  m_PrefabInstance: {fileID: 1806964110}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2142123910
 GameObject:
   m_ObjectHideFlags: 0
