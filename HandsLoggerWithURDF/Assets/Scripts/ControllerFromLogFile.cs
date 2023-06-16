@@ -134,7 +134,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
                 drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
                 // joint.xDrive.target         = Positions[j];
-                Debug.Log("Setting drive "+joint.ToString() +" target to "+drive.target.ToString());
+                // Debug.Log("Setting drive "+joint.ToString() +" target to "+drive.target.ToString());
                 joint.xDrive = drive;
                 
 
@@ -190,7 +190,7 @@ public class ControllerFromLogFile : MonoBehaviour {
             foreach (ArticulationBody joint in tempArticulationChain){
                 if (joint.ToString().Substring(0, joint.ToString().IndexOf("(")-1)==jointname){
                     articulationChain.Add(joint);
-                    Debug.Log("Added joint "+jointname+" to articulationChain.");
+                    // Debug.Log("Added joint "+jointname+" to articulationChain.");
                 }
                 else {
                     // Set joint target to 0 so it doesn't wobble, or increase stiffness and damping to something like 100000
@@ -231,12 +231,13 @@ public class ControllerFromLogFile : MonoBehaviour {
         string[] Positions = PositionLines[1].Split(',');
         int numJoints = Positions.Length;
     
+        Debug.Log("Put URDF in starting position: "+PositionLines[1]);
         int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
-        foreach (ArticulationBody joint in articulationChain){           
+        foreach (ArticulationBody joint in articulationChain){   
             var drive = joint.xDrive;
-            drive.target = float.Parse(Positions[j]);
+            drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
             joint.xDrive = drive;            
-            Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
+            // Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
             j=j+1;
         }
 
