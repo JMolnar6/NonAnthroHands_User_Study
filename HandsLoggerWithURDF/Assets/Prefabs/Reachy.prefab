@@ -75,9 +75,9 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: -44.97719
     upperLimit: 44.97719
-    stiffness: 0
-    damping: 0
-    forceLimit: 10
+    stiffness: 100000
+    damping: 100000
+    forceLimit: 5
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -3326,9 +3326,9 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: -68.75494
     upperLimit: 20.053524
-    stiffness: 0
-    damping: 0
-    forceLimit: 10
+    stiffness: 100000
+    damping: 100000
+    forceLimit: 5
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -5607,7 +5607,7 @@ ArticulationBody:
     upperLimit: 44.97719
     stiffness: 100000
     damping: 100000
-    forceLimit: 10000
+    forceLimit: 5
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -8107,12 +8107,12 @@ MonoBehaviour:
   selectedJoint: 
   selectedIndex: 0
   control: 0
-  stiffness: 100000
-  damping: 10000
-  forceLimit: 10000
+  stiffness: 1000000
+  damping: 1000000
+  forceLimit: 100
   speed: 15
-  torque: 100
-  acceleration: 5
+  torque: 5
+  acceleration: 10
   highLightColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &1495323686592701232
 MonoBehaviour:
@@ -9894,16 +9894,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   urdf: {fileID: 1288749552746682912}
   handPrefab: {fileID: 0}
-  gesture_num: 0
+  gesture_num: 1
   replayRefreshRate: 15
-  startJoint: 3
   debugHandMotion: 0
   playFinalMotion: 0
   stiffness: 100000
   damping: 10000
   forceLimit: 10000
-  speed: 15
-  torque: 100
+  speed: 50
+  torque: 5
   acceleration: 5
   animationTime: 0
   highLightColor: {r: 1, g: 0, b: 0, a: 1}

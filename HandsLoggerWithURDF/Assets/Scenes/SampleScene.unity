@@ -1084,9 +1084,9 @@ MonoBehaviour:
   - {fileID: 1288749552819972490, guid: bc336f7563d53904d905ef62dabef9c0, type: 3}
   - {fileID: 7042205152094455518, guid: 98795f48e01623146a7f7e391faa8dd7, type: 3}
   - {fileID: 7009348342243171546, guid: 5c403091395643047b998ff1bc8da8f3, type: 3}
-  startjoint_nums: 03000000010000000100000001000000
+  startjoint_nums: 01000000030000000100000001000000
   demo_max: 1
-  gesture_max: 1
+  gesture_max: 13
 --- !u!1 &424666882
 GameObject:
   m_ObjectHideFlags: 0
@@ -2244,7 +2244,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838946797}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ae26e19cd956134bbdf3c6f65bf393a, type: 3}
   m_Name: 
