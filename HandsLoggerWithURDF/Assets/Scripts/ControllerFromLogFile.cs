@@ -87,24 +87,26 @@ public class ControllerFromLogFile : MonoBehaviour {
             ReplayHandButton.onClick.AddListener(EndEffPlayback);
             // handPrefab.Instantiate();
         }
-
+        // DebugReport1.SetText("Debug Info: We are setting up the robot.");// + ((int) statusUpdate["RedTeamScore"].n));
         SetUpRobot();
 
         // Check for Oculus Quest connection - JLM 04/2022
         var inputDevices = new List<UnityEngine.XR.InputDevice>();
         UnityEngine.XR.InputDevices.GetDevices(inputDevices);
 
+        // DebugReport1.SetText("Debug Info: Looking for Quest");// + ((int) statusUpdate["RedTeamScore"].n));
         foreach (var device in inputDevices){
             // Debug.Log(string.Format("Device found h name '{0}' and role '{1}'", device.name, device.characteristics.ToString()));
             questConnected = true;
+            // DebugReport1.SetText("Debug Info: identifying input devices.");
         }
 
         // DebugReport = GameObject.Find("Debug Report").GetComponent<TextMeshPro>();
         if (questConnected){
-            DebugReport2.SetText("Debug Info: Quest is connected");// + ((int) statusUpdate["RedTeamScore"].n));
+            // DebugReport1.SetText("Debug Info: Quest is connected");// + ((int) statusUpdate["RedTeamScore"].n));
         }
         else {
-            DebugReport2.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
+            // DebugReport1.SetText("Debug Info: Quest is not connected;\n listening for keyboard input");// + ((int) statusUpdate["RedTeamScore"].n));
         }            
 
     }
@@ -121,9 +123,10 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     private IEnumerator PlayFromCSV(String URDFName, String filename){
         Debug.Log("Filename for BeginCountdown method:" + filename);
+        DebugReport1.SetText("");
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
 
-        for (int i=0; i<=PositionLines.Length-1; i++){
+        for (int i=0; i<=PositionLines.Length; i++){
             string[] Positions = PositionLines[i].Split(',');
             int numJoints = Positions.Length;
             
@@ -146,10 +149,11 @@ public class ControllerFromLogFile : MonoBehaviour {
                 j=j+1;
             }
 
-            if (i==PositionLines.Length){
+            if (i==PositionLines.Length-1){
                 Debug.Log("Final animation time: " + Time.time.ToString());
+                DebugReport1.SetText("Gesture complete: animation time = "+animationTime.ToString());
             }
-
+        
         yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
         }
     }
@@ -178,10 +182,11 @@ public class ControllerFromLogFile : MonoBehaviour {
         string URDFName = transform.root.gameObject.name;
         URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
         Debug.Log("URDF Name = "+URDFName);
+        // DebugReport1.SetText("URDF = " + URDFName);
         String filename = URDFName+"_joints.csv";
         string[] JointNames = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         // if (JointNames.Length>0){
-            // Debug.Log("Joint names file successfully read: "+ JointNames.Length.ToString()+ " lines.");
+            // DebugReport1.SetText("Joint names file successfully read: "+ JointNames.Length.ToString()+ " lines.");
         // }
         
         // Skip joints that are not listed in the ..._joints.csv file
@@ -205,7 +210,7 @@ public class ControllerFromLogFile : MonoBehaviour {
             // joint.angularDamping = defDyanmicVal;
             ArticulationDrive currentDrive = joint.xDrive;
             currentDrive.forceLimit = forceLimit;
-
+            // DebugReport1.SetText("ForceLimit = " + forceLimit.ToString() + " Stiffness = " + stiffness.ToString());
             joint.xDrive = currentDrive;
         }
 
@@ -224,9 +229,11 @@ public class ControllerFromLogFile : MonoBehaviour {
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         if (PositionLines.Length>0){
             Debug.Log("Control log file successfully read");
+            // DebugReport1.SetText("Control log file successfully read.");
         }
         animationTime = PositionLines.Length/replayRefreshRate;
         Debug.Log("Animation time = "+animationTime.ToString());
+        // DebugReport1.SetText("Animation time = "+animationTime.ToString());
 
         string[] Positions = PositionLines[1].Split(',');
         int numJoints = Positions.Length;
@@ -268,6 +275,7 @@ public class ControllerFromLogFile : MonoBehaviour {
     }
 
     private IEnumerator PauseBeforeStart(String URDFName, String filename){
+        DebugReport1.SetText("");
         yield return new WaitForSecondsRealtime((float) 1.0);
         StartCoroutine(PlayFromCSV(URDFName, filename));
     }
