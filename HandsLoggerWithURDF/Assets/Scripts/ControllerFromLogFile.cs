@@ -126,7 +126,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         DebugReport1.SetText("");
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
 
-        for (int i=0; i<=PositionLines.Length; i++){
+        for (int i=0; i<PositionLines.Length; i++){
             string[] Positions = PositionLines[i].Split(',');
             int numJoints = Positions.Length;
             
@@ -152,6 +152,7 @@ public class ControllerFromLogFile : MonoBehaviour {
             if (i==PositionLines.Length-1){
                 Debug.Log("Final animation time: " + Time.time.ToString());
                 DebugReport1.SetText("Gesture complete: animation time = "+animationTime.ToString());
+
             }
         
         yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
