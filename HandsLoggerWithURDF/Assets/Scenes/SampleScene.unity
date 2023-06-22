@@ -1080,13 +1080,12 @@ MonoBehaviour:
   ParticipantID: 0
   begin: 0
   Robots:
-  - {fileID: 3671922608385142336, guid: bfce6a26838d265459c8fd173be47dbf, type: 3}
   - {fileID: 1288749552819972490, guid: bc336f7563d53904d905ef62dabef9c0, type: 3}
-  - {fileID: 7042205152094455518, guid: 98795f48e01623146a7f7e391faa8dd7, type: 3}
+  - {fileID: 3671922608385142336, guid: bfce6a26838d265459c8fd173be47dbf, type: 3}
   - {fileID: 7009348342243171546, guid: 5c403091395643047b998ff1bc8da8f3, type: 3}
-  startjoint_nums: 03000000010000000100000001000000
-  demo_max: 1
-  gesture_max: 1
+  - {fileID: 7042205152094455518, guid: 98795f48e01623146a7f7e391faa8dd7, type: 3}
+  demo_max: 5
+  gesture_max: 13
 --- !u!1 &424666882
 GameObject:
   m_ObjectHideFlags: 0

@@ -2309,6 +2309,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922606970402378}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 1
   m_ParentAnchorPosition: {x: -0.0000002235175, y: -0.16000055, z: 3.5527154e-15}
   m_ParentAnchorRotation: {x: 0.5000002, y: -0.5000002, z: -0.5000003, w: 0.5000003}
@@ -2574,6 +2575,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922607066938809}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.01
   m_ParentAnchorPosition: {x: 0.002999546, y: 0.00000015087426, z: 0.044000395}
   m_ParentAnchorRotation: {x: -0.000000100098774, y: -0.000000057951922, z: -0.7071073, w: 0.7071073}
@@ -2590,8 +2592,8 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: 0
     upperLimit: 114.59156
-    stiffness: 0
-    damping: 0
+    stiffness: 10000000
+    damping: 10000000
     forceLimit: 2
     target: 0
     targetVelocity: 0
@@ -2708,6 +2710,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922607094799168}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.01
   m_ParentAnchorPosition: {x: 0.0029997788, y: -0.000000011175871, z: 0.044000603}
   m_ParentAnchorRotation: {x: 0, y: 0, z: -0.7071072, w: 0.7071072}
@@ -2724,8 +2727,8 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: 0
     upperLimit: 114.59156
-    stiffness: 0
-    damping: 0
+    stiffness: 10000000
+    damping: 10000000
     forceLimit: 2
     target: 0
     targetVelocity: 0
@@ -3065,6 +3068,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922607382650089}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.99
   m_ParentAnchorPosition: {x: -0.0016, y: -0.118750006, z: 0}
   m_ParentAnchorRotation: {x: 0, y: 1, z: 3.5527137e-15, w: 0.000000043711395}
@@ -3597,6 +3601,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922607623568450}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 1
   m_ParentAnchorPosition: {x: 0, y: 0, z: 0}
   m_ParentAnchorRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
@@ -4921,6 +4926,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608068170768}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.01
   m_ParentAnchorPosition: {x: 0.0029995255, y: -0.00000017508864, z: 0.04400038}
   m_ParentAnchorRotation: {x: -0.000000010536713, y: -0.00000007375698, z: 0.7071071, w: -0.7071071}
@@ -4937,8 +4943,8 @@ ArticulationBody:
   m_XDrive:
     lowerLimit: 0
     upperLimit: 114.59156
-    stiffness: 0
-    damping: 0
+    stiffness: 10000000
+    damping: 10000000
     forceLimit: 2
     target: 0
     targetVelocity: 0
@@ -5056,6 +5062,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608077634520}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.01
   m_ParentAnchorPosition: {x: -0.031260293, y: -0.114670485, z: 0.0027900105}
   m_ParentAnchorRotation: {x: -0.16558641, y: 0.71647376, z: -0.27819574, w: -0.61794376}
@@ -5741,6 +5748,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608403203999}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.01
   m_ParentAnchorPosition: {x: 0.027069846, y: -0.11482052, z: 0.022260081}
   m_ParentAnchorRotation: {x: -0.24537174, y: -0.60553145, z: 0.20378387, w: -0.7291074}
@@ -5876,6 +5884,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608441308693}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.6763
   m_ParentAnchorPosition: {x: 0.41000023, y: -0.00000023841858, z: -1.2079699e-14}
   m_ParentAnchorRotation: {x: -0.7071068, y: -0.7071068, z: -0.000000030908616, w: 0.000000030908623}
@@ -6150,6 +6159,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608513951336}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.99
   m_ParentAnchorPosition: {x: -0.103750184, y: -0.00000023841858, z: -2.2145134e-15}
   m_ParentAnchorRotation: {x: 0, y: 1.0000004, z: 5.3290705e-15, w: 0.00000004371141}
@@ -6389,6 +6399,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608552093139}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.463
   m_ParentAnchorPosition: {x: 0.00000017881395, y: -0.10374996, z: 2.3092644e-14}
   m_ParentAnchorRotation: {x: -1.0000002, y: 0, z: -0.000000043711395, w: -5.3290705e-15}
@@ -6881,6 +6892,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608758082632}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.7477
   m_ParentAnchorPosition: {x: 0, y: 0.15675, z: 0}
   m_ParentAnchorRotation: {x: -0.70710677, y: -0.70710677, z: -0.00000003090862, w: 0.00000003090862}
@@ -7050,7 +7062,6 @@ MonoBehaviour:
   handPrefab: {fileID: 0}
   gesture_num: 1
   replayRefreshRate: 15
-  startJoint: 3
   debugHandMotion: 0
   playFinalMotion: 0
   stiffness: 100000
@@ -7189,6 +7200,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608844792293}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.01
   m_ParentAnchorPosition: {x: 0.027069846, y: -0.11482051, z: -0.022260088}
   m_ParentAnchorRotation: {x: -0.20378387, y: -0.7291074, z: 0.24537168, w: -0.60553145}
@@ -7369,6 +7381,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608877258106}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.463
   m_ParentAnchorPosition: {x: -0.20729981, y: -0.011399764, z: -1.1768367e-14}
   m_ParentAnchorRotation: {x: 0, y: 1.0000001, z: -1.7763568e-15, w: 0.000000043711402}
@@ -7592,6 +7605,7 @@ ArticulationBody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608891817844}
   m_Enabled: 1
+  serializedVersion: 3
   m_Mass: 0.46784
   m_ParentAnchorPosition: {x: 0, y: 0, z: 0}
   m_ParentAnchorRotation: {x: 0, y: 0, z: 0.70710677, w: 0.70710677}

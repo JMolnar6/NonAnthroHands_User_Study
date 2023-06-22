@@ -29,7 +29,7 @@ public class EventSystemManager : MonoBehaviour
     private List<GameObject> ButtonsList = new List<GameObject>();
 
     private int robot_num = 0;
-    public int[] startjoint_nums;
+    // public int[] startjoint_nums;
     private int demo_num = 1;
     public int demo_max = 1; // Temp for faster debugging. Should = 5
     
