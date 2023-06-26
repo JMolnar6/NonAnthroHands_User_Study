@@ -47,6 +47,8 @@ public class ControllerFromLogFile : MonoBehaviour {
     public float acceleration = 5f;// Units: m/s^2 / degree/s^2
 
     public float animationTime;
+    public string URDFName;
+
     
 
     [Tooltip("Color to highlight the currently selected joint")]
@@ -180,7 +182,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         // int defDyanmicVal = 10;
 
         // Make a file containing the joints that you're interested in so that you can screen out all others
-        string URDFName = transform.root.gameObject.name;
+        URDFName = transform.root.gameObject.name;
         URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
         Debug.Log("URDF Name = "+URDFName);
         // DebugReport1.SetText("URDF = " + URDFName);

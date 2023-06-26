@@ -10,13 +10,15 @@ public class JointRecorder : MonoBehaviour
     public int iteration = 1;
     public GameObject urdf;
 
+    private string URDFName;
+
     private bool isRec = false;
     private bool playLaunched = true;
     private float startTime = 0;
     private float animationTime = 15;
     private ControllerFromLogFile controller;
     // private ControllerFullExploration controller;
-    private ArticulationBody[] articulationChain;
+    private List<ArticulationBody> articulationChain = new List<ArticulationBody>();
     private StreamWriter writer;
     
     
@@ -39,8 +41,32 @@ public class JointRecorder : MonoBehaviour
 
         controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
         
-        articulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
+        ArticulationBody[] tempArticulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
         Debug.Log(articulationChain.ToString());
+
+        URDFName = transform.root.gameObject.name;
+        URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+        // Debug.Log("URDF Name = "+URDFName);
+        // DebugReport1.SetText("URDF = " + URDFName);
+        String filename = URDFName+"_joints.csv";
+        string[] JointNames = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        // if (JointNames.Length>0){
+            // DebugReport1.SetText("Joint names file successfully read: "+ JointNames.Length.ToString()+ " lines.");
+        // }
+        
+        // Skip joints that are not listed in the ..._joints.csv file
+        for (int i = 0; i<JointNames.Length; i++){
+            string jointname = JointNames[i];
+            foreach (ArticulationBody joint in tempArticulationChain){
+                if (joint.ToString().Substring(0, joint.ToString().IndexOf("(")-1)==jointname){
+                    articulationChain.Add(joint);
+                    // Debug.Log("Added joint "+jointname+" to articulationChain.");
+                }
+                else {
+                    // Set joint target to 0 so it doesn't wobble, or increase stiffness and damping to something like 100000
+                }
+            }
+        }        
         
         
         LaunchCSVfile();
@@ -126,7 +152,7 @@ public class JointRecorder : MonoBehaviour
     }
 
     private void LaunchCSVfile(){
-        string filePath = Application.persistentDataPath + "/" + urdf.name + "_JointMotion_gesture_" + controller.gesture_num.ToString() + "_" + iteration + ".csv";
+        string filePath = Application.persistentDataPath + "/" + URDFName + "_JointMotion_gesture_" + controller.gesture_num.ToString() + "_" + iteration + ".csv";
         // Debug.Log("filepath = " + filePath);
         
         writer = new StreamWriter(filePath);
