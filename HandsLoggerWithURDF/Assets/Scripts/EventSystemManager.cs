@@ -76,7 +76,8 @@ public class EventSystemManager : MonoBehaviour
         DebugReport2.SetText("");
 
         ConnectToQuest();
-        data_recorder = GameObject.Find("RightHandAnchor").GetComponent<PosRotRecorder>();
+        // data_recorder = GameObject.Find("RightHandAnchor").GetComponent<PosRotRecorder>();
+        data_recorder = GameObject.Find("RightHand Controller").GetComponent<PosRotRecorder>();
         
         demo_num = data_recorder.iteration;
         Debug.Log("Demo num = "+demo_num.ToString());
