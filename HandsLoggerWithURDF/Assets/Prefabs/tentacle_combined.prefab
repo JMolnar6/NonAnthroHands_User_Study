@@ -932,7 +932,6 @@ MonoBehaviour:
   tentacleLength: 0.5
   target: {fileID: 6337748910887618528}
   pole: {fileID: 0}
-  tentacle: {fileID: 8337769965334573121}
   schemeSelection: 1
   speed: 0.001
 --- !u!114 &6591906361444201391
@@ -950,7 +949,6 @@ MonoBehaviour:
   tentacleLength: 0.5
   target: {fileID: 520308302184073228}
   pole: {fileID: 6607960766793466894}
-  tentacle: {fileID: 0}
   schemeSelection: 1
   speed: 0.001
 --- !u!1 &8337769965334573121
