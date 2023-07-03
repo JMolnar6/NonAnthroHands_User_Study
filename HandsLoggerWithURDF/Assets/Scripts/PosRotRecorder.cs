@@ -100,13 +100,13 @@ public class PosRotRecorder : MonoBehaviour
         // string filePath = Application.persistentDataPath + "/Data/" + "goMotion";
         string filePath = "";
         if (hitRecord){
-            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_" + go.name + "Motion_gesture_" + controller.gesture_num.ToString() + "_" + iteration + ".csv";
+            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "_" + go.name + "_Motion_gesture_" + controller.gesture_num.ToString() + "_" + iteration + ".csv";
         }
         else{
-            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_" + go.name + "Playback.csv";
+            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "_" + go.name + "_Playback.csv";
         }
         
-        Debug.Log("filepath = " + filePath);
+        // Debug.Log("filepath = " + filePath);
         
         StreamWriter writer = new StreamWriter(filePath);
         writer.WriteLine("Time, Position (X), Position (Y), Position (Z), Rotation (X), Rotation (Y), Rotation (Z)");

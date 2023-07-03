@@ -153,7 +153,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
             if (i==PositionLines.Length-1){
                 Debug.Log("Final animation time: " + Time.time.ToString());
-                DebugReport1.SetText("Gesture complete: animation time = "+animationTime.ToString());
+                DebugReport1.SetText("Gesture complete: \n"+animationTime.ToString() + " sec");
 
             }
         
@@ -226,7 +226,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         String filename = URDFName + "_corrected_positions_"+gesture_num.ToString()+".csv";
         Debug.Log("Reading from "+Application.persistentDataPath+"/"+filename);
         // Clear any distracting debug text
-        DebugReport2.SetText("");
+        // DebugReport2.SetText("");
 
         // If URDF is not already in start position, return it there 
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);

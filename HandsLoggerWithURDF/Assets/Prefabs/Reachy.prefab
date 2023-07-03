@@ -5562,6 +5562,7 @@ GameObject:
   - component: {fileID: 1288749552349099138}
   - component: {fileID: 1288749552349099139}
   - component: {fileID: 1288749552349099136}
+  - component: {fileID: 5876013875334546873}
   m_Layer: 0
   m_Name: r_wrist2hand
   m_TagString: Untagged
@@ -5685,6 +5686,22 @@ MonoBehaviour:
   jointName: r_wrist_r_wrist2hand_joint
   EffortLimit: 1000
   VelocityLimit: 1000
+--- !u!114 &5876013875334546873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1288749552349099150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iteration: 1
+  go: {fileID: 1288749552349099137}
+  catchupTime: 2
+  allowPlaybackRecording: 0
 --- !u!1 &1288749552355926544
 GameObject:
   m_ObjectHideFlags: 0

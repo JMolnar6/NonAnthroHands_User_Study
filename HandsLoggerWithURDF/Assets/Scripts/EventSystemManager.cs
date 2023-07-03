@@ -48,8 +48,6 @@ public class EventSystemManager : MonoBehaviour
         GameObject WelcomeButton = GameObject.Find("Welcome Button");
         GameObject BeginButton   = GameObject.Find("Begin Study Button");
         GameObject NextButton    = GameObject.Find("Next");
-
-
         
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
         WelcomeButton.GetComponent<Button>().enabled = true; 
@@ -64,6 +62,8 @@ public class EventSystemManager : MonoBehaviour
         }
         WelcomeButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
         
+        GameObject IDField       = GameObject.Find("Participant ID");
+        IDField.transform.localScale = new Vector3(0,0,0);
         // Debug.Log("Robots = " + Robots[1]);
 
         // If you want to include any instructions before the user gets started, do that here, now.
@@ -86,8 +86,10 @@ public class EventSystemManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        demo_num = data_recorder.iteration;
-        DebugReport2.SetText("Demo num: "+demo_num.ToString());
+        if (demo_num != data_recorder.iteration){
+            demo_num = data_recorder.iteration;
+            DebugReport2.SetText("Demo num: "+demo_num.ToString());
+        }
 
         if (demo_num > demo_max){
             PosRotRecorder[] motiontrackers = GameObject.FindObjectsOfType<PosRotRecorder>();
@@ -137,6 +139,10 @@ public class EventSystemManager : MonoBehaviour
 
     private void TaskOnClickBegin()
     {
+        GameObject IDField       = GameObject.Find("Participant ID");
+        IDField.transform.localScale = new Vector3(0.0f,0.0f,0.0f);
+        ParticipantID = IDField.GetComponent<Dropdown>().value;
+        Debug.Log("Participant ID = "+ ParticipantID.ToString());
         // Close demographic info, open first robot (and possibly a demo)
         GameObject BeginButton   = GameObject.Find("Begin Study Button");   
         BeginButton.SetActive(false);
@@ -209,7 +215,23 @@ public class EventSystemManager : MonoBehaviour
 
         // Also have a GUI that allows numerical keyboard input: participant ID will be used in the names of all files saved
         // ParticipantID = input("Please enter your ID number here: \n");
+        
+        // It's faster to add participant ID options with a for loop rather than manually adding them in the Editor:
+        GameObject IDField       = GameObject.Find("Participant ID");
+        
+        Dropdown ID_Dropdown= IDField.GetComponent<Dropdown>();
+        // Debug.Log("IDField = "+ IDField + "; ID Dropdown = " + ID_Dropdown);
+        List<string> DropOptions = new List<string>();
+        ID_Dropdown.ClearOptions();
+        DropOptions.Add("0 (test)");      
+        int max_participants = 30;
+        for (int i=1; i<=max_participants; i++){
+            DropOptions.Add(i.ToString());
+        }
+        ID_Dropdown.AddOptions(DropOptions);
 
+        IDField.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
+        DebugReport2.SetText("Please select your participant ID number. \n The experimenter will tell you which to choose.");
     }
 
     private void TaskOnClickNext(){
