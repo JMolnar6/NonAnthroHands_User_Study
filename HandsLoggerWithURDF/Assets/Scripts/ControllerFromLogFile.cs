@@ -66,9 +66,6 @@ public class ControllerFromLogFile : MonoBehaviour {
         // Both the Start and Record buttons should initiate animation, so assign them the same listener
         PlayButton.onClick.AddListener(delegate{AnimateURDF(false);});
         RecordButton.onClick.AddListener(delegate{AnimateURDF(true);});
-        
-        
-        // StartCoroutine(PlayFromCSV());
 
         if (playFinalMotion==false){
             GameObject PlayResultButtonObject = GameObject.Find("Play Result Button");
@@ -113,64 +110,15 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     }
 
-    void SetSelectedJointIndex(int index){
-        if (articulationChain.Count > 0){
-            selectedIndex = (index + articulationChain.Count) % articulationChain.Count;
-        }
-    }
+    // void SetSelectedJointIndex(int index){
+    //     if (articulationChain.Count > 0){
+    //         selectedIndex = (index + articulationChain.Count) % articulationChain.Count;
+    //     }
+    // }
 
     void Update(){
         OVRInput.Update();
     }
-
-    private IEnumerator PlayFromCSV(String URDFName, String filename){
-        Debug.Log("Filename for BeginCountdown method:" + filename);
-        DebugReport1.SetText("");
-        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
-
-        for (int i=0; i<PositionLines.Length; i++){
-            string[] Positions = PositionLines[i].Split(',');
-            int numJoints = Positions.Length;
-            
-            int j=0;
-            foreach (ArticulationBody joint in articulationChain){
-                // ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
-                var drive = joint.xDrive;
-
-                drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
-                // joint.xDrive.target         = Positions[j];
-                // Debug.Log("Setting drive "+joint.ToString() +" target to "+drive.target.ToString());
-                joint.xDrive = drive;
-                
-
-                // drive.targetVelocity = float.Parse(Velocities[j]);
-                // Debug.Log("Setting drive target to "+Velocities[j]);
-                // joint.xDrive.targetVelocity = Velocities[j];
-                
-                // JointControl current = articulationChain[j].GetComponent<JointControl>();
-                j=j+1;
-            }
-
-            if (i==PositionLines.Length-1){
-                Debug.Log("Final animation time: " + Time.time.ToString());
-                DebugReport1.SetText("Gesture complete: \n"+animationTime.ToString() + " sec");
-
-            }
-        
-        yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
-        }
-    }
-
-    // public void SetGestureNum(int num) {
-    //     this.gesture_num = num;
-    //     GestureNumber = num;
-    //     Debug.Log("Setting Gesture Number in Controller File to "+GestureNumber.ToString());
-    // }
-    
-    // public int GetGestureNum() {
-    //     Debug.Log("Getting Gesture Number from Controller File: "+GestureNumber.ToString());
-    //     return GestureNumber;
-    // }
 
     private void SetUpRobot(){
         hasMoved = false;
@@ -216,13 +164,12 @@ public class ControllerFromLogFile : MonoBehaviour {
             // DebugReport1.SetText("ForceLimit = " + forceLimit.ToString() + " Stiffness = " + stiffness.ToString());
             joint.xDrive = currentDrive;
         }
-
     }
 
-    private void AnimateURDF(bool countdown)
-    {
+    private string[] ReturnToStartPose(){
         string URDFName = transform.root.gameObject.name;
         URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+        
         String filename = URDFName + "_corrected_positions_"+gesture_num.ToString()+".csv";
         Debug.Log("Reading from "+Application.persistentDataPath+"/"+filename);
         // Clear any distracting debug text
@@ -251,17 +198,14 @@ public class ControllerFromLogFile : MonoBehaviour {
             j=j+1;
         }
 
-        // Begin countdown to animation 
-        if (countdown){
-            StartCoroutine(BeginCountdown(URDFName, filename));
-        }
-        else if (hasMoved == false){
-            StartCoroutine(PlayFromCSV(URDFName, filename));
-            hasMoved = true;
-        }
-        else{
-            StartCoroutine(PauseBeforeStart(URDFName, filename));
-        }
+        string[] return_vals = {URDFName, filename};
+        return return_vals;
+    }
+
+    private IEnumerator PauseBeforeStart(String URDFName, String filename){
+        DebugReport1.SetText("");
+        yield return new WaitForSecondsRealtime((float) 1.0);
+        StartCoroutine(PlayFromCSV(URDFName, filename));
     }
 
     private IEnumerator BeginCountdown(String URDFName, String filename){
@@ -277,11 +221,65 @@ public class ControllerFromLogFile : MonoBehaviour {
         StartCoroutine(PlayFromCSV(URDFName, filename));
     }
 
-    private IEnumerator PauseBeforeStart(String URDFName, String filename){
-        DebugReport1.SetText("");
-        yield return new WaitForSecondsRealtime((float) 1.0);
-        StartCoroutine(PlayFromCSV(URDFName, filename));
+    private void AnimateURDF(bool countdown)
+    {
+        string[] robot_terms = ReturnToStartPose();
+        string URDFName = robot_terms[0];
+        string filename = robot_terms[1];
+
+        // Begin countdown to animation 
+        if (countdown){
+            StartCoroutine(BeginCountdown(URDFName, filename));
+        }
+        else if (hasMoved == false){
+            StartCoroutine(PlayFromCSV(URDFName, filename));
+            hasMoved = true;
+        }
+        else{
+            StartCoroutine(PauseBeforeStart(URDFName, filename));
+        }
     }
+
+    private IEnumerator PlayFromCSV(String URDFName, String filename){
+        Debug.Log("Filename for BeginCountdown method:" + filename);
+        DebugReport1.SetText("");
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+
+        for (int i=0; i<PositionLines.Length; i++){
+            string[] Positions = PositionLines[i].Split(',');
+            int numJoints = Positions.Length;
+            
+            int j=0;
+            foreach (ArticulationBody joint in articulationChain){
+                // ArticulationBody joint = GameObject.Find(linkName).GetComponent<ArticulationBody>();
+                var drive = joint.xDrive;
+
+                drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees
+                // joint.xDrive.target         = Positions[j];
+                // Debug.Log("Setting drive "+joint.ToString() +" target to "+drive.target.ToString());
+                joint.xDrive = drive;
+                
+
+                // drive.targetVelocity = float.Parse(Velocities[j]);
+                // Debug.Log("Setting drive target to "+Velocities[j]);
+                // joint.xDrive.targetVelocity = Velocities[j];
+                
+                // JointControl current = articulationChain[j].GetComponent<JointControl>();
+                j=j+1;
+            }
+
+            if (i==PositionLines.Length-1){
+                ReturnToStartPose();
+                Debug.Log("Final animation time: " + Time.time.ToString());
+                DebugReport1.SetText("Gesture complete: \n"+animationTime.ToString() + " sec");
+
+            }
+        
+        yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
+        }
+    }
+
+    
 
     private void Playback()
     {

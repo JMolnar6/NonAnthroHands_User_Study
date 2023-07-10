@@ -10,7 +10,6 @@ public class PosRotRecorder : MonoBehaviour
 {
     public int iteration = 1;
     public Transform go;
-    public float catchupTime = (float) 2.0;
     public bool allowPlaybackRecording = false;
     // public ControllerFromLogFile fp;
 
@@ -73,7 +72,8 @@ public class PosRotRecorder : MonoBehaviour
             // The end time needs to equal the animationTime + 1 sec at the beginning between 
             //  "GO" and when the robot starts its movement. "Catchuptime" will add a (currently 2sec) 
             //  buffer afterwards.
-            if ((Time.time > startTime + animationTime + 1.0 + catchupTime) & (!playLaunched)){ 
+            if ((Time.time > startTime + animationTime + 1.0 + eventHandler.catchupTime) & (!playLaunched)){ 
+                    Debug.Log("Buffer time = "+eventHandler.catchupTime.ToString());
                     Debug.Log("Recording complete at " + Time.time.ToString());
                     playLaunched = true;
                     isRec = false;

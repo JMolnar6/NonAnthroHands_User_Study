@@ -7,6 +7,7 @@ using TMPro;
 public class EventSystemManager : MonoBehaviour
 {
     public int ParticipantID = 0;
+    public float catchupTime = 2.0f;
     public bool begin = false;
 
     private bool questConnected = false;
@@ -24,6 +25,7 @@ public class EventSystemManager : MonoBehaviour
     
     public GameObject[] Robots;
     private GameObject robot;
+    public float[] BufferTime;
 
     // private GameObject[] Buttons;
     private List<GameObject> ButtonsList = new List<GameObject>();
@@ -89,12 +91,15 @@ public class EventSystemManager : MonoBehaviour
         if (demo_num != data_recorder.iteration){
             demo_num = data_recorder.iteration;
             DebugReport2.SetText("Demo num: "+demo_num.ToString());
+            Debug.Log("Demo num: "+demo_num.ToString());
         }
 
         if (demo_num > demo_max){
             PosRotRecorder[] motiontrackers = GameObject.FindObjectsOfType<PosRotRecorder>();
             foreach (PosRotRecorder motiontracker in motiontrackers){
                 motiontracker.iteration = 1;
+                Debug.Log("Resetting demo num of "+motiontracker+" to: 1");
+
             }
             // data_recorder.iteration  = 1;
             // robot_recorder.iteration = 1;
@@ -168,7 +173,7 @@ public class EventSystemManager : MonoBehaviour
                                                                                  // that you and it face the same or opposite directions,
                                                                                  // but I prefer that to be manually arranged in the prefab
         // robot.transform.Rotate(0.0f, 180.0f, 0.0f, Space.World);
-        
+        catchupTime=BufferTime[0];
         // Controller is instantiated with the prefab, already attached. Let's grab it
         controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
         gesture_num = 1;//controller.gesture_num; //Allows us to set a gesture in the public edit field for debug       
@@ -246,6 +251,7 @@ public class EventSystemManager : MonoBehaviour
             robot_num = robot_num+1;
             Destroy(robot);
             robot = Instantiate(Robots[robot_num], new Vector3(0,0.4f,0), Quaternion.identity);
+            catchupTime=BufferTime[robot_num];
             controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
             // controller.startJoint = startjoint_nums[robot_num];
             controller.gesture_num=gesture_num;
