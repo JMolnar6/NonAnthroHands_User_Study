@@ -18,21 +18,22 @@ public class EventSystemManager : MonoBehaviour
     private TextMeshPro DebugReport1;
     private TextMeshPro DebugReport2;
     
-    private PosRotRecorder data_recorder; //Need to expand this; currently focusing only on Right Hand but could be grabbing all in the scene
+    // private PosRotRecorder data_recorder; //Need to expand this; currently focusing only on Right Hand but could be grabbing all in the scene
     // private List<PosRotRecorder> motiontrackers = new List<PosRotRecorder>();
-    private JointRecorder robot_recorder;
+    // private JointRecorder robot_recorder;
     private ControllerFromLogFile controller;
     
     public GameObject[] Robots;
     private GameObject robot;
-    public float[] BufferTime;
+    // public float[] BufferTime; // Adds extra recording time after a robot's animation, just in case the user doesn't finish instantaneously
+                               // BufferTime values can be customized, but should not be longer than the countdown (currently 3.0 sec) - 1sec
 
     // private GameObject[] Buttons;
     private List<GameObject> ButtonsList = new List<GameObject>();
 
     private int robot_num = 0;
     // public int[] startjoint_nums;
-    private int demo_num = 1;
+    public int demo_num = 0;
     public int demo_max = 1; // Temp for faster debugging. Should = 5
     
     private int gesture_num = 1; // 0-based indexing? Double-check after gesture generation
@@ -50,6 +51,9 @@ public class EventSystemManager : MonoBehaviour
         GameObject WelcomeButton = GameObject.Find("Welcome Button");
         GameObject BeginButton   = GameObject.Find("Begin Study Button");
         GameObject NextButton    = GameObject.Find("Next");
+
+        Button RecordButton  = GameObject.Find("Record Button").GetComponent<Button>();
+        Button PlayButton    = GameObject.Find("Play Button").GetComponent<Button>();
         
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
         WelcomeButton.GetComponent<Button>().enabled = true; 
@@ -57,7 +61,11 @@ public class EventSystemManager : MonoBehaviour
         BeginButton.GetComponent<Button>().enabled = false;
         NextButton.GetComponent<Button>().onClick.AddListener(TaskOnClickNext);
         NextButton.GetComponent<Button>().enabled = false;
+
+        RecordButton.onClick.AddListener(TaskOnRecord);
+        PlayButton.onClick.AddListener(TaskOnPlay);
         
+
         foreach (GameObject Button in Buttons){
             Button.transform.localScale = new Vector3(0, 0, 0);
             ButtonsList.Add(Button);
@@ -78,52 +86,50 @@ public class EventSystemManager : MonoBehaviour
         DebugReport2.SetText("");
 
         ConnectToQuest();
-        // data_recorder = GameObject.Find("RightHandAnchor").GetComponent<PosRotRecorder>();
-        data_recorder = GameObject.Find("RightHand Controller").GetComponent<PosRotRecorder>();
+        // // data_recorder = GameObject.Find("RightHandAnchor").GetComponent<PosRotRecorder>();
+        // data_recorder = GameObject.Find("RightHand Controller").GetComponent<PosRotRecorder>();
         
-        demo_num = data_recorder.iteration;
+        demo_num = 0; 
         Debug.Log("Demo num = "+demo_num.ToString());
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (demo_num != data_recorder.iteration){
-            demo_num = data_recorder.iteration;
-            DebugReport2.SetText("Demo num: "+demo_num.ToString());
-            Debug.Log("Demo num: "+demo_num.ToString());
-        }
-
-        if (demo_num > demo_max){
-            PosRotRecorder[] motiontrackers = GameObject.FindObjectsOfType<PosRotRecorder>();
-            foreach (PosRotRecorder motiontracker in motiontrackers){
-                motiontracker.iteration = 1;
-                Debug.Log("Resetting demo num of "+motiontracker+" to: 1");
-
+        if(begin==true){
+            
+            if ((demo_num < demo_max) && (controller.demo_complete)){ //At the very beginning, Update is being called and no controller is set
+                controller.demo_complete=false; //reset "demo_complete" marker
+                
+                StartCoroutine(ReactivateButtons());
             }
-            // data_recorder.iteration  = 1;
-            // robot_recorder.iteration = 1;
 
-            if (gesture_num >= gesture_max){
-                // Swap out robots, or swap out gesture sets? I think we said each user got their own gesture set, not all of them
-                gesture_num = 1;
-                controller.gesture_num=gesture_num;
-                gesture_not_robot = false;
+            if ((demo_num == demo_max) && (controller.demo_complete)){
+                controller.demo_complete=false;
 
-                Debug.Log("On to the next robot!");
-                DebugReport1.SetText("On to the next robot!");
+                StartCoroutine(ReactivateButtons());
+
+                if (gesture_num >= gesture_max){
+                    // Swap out robots, or swap out gesture sets? I think we said each user got their own gesture set, not all of them
+                    gesture_num = 1;
+                    
+                    controller.gesture_num=gesture_num;
+                    gesture_not_robot = false;
+
+                    Debug.Log("On to the next robot!");
+                    DebugReport1.SetText("On to the next robot!");
+                    }
+                else{
+                    Debug.Log("On to the next gesture!");
+                    DebugReport1.SetText("On to the next gesture!");
                 }
-            else{
-                Debug.Log("On to the next gesture!");
-                DebugReport1.SetText("On to the next gesture!");
+
+                GameObject NextButton = GameObject.Find("Next");
+                NextButton.GetComponent<Button>().enabled = true;
+                NextButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
             }
 
-            GameObject NextButton = GameObject.Find("Next");
-            NextButton.GetComponent<Button>().enabled = true;
-            NextButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
         }
-
-        
     }
 
     private void TaskOnClickOpen(){
@@ -173,7 +179,7 @@ public class EventSystemManager : MonoBehaviour
                                                                                  // that you and it face the same or opposite directions,
                                                                                  // but I prefer that to be manually arranged in the prefab
         // robot.transform.Rotate(0.0f, 180.0f, 0.0f, Space.World);
-        catchupTime=BufferTime[0];
+        // catchupTime=BufferTime[0];
         // Controller is instantiated with the prefab, already attached. Let's grab it
         controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
         gesture_num = 1;//controller.gesture_num; //Allows us to set a gesture in the public edit field for debug       
@@ -182,7 +188,32 @@ public class EventSystemManager : MonoBehaviour
         string URDFName = controller.transform.root.gameObject.name;
         // URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
         Debug.Log("URDF Name = "+URDFName);
-        robot_recorder = GameObject.Find(URDFName).GetComponent<JointRecorder>();
+        // robot_recorder = GameObject.Find(URDFName).GetComponent<JointRecorder>();
+    }
+
+    private void TaskOnRecord(){
+        demo_num=demo_num+1; 
+        Debug.Log("Demo num = "+demo_num.ToString()); 
+        Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+        Button PlayButton   = GameObject.Find("Play Button").GetComponent<Button>();
+        RecordButton.interactable = false;
+        PlayButton.interactable = false;
+    }
+
+    private void TaskOnPlay(){
+        // Don't increment the demo number
+        Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
+        Button PlayButton   = GameObject.Find("Play Button").GetComponent<Button>();
+        RecordButton.interactable = false;
+        PlayButton.interactable = false;
+    }
+
+    private IEnumerator ReactivateButtons(){
+        yield return new WaitForSecondsRealtime((float) 0.5);
+        Button RecordButton       = GameObject.Find("Record Button").GetComponent<Button>();
+        RecordButton.interactable = true;
+        Button PlayButton         = GameObject.Find("Play Button").GetComponent<Button>();
+        PlayButton.interactable   = true;
     }
 
     private void ConnectToQuest(){
@@ -242,6 +273,9 @@ public class EventSystemManager : MonoBehaviour
     private void TaskOnClickNext(){
         DebugReport1.SetText("");
 
+        demo_num=0;
+        Debug.Log("Demo num = "+demo_num.ToString());
+
         if (gesture_not_robot){    
             gesture_num = gesture_num+1;
             controller.gesture_num=gesture_num;
@@ -251,7 +285,7 @@ public class EventSystemManager : MonoBehaviour
             robot_num = robot_num+1;
             Destroy(robot);
             robot = Instantiate(Robots[robot_num], new Vector3(0,0.4f,0), Quaternion.identity);
-            catchupTime=BufferTime[robot_num];
+            // catchupTime=BufferTime[robot_num];
             controller = robot.GetComponentsInChildren<ControllerFromLogFile>()[0]; //Should be only one controller enabled
             // controller.startJoint = startjoint_nums[robot_num];
             controller.gesture_num=gesture_num;

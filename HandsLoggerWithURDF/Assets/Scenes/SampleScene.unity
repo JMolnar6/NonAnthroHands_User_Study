@@ -866,9 +866,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   go: {fileID: 120613589}
-  catchupTime: 2
   allowPlaybackRecording: 0
 --- !u!1 &131305685
 GameObject:
@@ -1746,12 +1744,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ParticipantID: 0
+  catchupTime: 2
   begin: 0
   Robots:
   - {fileID: 1288749552819972490, guid: bc336f7563d53904d905ef62dabef9c0, type: 3}
   - {fileID: 3671922608385142336, guid: bfce6a26838d265459c8fd173be47dbf, type: 3}
   - {fileID: 7009348342243171546, guid: 5c403091395643047b998ff1bc8da8f3, type: 3}
   - {fileID: 7042205152094455518, guid: 98795f48e01623146a7f7e391faa8dd7, type: 3}
+  demo_num: 1
   demo_max: 5
   gesture_max: 13
 --- !u!1 &424666882
@@ -2049,9 +2049,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   go: {fileID: 531574999}
-  catchupTime: 2
   allowPlaybackRecording: 0
 --- !u!4 &531574999 stripped
 Transform:
@@ -2275,9 +2273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   go: {fileID: 601034976}
-  catchupTime: 2
   allowPlaybackRecording: 0
 --- !u!4 &601034978 stripped
 Transform:
@@ -2296,9 +2292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   go: {fileID: 601034978}
-  catchupTime: 2
   allowPlaybackRecording: 0
 --- !u!1 &623876216
 GameObject:
@@ -2648,9 +2642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   go: {fileID: 641089410}
-  catchupTime: 2
   allowPlaybackRecording: 0
 --- !u!1001 &702508694
 PrefabInstance:
@@ -3452,9 +3444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   go: {fileID: 777131691}
-  catchupTime: 2
   allowPlaybackRecording: 0
 --- !u!1 &838946797
 GameObject:

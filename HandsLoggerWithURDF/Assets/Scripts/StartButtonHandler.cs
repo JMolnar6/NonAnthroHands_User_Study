@@ -82,14 +82,14 @@ public class StartButtonHandler : MonoBehaviour
         ConnectToQuest();
 
         data_recorder = GameObject.Find("RightHandAnchor").GetComponent<PosRotRecorder>();
-        demo_num = data_recorder.iteration;
+        // demo_num = data_recorder.iteration;
         Debug.Log("Demo num = "+demo_num.ToString());
     }
 
     // Update is called once per frame
     void Update()
     {
-        demo_num = data_recorder.iteration;
+        // demo_num = data_recorder.iteration;
     }
 
     private void TaskOnClickOpen(){

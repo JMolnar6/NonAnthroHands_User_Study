@@ -2,7 +2,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-// using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using TMPro;
 
@@ -20,8 +19,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     private int selectedIndex = 1;
     public int gesture_num = 1; // 0-based indexing? Double-check after gesture generation
-    // private int demo_num = 1;
-    // private PosRotRecorder data_recorder;
+    public bool demo_complete = false;
 
     // public TextMeshPro DebugReport2;
     // public TextMeshPro DebugReport3;
@@ -164,6 +162,8 @@ public class ControllerFromLogFile : MonoBehaviour {
             // DebugReport1.SetText("ForceLimit = " + forceLimit.ToString() + " Stiffness = " + stiffness.ToString());
             joint.xDrive = currentDrive;
         }
+
+        ReturnToStartPose();
     }
 
     private string[] ReturnToStartPose(){
@@ -221,14 +221,14 @@ public class ControllerFromLogFile : MonoBehaviour {
         StartCoroutine(PlayFromCSV(URDFName, filename));
     }
 
-    private void AnimateURDF(bool countdown)
+    private void AnimateURDF(bool record)
     {
         string[] robot_terms = ReturnToStartPose();
         string URDFName = robot_terms[0];
         string filename = robot_terms[1];
 
         // Begin countdown to animation 
-        if (countdown){
+        if (record){
             StartCoroutine(BeginCountdown(URDFName, filename));
         }
         else if (hasMoved == false){
@@ -269,10 +269,11 @@ public class ControllerFromLogFile : MonoBehaviour {
             }
 
             if (i==PositionLines.Length-1){
+                demo_complete=true;
                 ReturnToStartPose();
                 Debug.Log("Final animation time: " + Time.time.ToString());
+                Debug.Log("Gesture complete: \n"+animationTime.ToString() + " sec");
                 DebugReport1.SetText("Gesture complete: \n"+animationTime.ToString() + " sec");
-
             }
         
         yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);

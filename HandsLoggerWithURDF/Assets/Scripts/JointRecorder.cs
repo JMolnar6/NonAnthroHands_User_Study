@@ -7,25 +7,27 @@ using System.IO;
 
 public class JointRecorder : MonoBehaviour
 {
-    public int iteration = 1;
+    // public int iteration = 1;
     public GameObject urdf;
 
     private string URDFName;
 
     private bool isRec = false;
     private bool playLaunched = true;
+    private int demo_num;
+    private int gesture_num;
     private float startTime = 0;
     private float animationTime = 15;
+    private float countdownTime = 2.0f;
     private ControllerFromLogFile controller;
     private EventSystemManager eventHandler;
-    // private ControllerFullExploration controller;
     private string[] JointNames;
     private List<ArticulationBody> articulationChain = new List<ArticulationBody>();
     private StreamWriter writer;
     
     
     List<float> angles = new List<float>();
-    List<float> tim = new List<float>();    
+    List<string> angleData = new List<string>();   
 
     // Start is called before the first frame update
     void Start()
@@ -72,7 +74,7 @@ public class JointRecorder : MonoBehaviour
         }        
         
         
-        LaunchCSVfile();
+        // LaunchCSVfile();
        
     }
 
@@ -81,11 +83,9 @@ public class JointRecorder : MonoBehaviour
     {
         animationTime = controller.animationTime; //Note that this doesn't get updated until after the first "record"
         // Debug.Log("Animation runtime = " + animationTime.ToString());
-        if(isRec == true & startTime == 0.0){ // isRec gets set to "true" upon button click
+        if(isRec == true & startTime == 0.0){ // isRec gets set to "true" two seconds after button click
             startTime = Time.time; 
-            playLaunched = false;
-            // Debug.Log("Time = " + startTime);
-            // Debug.Log("End time = " + (startTime+animationTime).ToString());
+            playLaunched = false;            
         }
 
         if (isRec == true){
@@ -111,44 +111,39 @@ public class JointRecorder : MonoBehaviour
                     // Debug.Log("AngleString is: "+angleString);
                 }    
             }
-            string angleString = "";
+            string angleString = Time.time.ToString();
             for (int i=0; i<angles.Count; i++){
                 // Debug.Log("Angle is: "+angles[i].ToString());
                 angleString = angleString+","+angles[i].ToString();
                 // Debug.Log("AngleString is: "+angleString);
             }
             // Debug.Log("Writing this line to file: "+angleString);
-            writer.WriteLine(Time.time.ToString()+angleString);
+            // writer.WriteLine(Time.time.ToString()+angleString);
+            angleData.Add(angleString);
             angles.Clear();
         }
-            // The end time needs to equal the animationTime + 1 sec at the beginning between 
+            // The end time needs to equal the animationTime + countdown time + 1 sec between
             //  "GO" and when the robot starts its movement. "Catchuptime" will add a (currently 2sec) 
             //  buffer afterwards (can be customized in the EventSystemManager GUI).
-        if ((Time.time > animationTime + startTime + 1.0+ eventHandler.catchupTime) & (!playLaunched)){ 
-                // Debug.Log("Recording jointangles complete at " + Time.time.ToString());
+        if ((Time.time > startTime + 1.0 + animationTime + eventHandler.catchupTime) & (!playLaunched)){ 
+                Debug.Log("JointMotion recording complete at " + Time.time.ToString());
                 playLaunched = true;
                 isRec = false;
-                iteration++;
-                // Debug.Log("Jointfile Iteration = "+ iteration);
-                Reset();
+                LogAndConfirm();
         }
     }
  
     public void Reset () {
-        angles.Clear();
-        tim.Clear();
-
-        writer.Flush();
-        writer.Close();
+        angleData.Clear();
 
         isRec = false;
         startTime = (float) 0.0;
         
-        LaunchCSVfile();
+        
     }
 
     private void TaskOnRecordClick()
-    {
+    {  
         StartCoroutine(WaitForCountdown());
     }
 
@@ -158,14 +153,41 @@ public class JointRecorder : MonoBehaviour
     }
     
     private IEnumerator WaitForCountdown(){
-        yield return new WaitForSecondsRealtime((float) 3.0); //Change this if you change the countdown in the ControllerLogFile
+        yield return new WaitForSecondsRealtime(countdownTime); //Change this if you change the countdown in the ControllerLogFile
         //Output this to console when Button1 is clicked
         // Debug.Log("Starting recording now: " + urdf.name + " at time " + Time.time);
         isRec=true;
+        demo_num = eventHandler.demo_num; // Grab the demo num now, not immediately upon click, 
+                                          //  just in case there's still a file under the old demo_num
+                                          //  that needs to be written
+        gesture_num = controller.gesture_num;
     }
 
-    private void LaunchCSVfile(){
-        string filePath = Application.persistentDataPath + "/" + URDFName + "_PID" + eventHandler.ParticipantID + "_JointMotion_gesture_" + controller.gesture_num.ToString() + "_" + iteration + ".csv";
+    // private void LaunchCSVfile(){
+    //     string filePath = Application.persistentDataPath + "/" + URDFName + "_PID" + eventHandler.ParticipantID + "_JointMotion_gesture_" + gesture_num.ToString() + "_" + demo_num.ToString() + ".csv";
+    //     // Debug.Log("filepath = " + filePath);
+        
+    //     writer = new StreamWriter(filePath);
+    //     string headerLine = "Time,";
+    //     foreach (ArticulationBody joint in articulationChain){
+    //         // Debug.Log("Joint name is " + joint.name);
+    //         // Debug.Log("DOF count for joint "+joint.name+" is: "+  joint.dofCount.ToString());
+    //         for (int i=1; i<=joint.dofCount; i++){
+    //             headerLine = headerLine+joint.name+",";
+    //         }
+            
+    //     }
+    //     writer.WriteLine(headerLine);
+        
+    // }
+
+    public void LogAndConfirm() {
+        WriteLogFile();
+        Reset();
+    }
+
+    private void WriteLogFile(){
+        string filePath = Application.persistentDataPath + "/" + URDFName + "_PID" + eventHandler.ParticipantID + "_JointMotion_gesture_" + gesture_num.ToString() + "_" + demo_num.ToString() + ".csv";
         // Debug.Log("filepath = " + filePath);
         
         writer = new StreamWriter(filePath);
@@ -179,7 +201,12 @@ public class JointRecorder : MonoBehaviour
             
         }
         writer.WriteLine(headerLine);
-        
-    }
 
+        for (int i = 0; i < angleData.Count; i++) {
+            writer.WriteLine(angleData[i]);
+        }
+        writer.Flush();
+        writer.Close();
+
+    }
 }
