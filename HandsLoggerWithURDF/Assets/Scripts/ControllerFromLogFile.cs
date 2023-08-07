@@ -144,22 +144,26 @@ public class ControllerFromLogFile : MonoBehaviour {
             foreach (ArticulationBody joint in tempArticulationChain){
                 if (joint.ToString().Substring(0, joint.ToString().IndexOf("(")-1)==jointname){
                     articulationChain.Add(joint);
-                    // Debug.Log("Added joint "+jointname+" to articulationChain.");
+                    Debug.Log("Added joint "+jointname+" to articulationChain.");
                 }
                 else {
                     // Set joint target to 0 so it doesn't wobble, or increase stiffness and damping to something like 100000
                 }
             }
+            Debug.Log("Finished setting up articulation chain.");
         }        
 
         foreach (ArticulationBody joint in articulationChain)
         {
+            Debug.Log("Setting up joint control");
             joint.gameObject.AddComponent<JointControl>();
             // joint.jointFriction = defDyanmicVal;
             // joint.angularDamping = defDyanmicVal;
             ArticulationDrive currentDrive = joint.xDrive;
+            currentDrive.stiffness = stiffness;
+            currentDrive.damping = damping;
             currentDrive.forceLimit = forceLimit;
-            // DebugReport1.SetText("ForceLimit = " + forceLimit.ToString() + " Stiffness = " + stiffness.ToString());
+            Debug.Log("Setting "+joint+" to: ForceLimit = " + forceLimit.ToString() + ", Damping =" + damping.ToString() + ", Stiffness = " + stiffness.ToString());
             joint.xDrive = currentDrive;
         }
 
@@ -270,7 +274,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
             if (i==PositionLines.Length-1){
                 demo_complete=true;
-                ReturnToStartPose();
+                StartCoroutine(FinishGesture());
                 Debug.Log("Final animation time: " + Time.time.ToString());
                 Debug.Log("Gesture complete: \n"+animationTime.ToString() + " sec");
                 DebugReport1.SetText("Gesture complete: \n"+animationTime.ToString() + " sec");
@@ -323,6 +327,11 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         yield return new WaitForSecondsRealtime((float) 0.5/replayRefreshRate);
         }
+    }
+
+    private IEnumerator FinishGesture(){
+        yield return new WaitForSecondsRealtime(1.0f);
+        ReturnToStartPose();
     }
 
 }

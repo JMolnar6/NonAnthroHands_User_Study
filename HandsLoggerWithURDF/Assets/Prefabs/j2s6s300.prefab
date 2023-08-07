@@ -2381,9 +2381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   go: {fileID: 3671922606970402377}
-  catchupTime: 2
   allowPlaybackRecording: 0
 --- !u!1 &3671922606975346964
 GameObject:
@@ -3554,8 +3552,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3671922607623568449}
   - component: {fileID: 3671922607623569342}
-  - component: {fileID: 3671922607623569343}
-  - component: {fileID: 3671922607623568448}
+  - component: {fileID: 4331292898528386926}
+  - component: {fileID: 2390558065492467498}
   m_Layer: 0
   m_Name: root
   m_TagString: robot
@@ -3593,7 +3591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsBaseLink: 0
---- !u!171741748 &3671922607623569343
+--- !u!171741748 &4331292898528386926
 ArticulationBody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3645,7 +3643,7 @@ ArticulationBody:
   m_Immovable: 1
   m_UseGravity: 1
   m_CollisionDetectionMode: 0
---- !u!114 &3671922607623568448
+--- !u!114 &2390558065492467498
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3658,7 +3656,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: world_root_joint
+  jointName: 
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!1 &3671922607659848969
@@ -4667,7 +4665,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922607989292150}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -4676,7 +4674,7 @@ Transform:
   - {fileID: 3671922607623568449}
   m_Father: {fileID: 3671922608385139133}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &3671922607989292148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5569,7 +5567,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608385142336}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5578,7 +5576,7 @@ Transform:
   - {fileID: 3671922608768846570}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &3671922608385139134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5636,7 +5634,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3671922608385142336}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d607ea46a579d44c4b19a6322ce4b9b2, type: 3}
   m_Name: 
@@ -5644,8 +5642,8 @@ MonoBehaviour:
   selectedJoint: 
   selectedIndex: 0
   control: 0
-  stiffness: 100000
-  damping: 10000
+  stiffness: 10000
+  damping: 1000
   forceLimit: 10000
   speed: 15
   torque: 100
@@ -5663,7 +5661,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f450ab68e882f4a4ea9f360b761f3439, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   urdf: {fileID: 3671922608385142336}
 --- !u!1 &3671922608403203999
 GameObject:
@@ -5814,6 +5811,7 @@ GameObject:
   - component: {fileID: 3671922608441308689}
   - component: {fileID: 3671922608441308690}
   - component: {fileID: 3671922608441308691}
+  - component: {fileID: 3186124651545854663}
   m_Layer: 0
   m_Name: j2s6s300_link_3
   m_TagString: Untagged
@@ -5937,6 +5935,24 @@ MonoBehaviour:
   jointName: j2s6s300_link_2_j2s6s300_link_3_joint
   EffortLimit: 1000
   VelocityLimit: 1000
+--- !u!114 &3186124651545854663
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3671922608441308693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40e529cb207884a939b5a774102363e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  direction: 0
+  controltype: 0
+  speed: 0
+  torque: 0
+  acceleration: 0
+  joint: {fileID: 0}
 --- !u!1 &3671922608448890946
 GameObject:
   m_ObjectHideFlags: 0
@@ -6224,9 +6240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96451976f06f8b44a841e04a31e58655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iteration: 1
   go: {fileID: 3671922608513951335}
-  catchupTime: 2
   allowPlaybackRecording: 0
 --- !u!1 &3671922608523451177
 GameObject:
@@ -7035,6 +7049,7 @@ MonoBehaviour:
   urdf: {fileID: 3671922608385142336}
   handPrefab: {fileID: 0}
   gesture_num: 1
+  demo_complete: 0
   replayRefreshRate: 15
   debugHandMotion: 0
   playFinalMotion: 0
@@ -7507,7 +7522,7 @@ GameObject:
   - component: {fileID: 3671922608891817839}
   - component: {fileID: 3671922608891817840}
   - component: {fileID: 3671922608891817841}
-  - component: {fileID: 3671922608891817842}
+  - component: {fileID: 882718238620552753}
   m_Layer: 0
   m_Name: j2s6s300_link_base
   m_TagString: Untagged
@@ -7562,17 +7577,17 @@ ArticulationBody:
   m_ComputeParentAnchor: 1
   m_ArticulationJointType: 0
   m_LinearX: 2
-  m_LinearY: 2
-  m_LinearZ: 2
+  m_LinearY: 0
+  m_LinearZ: 0
   m_SwingY: 2
   m_SwingZ: 2
   m_Twist: 2
   m_XDrive:
     lowerLimit: 0
     upperLimit: 0
-    stiffness: 0
-    damping: 0
-    forceLimit: 3.4028235e+38
+    stiffness: 10000000
+    damping: 10000000
+    forceLimit: 40
     target: 0
     targetVelocity: 0
   m_YDrive:
@@ -7591,9 +7606,9 @@ ArticulationBody:
     forceLimit: 3.4028235e+38
     target: 0
     targetVelocity: 0
-  m_LinearDamping: 0.05
-  m_AngularDamping: 0.05
-  m_JointFriction: 0.05
+  m_LinearDamping: 10
+  m_AngularDamping: 10
+  m_JointFriction: 10
   m_Immovable: 0
   m_UseGravity: 1
   m_CollisionDetectionMode: 0
@@ -7615,7 +7630,7 @@ MonoBehaviour:
   inertiaTensor: {x: 0.0009512708, y: 0.00037427203, z: 0.0009512708}
   inertiaTensorRotation: {x: 0, y: 0, z: 0, w: 1}
   inertialAxisRotation: {x: 0, y: 0, z: 0, w: 1}
---- !u!114 &3671922608891817842
+--- !u!114 &882718238620552753
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -7628,7 +7643,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xAxis: 0
-  jointName: root_j2s6s300_link_base_joint
+  jointName: 
   EffortLimit: 1000
   VelocityLimit: 1000
 --- !u!1 &3671922608971074526

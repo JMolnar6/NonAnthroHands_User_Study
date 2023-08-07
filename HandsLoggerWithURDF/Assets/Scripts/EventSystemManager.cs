@@ -209,7 +209,7 @@ public class EventSystemManager : MonoBehaviour
     }
 
     private IEnumerator ReactivateButtons(){
-        yield return new WaitForSecondsRealtime((float) 0.5);
+        yield return new WaitForSecondsRealtime((float) 1.0);
         Button RecordButton       = GameObject.Find("Record Button").GetComponent<Button>();
         RecordButton.interactable = true;
         Button PlayButton         = GameObject.Find("Play Button").GetComponent<Button>();
