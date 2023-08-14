@@ -73,9 +73,9 @@ public class PosRotRecorder : MonoBehaviour
                 // Debug.Log("Rotation at time " + Time.time + " = " + go.rotation);            
             }
             // The end time needs to equal the animationTime + 1 sec at the beginning between 
-            //  "GO" and when the robot starts its movement. "Catchuptime" will add a (currently 2sec) 
+            //  "GO" and when the robot starts its movement. "Catchuptime" will add a (currently 1.5sec) 
             //  buffer afterwards.
-            if ((Time.time > startTime + 1.0 + animationTime + eventHandler.catchupTime) & (!playLaunched)){ 
+            if ((Time.time > startTime + 1.5 + animationTime + eventHandler.catchupTime) & (!playLaunched)){ 
                     Debug.Log("PosRotRecorder recording complete at " + Time.time.ToString());
                     playLaunched = true;
                     isRec = false;
@@ -146,8 +146,8 @@ public class PosRotRecorder : MonoBehaviour
     private IEnumerator WaitForCountdown(){
         // The time to wait here should reflect the amount of time the countdown takes.
         // Start recording at 2 seconds: "ready + 1 sec + set + 1 sec + GO" 
-        // The amount of time the animation takes should have a 1 second buffer,
-        //  since the robot doesn't start moving until 1 sec after "GO" (currently)
+        // The amount of time the animation takes should have a 1.0 second buffer,
+        //  since the robot doesn't start moving until 0.5 sec after "GO" (currently)
         yield return new WaitForSecondsRealtime(countdownTime);
         //Output this to console when Button1 is clicked
         Debug.Log("Starting recording now: " + go.name + " at time " + Time.time);
