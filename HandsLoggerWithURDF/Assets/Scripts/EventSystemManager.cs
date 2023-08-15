@@ -117,11 +117,23 @@ public class EventSystemManager : MonoBehaviour
     {
         if(begin==true){
             
-            if ((demo_num != demo_max) && (controller.demo_complete)){ //At the very beginning, Update is being called and no controller is set
+            if ((demo_num != demo_max) && (controller.demo_complete)){ // Used to be demo_num < demo_max, but sometimes it's nice to 
+                                                                       // have the option of doing extra demos, so let's reactivate
+                                                                       // the buttons regardless
                 controller.demo_complete=false; //reset "demo_complete" marker
                 
                 StartCoroutine(ReactivateButtons());
-                Debug.Log("Reactivating buttons.");
+
+                //If the cube is active, you'll need to reset it between gestures
+
+                if (Cube.activeSelf){
+                    Debug.Log("Cube is active. Resetting cube position.");
+                    string URDFName = robot.name;
+                    URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+                    string filename = URDFName+"_objects.csv";
+                    StartCoroutine(DelayedCheckObjectInfo(filename));
+                }
+
             }
 
             if ((demo_num == demo_max) && (controller.demo_complete)){
@@ -130,6 +142,7 @@ public class EventSystemManager : MonoBehaviour
                 StartCoroutine(ReactivateButtons());
                 Debug.Log("Reactivating buttons.");
 
+                string debugtext = "On to the next ";
                 if (gesture_num >= gesture_max){
                     // Swap out robots, or swap out gesture sets? I think we said each user got their own gesture set, not all of them
                     gesture_num = 1;
@@ -137,17 +150,16 @@ public class EventSystemManager : MonoBehaviour
                     controller.gesture_num=gesture_num;
                     gesture_not_robot = false;
 
-                    Debug.Log("On to the next robot!");
-                    DebugReport1.SetText("On to the next robot!");
+                    debugtext = debugtext + "robot!";
+                    Debug.Log(debugtext);
                     }
+
                 else{
-                    Debug.Log("On to the next gesture!");
-                    DebugReport1.SetText("On to the next gesture!");
+                    debugtext = debugtext + "gesture!"    ;
+                    Debug.Log(debugtext);
                 }
 
-                GameObject NextButton = GameObject.Find("Next");
-                NextButton.GetComponent<Button>().enabled = true;
-                NextButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
+                StartCoroutine(NextButtonHandlingWithDelay(debugtext));
             }
 
         }
@@ -390,9 +402,9 @@ public class EventSystemManager : MonoBehaviour
         //      5-7: Object1_position   8-10: Obj1_rot   11-13: Obj1_scale   
         //    14-16: Obj2_pos          17-19: Obj2_rot   20-22: Obj2_scale
         if (ObjectInfo[1]=="X"){ // We have a target (always an Obj1)
-            Target.transform.position = new Vector3(float.Parse(ObjectInfo[5]), float.Parse(ObjectInfo[6]), float.Parse(ObjectInfo[7]));
-            Vector3 tempRot           = new Vector3(float.Parse(ObjectInfo[8]), float.Parse(ObjectInfo[9]), float.Parse(ObjectInfo[10]));
-            Target.transform.rotation = Quaternion.Euler(tempRot);
+            Target.transform.position   = new Vector3(float.Parse(ObjectInfo[5]), float.Parse(ObjectInfo[6]), float.Parse(ObjectInfo[7]));
+            Vector3 tempRot             = new Vector3(float.Parse(ObjectInfo[8]), float.Parse(ObjectInfo[9]), float.Parse(ObjectInfo[10]));
+            Target.transform.rotation   = Quaternion.Euler(tempRot);
             Target.transform.localScale = new Vector3(float.Parse(ObjectInfo[11]), float.Parse(ObjectInfo[12]), float.Parse(ObjectInfo[13]));
             Target.SetActive(true);
             
@@ -401,11 +413,37 @@ public class EventSystemManager : MonoBehaviour
             Target.SetActive(false);
         }
         if (ObjectInfo[2]=="X"){ // We have a wall (always an Obj2)
-
+            Wall.transform.position   = new Vector3(float.Parse(ObjectInfo[14]), float.Parse(ObjectInfo[15]), float.Parse(ObjectInfo[16]));
+            Vector3 tempRot           = new Vector3(float.Parse(ObjectInfo[17]), float.Parse(ObjectInfo[18]), float.Parse(ObjectInfo[19]));
+            Wall.transform.rotation   = Quaternion.Euler(tempRot);
+            Wall.transform.localScale = new Vector3(float.Parse(ObjectInfo[20]), float.Parse(ObjectInfo[21]), float.Parse(ObjectInfo[22]));
+            Wall.SetActive(true);
         }
         else{
+            Wall.SetActive(false);
+        }
+        if (ObjectInfo[3]=="X"){ // We have a target (always an Obj1)  // NOTE: THIS WILL NEED TO BE RESET BETWEEN DEMOS
+            Cube.transform.position   = new Vector3(float.Parse(ObjectInfo[5]), float.Parse(ObjectInfo[6]), float.Parse(ObjectInfo[7]));
+            Vector3 tempRot           = new Vector3(float.Parse(ObjectInfo[8]), float.Parse(ObjectInfo[9]), float.Parse(ObjectInfo[10]));
+            Cube.transform.rotation   = Quaternion.Euler(tempRot);
+            Cube.transform.localScale = new Vector3(float.Parse(ObjectInfo[11]), float.Parse(ObjectInfo[12]), float.Parse(ObjectInfo[13]));
+            Cube.SetActive(true);
             
         }
+        else{
+            Cube.SetActive(false);
+        }
+        if (ObjectInfo[4]=="X"){ // We have a wall (always an Obj2)
+            Tabletop.transform.position   = new Vector3(float.Parse(ObjectInfo[14]), float.Parse(ObjectInfo[15]), float.Parse(ObjectInfo[16]));
+            Vector3 tempRot               = new Vector3(float.Parse(ObjectInfo[17]), float.Parse(ObjectInfo[18]), float.Parse(ObjectInfo[19]));
+            Tabletop.transform.rotation   = Quaternion.Euler(tempRot);
+            Tabletop.transform.localScale = new Vector3(float.Parse(ObjectInfo[20]), float.Parse(ObjectInfo[21]), float.Parse(ObjectInfo[22]));
+            Tabletop.SetActive(true);
+        }
+        else{
+            Tabletop.SetActive(false);
+        }
+        
 
             // //Do these need to be modified for Unity's inverted y-axis?
             // Vector3 tempPos = new Vector3(float.Parse(Positions[0]),float.Parse(Positions[1]),float.Parse(Positions[2])); 
@@ -418,5 +456,20 @@ public class EventSystemManager : MonoBehaviour
 
         
         // }
+    }
+
+    private IEnumerator DelayedCheckObjectInfo(string filename){
+        yield return new WaitForSecondsRealtime(1.5f);
+        Cube.SetActive(false);
+        CheckObjectInfo(filename);
+    }
+
+    private IEnumerator NextButtonHandlingWithDelay(string debugtext){
+        yield return new WaitForSecondsRealtime(1.0f);
+        DebugReport1.SetText(debugtext);
+
+        GameObject NextButton = GameObject.Find("Next");
+        NextButton.GetComponent<Button>().enabled = true;
+        NextButton.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
     }
 }

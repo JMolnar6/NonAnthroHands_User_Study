@@ -2401,8 +2401,8 @@ MonoBehaviour:
   catchupTime: 2
   begin: 0
   Robots:
-  - {fileID: 3671922608385142336, guid: bfce6a26838d265459c8fd173be47dbf, type: 3}
   - {fileID: 1288749552819972490, guid: bc336f7563d53904d905ef62dabef9c0, type: 3}
+  - {fileID: 3671922608385142336, guid: bfce6a26838d265459c8fd173be47dbf, type: 3}
   demo_num: 1
   demo_max: 1
   gesture_num: 1
@@ -9955,7 +9955,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4307816254683303287, guid: d614ff5fa683d5e4183294757ac7b6f0, type: 3}
       propertyPath: m_Convex
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d614ff5fa683d5e4183294757ac7b6f0, type: 3}
