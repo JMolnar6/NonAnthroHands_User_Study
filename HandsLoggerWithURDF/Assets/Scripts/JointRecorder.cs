@@ -123,9 +123,9 @@ public class JointRecorder : MonoBehaviour
             angles.Clear();
         }
             // The end time needs to equal the animationTime + countdown time + 1 sec between
-            //  "GO" and when the robot starts its movement. "Catchuptime" will add a (currently 2sec) 
+            //  "GO" and when the robot starts its movement. "Catchuptime" will add a (currently 1.5sec) 
             //  buffer afterwards (can be customized in the EventSystemManager GUI).
-        if ((Time.time > startTime + 1.0 + animationTime + eventHandler.catchupTime) & (!playLaunched)){ 
+        if ((Time.time > startTime + 1.5 + animationTime + eventHandler.catchupTime) & (!playLaunched)){ 
                 Debug.Log("JointMotion recording complete at " + Time.time.ToString());
                 playLaunched = true;
                 isRec = false;

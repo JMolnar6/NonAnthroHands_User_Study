@@ -10,14 +10,13 @@ public class ControllerFromLogFile : MonoBehaviour {
     public GameObject urdf;
     public GameObject handPrefab;
     private List<ArticulationBody> articulationChain = new List<ArticulationBody>();
-    private bool hasMoved = false;
+    // private bool hasMoved = false;
 
 
     private bool questConnected = false;
     private TextMeshPro DebugReport1;
     private TextMeshPro DebugReport2;
 
-    private int selectedIndex = 1;
     public int gesture_num = 1; // 0-based indexing? Double-check after gesture generation
     public bool demo_complete = false;
 
@@ -28,10 +27,6 @@ public class ControllerFromLogFile : MonoBehaviour {
     // public Button RecordButton;
 
     public float replayRefreshRate = 15;
-
-    // [InspectorReadOnly(hideInEditMode: true)]
-    // public string selectedJoint;
-    // [HideInInspector]
     
     public bool debugHandMotion = false;
     public bool playFinalMotion = false;
@@ -47,10 +42,10 @@ public class ControllerFromLogFile : MonoBehaviour {
     public float animationTime;
     public string URDFName;
 
-    
+    public AudioSource countdown_sound;
+    public AudioSource play_sound;
+    public AudioSource gesture_over_sound;
 
-    [Tooltip("Color to highlight the currently selected joint")]
-    public Color highLightColor = new Color(1.0f, 0, 0, 1.0f);
 
     void Start()
     {
@@ -108,19 +103,12 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     }
 
-    // void SetSelectedJointIndex(int index){
-    //     if (articulationChain.Count > 0){
-    //         selectedIndex = (index + articulationChain.Count) % articulationChain.Count;
-    //     }
-    // }
-
     void Update(){
         OVRInput.Update();
     }
 
     private void SetUpRobot(){
-        hasMoved = false;
-        selectedIndex = 1;
+        // hasMoved = false;
         // this.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
         urdf.gameObject.AddComponent<Unity.Robotics.UrdfImporter.Control.FKRobot>();
         // articulationChain = this.GetComponentsInChildren<ArticulationBody>();
@@ -208,7 +196,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     private IEnumerator PauseBeforeStart(String URDFName, String filename){
         DebugReport1.SetText("");
-        yield return new WaitForSecondsRealtime((float) 1.0);
+        yield return new WaitForSecondsRealtime((float) 0.5);
         StartCoroutine(PlayFromCSV(URDFName, filename));
     }
 
@@ -221,6 +209,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         DebugReport1.SetText("GO");
         yield return new WaitForSecondsRealtime((float) 1.0);
         DebugReport1.SetText("");
+        yield return new WaitForSecondsRealtime((float) 0.5);
         Debug.Log("Starting now! (robot motion): Time " + Time.time.ToString());
         StartCoroutine(PlayFromCSV(URDFName, filename));
     }
@@ -233,13 +222,16 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         // Begin countdown to animation 
         if (record){
+            countdown_sound.Play();
             StartCoroutine(BeginCountdown(URDFName, filename));
         }
-        else if (hasMoved == false){
-            StartCoroutine(PlayFromCSV(URDFName, filename));
-            hasMoved = true;
-        }
+        // else if (hasMoved == false){
+            // play_sound.Play();
+            // StartCoroutine(PlayFromCSV(URDFName, filename));
+            // hasMoved = true;
+        // }
         else{
+            play_sound.Play();
             StartCoroutine(PauseBeforeStart(URDFName, filename));
         }
     }
@@ -275,9 +267,6 @@ public class ControllerFromLogFile : MonoBehaviour {
             if (i==PositionLines.Length-1){
                 demo_complete=true;
                 StartCoroutine(FinishGesture());
-                Debug.Log("Final animation time: " + Time.time.ToString());
-                Debug.Log("Gesture complete: \n"+animationTime.ToString() + " sec");
-                DebugReport1.SetText("Gesture complete: \n"+animationTime.ToString() + " sec");
             }
         
         yield return new WaitForSecondsRealtime((float) 1.0/replayRefreshRate);
@@ -330,7 +319,12 @@ public class ControllerFromLogFile : MonoBehaviour {
     }
 
     private IEnumerator FinishGesture(){
-        yield return new WaitForSecondsRealtime(1.0f);
+        yield return new WaitForSecondsRealtime(0.5f);
+        Debug.Log("Final animation time: " + Time.time.ToString());
+        Debug.Log("Gesture complete: \n"+(Mathf.Round(animationTime * 100.0f) / 100.0f).ToString() + " sec");
+        DebugReport1.SetText("Gesture complete: \n"+Mathf.Round(animationTime).ToString() + " sec");
+        gesture_over_sound.Play();
+        yield return new WaitForSecondsRealtime(0.5f);
         ReturnToStartPose();
     }
 
