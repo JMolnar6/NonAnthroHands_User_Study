@@ -323,7 +323,7 @@ public class EventSystemManager : MonoBehaviour
 
         // Set up overrides for robot and gesture numbers in the back
         GameObject robotOverride = GameObject.Find("Robot Override");
-        robotOverride.transform.localScale = new Vector3(0.015f,0.015f,0.015f);
+        robotOverride.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
 
         Dropdown robot_Dropdown= robotOverride.GetComponent<Dropdown>();
         List<string> robotOptions = new List<string>();
@@ -343,7 +343,7 @@ public class EventSystemManager : MonoBehaviour
             gestureOptions.Add(i.ToString());
         }
         gesture_Dropdown.AddOptions(gestureOptions);
-        gestureOverride.transform.localScale = new Vector3(0.015f,0.015f,0.015f);
+        gestureOverride.transform.localScale = new Vector3(0.025f,0.025f,0.025f);
         
     }
 
