@@ -229,13 +229,11 @@ public class EventSystemManager : MonoBehaviour
         }
         controller.gesture_num=gesture_num;
         
-        // controller.startJoint = startjoint_nums[0];
-
-        string URDFName = controller.transform.root.gameObject.name;
-        // URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
-        Debug.Log("URDF Name = "+URDFName);
+        string URDFName = robot.name;
+        URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+        string filename = URDFName+"_objects.csv";
         // robot_recorder = GameObject.Find(URDFName).GetComponent<JointRecorder>();
-
+        CheckObjectInfo(filename);
 
         // Add mirror once it's time for the study to begin:
         GameObject Mirror   = GameObject.Find("Mirror");
@@ -370,13 +368,15 @@ public class EventSystemManager : MonoBehaviour
             CheckObjectInfo(filename);
         }
         else{
+            gesture_not_robot = true;
+            robot_num = robot_num+1;
+
             if (robot_num==Robots.Length){
                 //Exit sequence
                 DebugReport2.SetText("Thank you for participating\n in our study. Please take off your headset to answer \n a survey question before exiting.");
             }
-            DebugReport2.SetText("Please take off your headset to answer \n a survey question before continuing.");
-            gesture_not_robot = true;
-            robot_num = robot_num+1;
+            DebugReport2.SetText("Please take off your headset and answer\n the survey questions provided before continuing");
+            
             Destroy(robot);
             robot = Instantiate(Robots[robot_num], new Vector3(0,0.4f,0), Quaternion.identity);
             // catchupTime=BufferTime[robot_num];

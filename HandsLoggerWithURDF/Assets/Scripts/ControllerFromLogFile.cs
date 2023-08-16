@@ -181,14 +181,8 @@ public class ControllerFromLogFile : MonoBehaviour {
         int numJoints = Positions.Length;
     
         Debug.Log("Put URDF in starting position: "+PositionLines[1]);
-        int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
-        foreach (ArticulationBody joint in articulationChain){   
-            var drive = joint.xDrive;
-            drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
-            joint.xDrive = drive;            
-            // Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
-            j=j+1;
-        }
+
+        StartCoroutine(SmoothReturnToStart(Positions));
 
         string[] return_vals = {URDFName, filename};
         return return_vals;
@@ -198,6 +192,24 @@ public class ControllerFromLogFile : MonoBehaviour {
         DebugReport1.SetText("");
         yield return new WaitForSecondsRealtime((float) 0.5);
         StartCoroutine(PlayFromCSV(URDFName, filename));
+    }
+
+    private IEnumerator SmoothReturnToStart(string[] Positions){
+        // Default position is all 0s
+
+        int smoothnessScale = 20;
+        for (int i=1; i<=replayRefreshRate*smoothnessScale; i++){
+            int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
+            foreach (ArticulationBody joint in articulationChain){   
+                var drive = joint.xDrive;
+                drive.target = float.Parse(Positions[j])*180/(float)Math.PI*i/(replayRefreshRate*smoothnessScale); // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
+                joint.xDrive = drive;            
+                // Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
+                j=j+1;
+            }
+            j=0;
+            yield return new WaitForSecondsRealtime(1/replayRefreshRate);
+        }
     }
 
     private IEnumerator BeginCountdown(String URDFName, String filename){
