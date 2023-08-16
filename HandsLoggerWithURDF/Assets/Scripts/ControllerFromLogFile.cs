@@ -155,7 +155,54 @@ public class ControllerFromLogFile : MonoBehaviour {
             joint.xDrive = currentDrive;
         }
 
-        ReturnToStartPose();
+        if ((URDFName =="j2s6s300") && (gesture_num>13)){
+            StartCoroutine(SmoothReturnToStartPose());
+        }
+        else{
+            ReturnToStartPose();
+        }
+        
+    }
+
+    private IEnumerator SmoothReturnToStartPose(){
+        string URDFName = transform.root.gameObject.name;
+        URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
+        
+        String filename = URDFName + "_corrected_positions_"+gesture_num.ToString()+".csv";
+        Debug.Log("Reading from "+Application.persistentDataPath+"/"+filename);
+        // Clear any distracting debug text
+        // DebugReport2.SetText("");
+
+        // If URDF is not already in start position, return it there 
+        string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
+        if (PositionLines.Length>0){
+            Debug.Log("Control log file successfully read");
+            // DebugReport1.SetText("Control log file successfully read.");
+        }
+        animationTime = PositionLines.Length/replayRefreshRate;
+        Debug.Log("Animation time = "+animationTime.ToString());
+        // DebugReport1.SetText("Animation time = "+animationTime.ToString());
+
+        string[] Positions = PositionLines[1].Split(',');
+        int numJoints = Positions.Length;
+    
+        Debug.Log("Put URDF in starting position: "+PositionLines[1]);
+
+                // Default position is all 0s
+
+        int smoothnessScale = 2;
+        for (int i=1; i<=replayRefreshRate*smoothnessScale; i++){
+            int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
+            foreach (ArticulationBody joint in articulationChain){   
+                var drive = joint.xDrive;
+                drive.target = float.Parse(Positions[j])*180/(float)Math.PI*i/(replayRefreshRate*smoothnessScale); // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
+                joint.xDrive = drive;            
+                // Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
+                j=j+1;
+            }
+            j=0;
+            yield return new WaitForSecondsRealtime(1/replayRefreshRate);
+        }
     }
 
     private string[] ReturnToStartPose(){
@@ -182,7 +229,16 @@ public class ControllerFromLogFile : MonoBehaviour {
     
         Debug.Log("Put URDF in starting position: "+PositionLines[1]);
 
-        StartCoroutine(SmoothReturnToStart(Positions));
+                // Default position is all 0s
+
+        int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
+        foreach (ArticulationBody joint in articulationChain){   
+            var drive = joint.xDrive;
+            drive.target = float.Parse(Positions[j])*180/(float)Math.PI; // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
+            joint.xDrive = drive;            
+            // Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
+            j=j+1;
+        }
 
         string[] return_vals = {URDFName, filename};
         return return_vals;
@@ -194,23 +250,23 @@ public class ControllerFromLogFile : MonoBehaviour {
         StartCoroutine(PlayFromCSV(URDFName, filename));
     }
 
-    private IEnumerator SmoothReturnToStart(string[] Positions){
-        // Default position is all 0s
+    // private IEnumerator SmoothReturnToStart(string[] Positions){
+    //     // Default position is all 0s
 
-        int smoothnessScale = 20;
-        for (int i=1; i<=replayRefreshRate*smoothnessScale; i++){
-            int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
-            foreach (ArticulationBody joint in articulationChain){   
-                var drive = joint.xDrive;
-                drive.target = float.Parse(Positions[j])*180/(float)Math.PI*i/(replayRefreshRate*smoothnessScale); // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
-                joint.xDrive = drive;            
-                // Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
-                j=j+1;
-            }
-            j=0;
-            yield return new WaitForSecondsRealtime(1/replayRefreshRate);
-        }
-    }
+    //     int smoothnessScale = 20;
+    //     for (int i=1; i<=replayRefreshRate*smoothnessScale; i++){
+    //         int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
+    //         foreach (ArticulationBody joint in articulationChain){   
+    //             var drive = joint.xDrive;
+    //             drive.target = float.Parse(Positions[j])*180/(float)Math.PI*i/(replayRefreshRate*smoothnessScale); // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
+    //             joint.xDrive = drive;            
+    //             // Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
+    //             j=j+1;
+    //         }
+    //         j=0;
+    //         yield return new WaitForSecondsRealtime(1/replayRefreshRate);
+    //     }
+    // }
 
     private IEnumerator BeginCountdown(String URDFName, String filename){
         Debug.Log("Filename for BeginCountdown method:" + filename);
@@ -337,7 +393,12 @@ public class ControllerFromLogFile : MonoBehaviour {
         DebugReport1.SetText("Gesture complete: \n"+Mathf.Round(animationTime).ToString() + " sec");
         gesture_over_sound.Play();
         yield return new WaitForSecondsRealtime(0.5f);
-        ReturnToStartPose();
+        if ((URDFName =="j2s6s300") && (gesture_num==14)){
+            StartCoroutine(SmoothReturnToStartPose());
+        }
+        else{
+            ReturnToStartPose();
+        }
     }
 
 }
