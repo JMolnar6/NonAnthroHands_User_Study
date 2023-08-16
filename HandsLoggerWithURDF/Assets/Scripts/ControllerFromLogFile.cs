@@ -155,8 +155,12 @@ public class ControllerFromLogFile : MonoBehaviour {
             joint.xDrive = currentDrive;
         }
 
-        if ((URDFName =="j2s6s300") && (gesture_num>13)){
-            StartCoroutine(SmoothReturnToStartPose());
+        // Special handling of start-pose pacing for gestures that start too far from the default position
+        if ((URDFName =="j2s6s300") && (gesture_num==14)){
+            StartCoroutine(SmoothReturnToStartPose(2));
+        }
+        if ((URDFName =="j2s6s300") && (gesture_num==15)){
+            StartCoroutine(SmoothReturnToStartPose(1));
         }
         else{
             ReturnToStartPose();
@@ -164,7 +168,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         
     }
 
-    private IEnumerator SmoothReturnToStartPose(){
+    private IEnumerator SmoothReturnToStartPose(int smoothnessScale){
         string URDFName = transform.root.gameObject.name;
         URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
         
@@ -190,7 +194,6 @@ public class ControllerFromLogFile : MonoBehaviour {
 
                 // Default position is all 0s
 
-        int smoothnessScale = 2;
         for (int i=1; i<=replayRefreshRate*smoothnessScale; i++){
             int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
             foreach (ArticulationBody joint in articulationChain){   
@@ -393,8 +396,8 @@ public class ControllerFromLogFile : MonoBehaviour {
         DebugReport1.SetText("Gesture complete: \n"+Mathf.Round(animationTime).ToString() + " sec");
         gesture_over_sound.Play();
         yield return new WaitForSecondsRealtime(0.5f);
-        if ((URDFName =="j2s6s300") && (gesture_num==14)){
-            StartCoroutine(SmoothReturnToStartPose());
+        if ((URDFName =="j2s6s300") && (gesture_num==14)){ //Special handling for gestures that end 
+            StartCoroutine(SmoothReturnToStartPose(1));     // in positions too far from their starting points
         }
         else{
             ReturnToStartPose();
