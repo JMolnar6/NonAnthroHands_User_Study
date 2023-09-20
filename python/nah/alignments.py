@@ -32,40 +32,54 @@ def get_filename(participant_id,
     data_path = Path("data")
     if follow_up:
         data_path /= "Follow-up Study"
-        follow_up_experiment = 'B'
+        is_followup = 'B'
     else:
-        follow_up_experiment = ''
+        is_followup = ''
 
-    participant_directory = f"PID{participant_id}{follow_up_experiment}"
-    experiment_file = f"{robot_name}_PID{participant_id}{follow_up_experiment}_{end_eff_name}"\
-        f"_Motion_gesture_{gesture_num}_{demo_num}.csv"
+    participant_directory = f"PID{participant_id}{is_followup}"
+    experiment_file = f"{robot_name}_PID{participant_id}{is_followup}_{end_eff_name}"\
+        f"Motion_gesture_{gesture_num}_{demo_num}.csv"
 
     filename = data_path / participant_directory / experiment_file
 
     return filename
 
 
-# def load_alternate_data(robot_name, followup=True):
-#     if followup:
-#         PID_temp=9
-#         filename = get_filename(participant_id=PID_temp, contoller=JointMotion_gesture follow_up=followup)
-#         try:
-#             filename = "C:\\Users\\jmoln\\Dropbox (GaTech)\\Non-Anthropomorphic Hands User Study Data\\Follow-up Study\\PID"+str(PID_temp)+"B\\"+str(robot_name)+"_PID"+str(PID_temp)+"B_JointMotion_gesture_"+str(gesture_num)+"_"+str(demo_num)+".csv"
-#             jointangles = pd.read_csv(filename)
-#             joint_data = jointangles.to_numpy()
-#         except:
-#             print("ERROR: JointMotion file not found. Backup JointMotion file not found.")
-#     else:
-#         PID_temp=3
-#         try:
-#             filename = "C:\\Users\\jmoln\\Dropbox (GaTech)\\Non-Anthropomorphic Hands User Study Data\\PID"+str(PID_temp)+"\\"+str(robot_name)+"_PID"+str(PID_temp)+"_JointMotion_gesture_"+str(gesture_num)+"_"+str(demo_num)+".csv"
-#             jointangles = pd.read_csv(filename)
-#             joint_data = jointangles.to_numpy()
-#         except:
-#             print("ERROR: JointMotion file not found. Backup JointMotion file not found.")
+def load_alternate_data(robot_name, gesture_num, demo_num, followup=True):
+    """
+    If JointMotion data is missing, the good news is that
+    it should be the same for all participants.
 
-#     print("Using PID "+str(PID_temp)+" instead")
-#     return
+    Try to find a participant/demo that exists, and copy that over instead.
+    
+    NOTE that time increments may be different for JointMotions
+        vs all other data timestamps because of this.
+    The start time should be identical, though, and the overall time as well
+
+    (I prefer to have the code do this for me,
+    rather than keeping track of which PIDs I had to adjust manually)
+    """
+    if followup:
+        PID_temp = 9
+    else:
+        PID_temp = 3
+
+    filename = get_filename(participant_id=PID_temp,
+                            robot_name=robot_name,
+                            end_eff_name="Joint",
+                            follow_up=followup,
+                            gesture_num=gesture_num,
+                            demo_num=demo_num)
+    try:
+        jointangles = pd.read_csv(filename)
+        joint_data = jointangles.to_numpy()
+    except Exception:
+        print(
+            "ERROR: JointMotion file not found. Backup JointMotion file not found."
+        )
+
+    print(f"Using PID {PID_temp} instead")
+    return joint_data
 
 
 def dtw_data_import(robot_name, end_eff_name, PID, followup, gesture_num,
@@ -93,16 +107,7 @@ def dtw_data_import(robot_name, end_eff_name, PID, followup, gesture_num,
     except RuntimeError:
         print("{filename} NOT FOUND")
 
-        # If JointMotion data is missing, the good news is that
-        # it should be the same for all participants.
-
-        #  Try to find a participant/demo that exists, and copy that over instead.
-        # NOTE that time increments may be different for JointMotions
-        # vs all other data timestamps because of this.
-        # The start time should be identical,
-        # though, and the overall time as well
-        # (I prefer to have the code do this for me,
-        # rather than keeping track of which PIDs I had to adjust manually)
-
-        #TODO(Varun)
-        # load_alternate
+        return load_alternate_data(robot_name,
+                                   gesture_num,
+                                   demo_num,
+                                   followup=True)
