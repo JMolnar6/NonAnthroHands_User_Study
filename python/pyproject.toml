@@ -24,7 +24,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["numpy", "fastdtw", "matplotlib", "pandas", "scipy"]
+dependencies = ["numpy", "fastdtw", "matplotlib", "pandas", "scipy", "yapf"]
 
 [build-system]
 requires = ["hatchling"]
