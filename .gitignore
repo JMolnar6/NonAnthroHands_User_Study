@@ -4,3 +4,5 @@ HandsLoggerWithURDF/tempdata/PID 0 (test)/
 
 *.meta
 *.txt
+
+.ipynb_checkpoints/
