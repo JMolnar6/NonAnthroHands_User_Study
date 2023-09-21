@@ -173,13 +173,13 @@ def plot_raw_data(end_eff_data, rh_data, lh_data, camera_data, joint_data,
     ax.set_ylim(-.25, .75)
     ax.set_zlim(-.5, .5)
 
-    centered_rh_data = rh_data - camera_data
-    centered_lh_data = lh_data - camera_data
-    centered_camera_data = camera_data - camera_data
+    subsampled_rh_data = rh_data - camera_data
+    subsampled_lh_data = lh_data - camera_data
+    subsampled_camera_data = camera_data - camera_data
 
-    centered_rh_data = centered_rh_data[start_index:end_index, :]
-    centered_lh_data = centered_lh_data[start_index:end_index, :]
-    centered_camera_data = centered_camera_data[start_index:end_index, :]
+    subsampled_rh_data = subsampled_rh_data[start_index:end_index, :]
+    subsampled_lh_data = subsampled_lh_data[start_index:end_index, :]
+    subsampled_camera_data = subsampled_camera_data[start_index:end_index, :]
 
     # Ideally, also need to normalize by participant height (wingspan)
     # And clip ends (~1sec at beginning, 2sec at end (but DTW should help with this))
@@ -192,21 +192,21 @@ def plot_raw_data(end_eff_data, rh_data, lh_data, camera_data, joint_data,
     #     ax.scatter(camera_data[:].T[1], camera_data[:].T[2], -camera_data[:].T[3], \
     #                c=time/max(time), cmap='Greens', label='Camera position')
 
-    ax.scatter(centered_rh_data[:].T[1],
-               centered_rh_data[:].T[3],
-               centered_rh_data[:].T[2],
+    ax.scatter(subsampled_rh_data[:].T[1],
+               subsampled_rh_data[:].T[3],
+               subsampled_rh_data[:].T[2],
                c=time[start_index:end_index] / max(time),
                cmap='Reds',
                label='Right-hand position')
-    ax.scatter(centered_lh_data[:].T[1],
-               centered_lh_data[:].T[3],
-               centered_lh_data[:].T[2],
+    ax.scatter(subsampled_lh_data[:].T[1],
+               subsampled_lh_data[:].T[3],
+               subsampled_lh_data[:].T[2],
                c=time[start_index:end_index] / max(time),
                cmap='Blues',
                label='Left-hand position')
-    ax.scatter(centered_camera_data[:].T[1],
-               centered_camera_data[:].T[3],
-               centered_camera_data[:].T[2],
+    ax.scatter(subsampled_camera_data[:].T[1],
+               subsampled_camera_data[:].T[3],
+               subsampled_camera_data[:].T[2],
                c=time[start_index:end_index] / max(time),
                cmap='Greens',
                label='Camera position')
@@ -225,7 +225,7 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     start_index = 1  #77
     end_index = -1  #-154
 
-    fig, ax = plt.subplots(figsize=(12, 16))
+    fig, ax = plt.subplots(figsize=(9, 12))
     fig.patch.set_visible(True)
     ax.axis('off')
     ax = plt.axes(projection='3d')
@@ -234,25 +234,20 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
 
-    # ax.set_xlim(-.5,.5)
-    # ax.set_ylim(-.25,.75)
-    # ax.set_zlim(-.5,.5)
+    ax.set_xlim(-1.5, 1.5)
+    ax.set_ylim(-.75, 2.15)
+    ax.set_zlim(-1.5, 1.5)
 
-    centered_rh_data = rh_data - camera_data
-    centered_lh_data = lh_data - camera_data
-    centered_camera_data = camera_data - camera_data
+    # centered_rh_data = rh_data - camera_data
+    # centered_lh_data = lh_data - camera_data
+    # centered_camera_data = camera_data - camera_data
 
-    centered_rh_data = centered_rh_data[start_index:end_index:subsample, :]
-    centered_lh_data = centered_lh_data[start_index:end_index:subsample, :]
-    centered_camera_data = centered_camera_data[
-        start_index:end_index:subsample, :]
+    subsampled_rh_data      = rh_data[start_index:end_index:subsample, :]
+    subsampled_lh_data      = lh_data[start_index:end_index:subsample, :]
+    subsampled_camera_data  = camera_data[start_index:end_index:subsample, :]
+    subsampled_end_eff_data = end_eff_data[start_index:end_index:subsample, :]
 
-    #End eff data is not centered, but merely subsampled:
-    centered_end_eff_data = end_eff_data[start_index:end_index:subsample, :]
 
-    # Ideally, also need to normalize by participant height (wingspan)
-    # And clip ends (~1sec at beginning, 2sec at end (but DTW should help with this))
-    # np.where(time_hand_aligned>time_hand_aligned[0]+1)[0][0]
 
     #     ax.scatter(rh_data[:].T[1], rh_data[:].T[2], -rh_data[:].T[3],\
     #                 c=time/max(time), cmap='Reds', label='Right-hand position')
@@ -261,33 +256,39 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     #     ax.scatter(camera_data[:].T[1], camera_data[:].T[2], -camera_data[:].T[3], \
     #                c=time/max(time), cmap='Greens', label='Camera position')
 
-    ax.scatter(centered_rh_data[:].T[1],
-               centered_rh_data[:].T[3],
-               centered_rh_data[:].T[2],
-               c=time[start_index:end_index:subsample] / max(time),
+    ax.scatter(subsampled_rh_data[:].T[1],
+               subsampled_rh_data[:].T[3],
+               subsampled_rh_data[:].T[2],
+               c=rh_data[start_index:end_index:subsample, 0] / max(rh_data[:,0]),
                cmap='Reds',
                label='Right-hand position')
-    ax.scatter(centered_lh_data[:].T[1],
-               centered_lh_data[:].T[3],
-               centered_lh_data[:].T[2],
-               c=time[start_index:end_index:subsample] / max(time),
+    ax.scatter(subsampled_lh_data[:].T[1],
+               subsampled_lh_data[:].T[3],
+               subsampled_lh_data[:].T[2],
+               c=lh_data[start_index:end_index:subsample, 0] / max(lh_data[:,0]),
                cmap='Blues',
                label='Left-hand position')
-    ax.scatter(centered_camera_data[:].T[1],
-               centered_camera_data[:].T[3],
-               centered_camera_data[:].T[2],
-               c=time[start_index:end_index:subsample] / max(time),
+    ax.scatter(subsampled_camera_data[:].T[1],
+               subsampled_camera_data[:].T[3],
+               subsampled_camera_data[:].T[2],
+               c=camera_data[start_index:end_index:subsample, 0] / max(camera_data[:,0]),
                cmap='Greens',
                label='Camera position')
-    ax.scatter(centered_end_eff_data[:].T[1],
-               centered_end_eff_data[:].T[3],
-               centered_end_eff_data[:].T[2],
-               c=time[start_index:end_index:subsample] / max(time),
+    ax.scatter(subsampled_end_eff_data[:].T[1],
+               subsampled_end_eff_data[:].T[3],
+               subsampled_end_eff_data[:].T[2],
+               c=end_eff_data[start_index:end_index:subsample, 0] / max(end_eff_data[:,0]),
                cmap='Purples',
                label='End-effector position')
 
-    # ax.plot(centered_rh_data[:].T[1], centered_rh_data[:].T[3], centered_rh_data[:].T[2])
-    # ax.plot(centered_lh_data[:].T[1], centered_lh_data[:].T[3], centered_lh_data[:].T[2])
-    # ax.plot(centered_camera_data[:].T[1], centered_camera_data[:].T[3], centered_camera_data[:].T[2])
+    # ax.plot(subsampled_rh_data[:].T[1], subsampled_rh_data[:].T[3], subsampled_rh_data[:].T[2])
+    # ax.plot(subsampled_lh_data[:].T[1], subsampled_lh_data[:].T[3], subsampled_lh_data[:].T[2])
+    # ax.plot(subsampled_camera_data[:].T[1], subsampled_camera_data[:].T[3], subsampled_camera_data[:].T[2])
 
     ax.legend()
+    leg = ax.get_legend()
+    leg.legendHandles[0].set_color('red')
+    leg.legendHandles[1].set_color('blue')
+    leg.legendHandles[2].set_color('green')
+    leg.legendHandles[3].set_color('purple')
+
