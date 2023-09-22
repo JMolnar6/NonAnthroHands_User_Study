@@ -80,7 +80,8 @@ def test_get_npz_filename():
     robot_name = "j2s6s300"
     participant_id = 1
     gesture_num = 3
-    actual_file1 = get_npz_filename(robot_name, participant_id, gesture_num, False)
+    actual_file1 = get_npz_filename(robot_name, participant_id, gesture_num,
+                                    False)
 
     assert expected_file1 == actual_file1
 
@@ -109,3 +110,15 @@ def test_load_npzs():
     gesture_num = 3
 
     load_npzs(robot_name, participant_id, followup, gesture_num)
+
+
+def test_load_alternate_data():
+    """Test for loading the alternate joint angle data if the original is missing."""
+    robot_name = "j2s6s300"
+    end_eff_name = "j2s6s300_end_effector_"
+    participant_id = 1
+    followup = True
+    gesture_num = 2
+    demo_num = 1
+    data = dtw_data_import(robot_name, end_eff_name, participant_id, followup,
+                           gesture_num, demo_num)
