@@ -6,3 +6,6 @@ HandsLoggerWithURDF/tempdata/PID 0 (test)/
 *.txt
 
 .ipynb_checkpoints/
+
+data/
+pre_proposal_data/
