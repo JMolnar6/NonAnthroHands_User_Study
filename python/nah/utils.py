@@ -182,7 +182,7 @@ def load_npzs(robot_name, PID, followup, gesture_num):
     return end_eff_data, camera_data, rh_data, lh_data, joint_data
 
 
-def segmentbydemo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
+def segment_by_demo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
                   demo_max, peaks):
     end_eff = [''] * demo_max
     camera = [''] * demo_max
