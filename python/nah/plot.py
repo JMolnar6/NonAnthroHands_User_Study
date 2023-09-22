@@ -1,7 +1,7 @@
 """Plotting utilities"""
 import numpy as np
 from matplotlib import pyplot as plt
-from nah.utils import load_npzs
+from nah.loader import load_npzs
 from tqdm import tqdm
 
 
