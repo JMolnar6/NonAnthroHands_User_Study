@@ -25,8 +25,7 @@ def get_filename(participant_id,
         is_followup = ''
 
     participant_directory = f"PID{participant_id}{is_followup}"
-    experiment_file = f"{robot_name}_PID{participant_id}{is_followup}_{end_eff_name}"\
-        f"Motion_gesture_{gesture_num}_{demo_num}.csv"
+    experiment_file = f"{robot_name}_PID{participant_id}{is_followup}_{end_eff_name}" f"Motion_gesture_{gesture_num}_{demo_num}.csv"
 
     filename = data_path / participant_directory / experiment_file
 
@@ -72,13 +71,14 @@ def load_alternate_data(robot_name, gesture_num, demo_num, followup=True):
     try:
         jointangles = pd.read_csv(filename)
         joint_data = jointangles.to_numpy()
-    except Exception:
-        print(
-            "ERROR: JointMotion file not found. Backup JointMotion file not found."
-        )
 
-    print(f"Using PID {PID_temp} instead")
-    return joint_data
+        print(f"Using PID {PID_temp} instead")
+        return joint_data
+
+    except FileNotFoundError:
+        raise FileNotFoundError(
+            f"JointMotion file not found AND backup JointMotion file not found: {filename}"
+        )
 
 
 def dtw_data_import(robot_name, end_eff_name, PID, followup, gesture_num,
@@ -103,13 +103,13 @@ def dtw_data_import(robot_name, end_eff_name, PID, followup, gesture_num,
         controller_data = controller_raw.to_numpy()
         return controller_data
 
-    except RuntimeError:
-        print("{filename} NOT FOUND")
+    except FileNotFoundError:
+        print(f"{filename} not found, loading alternate data from followup")
 
         return load_alternate_data(robot_name,
                                    gesture_num,
                                    demo_num,
-                                   followup=True)
+                                   followup=followup)
 
 
 def load_npzs(robot_name, participant_id, followup, gesture_num):
