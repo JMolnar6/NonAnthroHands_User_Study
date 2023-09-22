@@ -1,6 +1,8 @@
 """Plotting utilities"""
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
+from nah.utils import load_npzs
+from tqdm import tqdm
 
 
 def plot_norm(warp_path, x_norm, y_norm):
@@ -225,7 +227,7 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     start_index = 1  #77
     end_index = -1  #-154
 
-    fig, ax = plt.subplots(figsize=(9, 12))
+    fig, ax = plt.subplots(figsize=(7, 6))
     fig.patch.set_visible(True)
     ax.axis('off')
     ax = plt.axes(projection='3d')
@@ -242,12 +244,10 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     # centered_lh_data = lh_data - camera_data
     # centered_camera_data = camera_data - camera_data
 
-    subsampled_rh_data      = rh_data[start_index:end_index:subsample, :]
-    subsampled_lh_data      = lh_data[start_index:end_index:subsample, :]
-    subsampled_camera_data  = camera_data[start_index:end_index:subsample, :]
+    subsampled_rh_data = rh_data[start_index:end_index:subsample, :]
+    subsampled_lh_data = lh_data[start_index:end_index:subsample, :]
+    subsampled_camera_data = camera_data[start_index:end_index:subsample, :]
     subsampled_end_eff_data = end_eff_data[start_index:end_index:subsample, :]
-
-
 
     #     ax.scatter(rh_data[:].T[1], rh_data[:].T[2], -rh_data[:].T[3],\
     #                 c=time/max(time), cmap='Reds', label='Right-hand position')
@@ -259,25 +259,29 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     ax.scatter(subsampled_rh_data[:].T[1],
                subsampled_rh_data[:].T[3],
                subsampled_rh_data[:].T[2],
-               c=rh_data[start_index:end_index:subsample, 0] / max(rh_data[:,0]),
+               c=rh_data[start_index:end_index:subsample, 0] /
+               max(rh_data[:, 0]),
                cmap='Reds',
                label='Right-hand position')
     ax.scatter(subsampled_lh_data[:].T[1],
                subsampled_lh_data[:].T[3],
                subsampled_lh_data[:].T[2],
-               c=lh_data[start_index:end_index:subsample, 0] / max(lh_data[:,0]),
+               c=lh_data[start_index:end_index:subsample, 0] /
+               max(lh_data[:, 0]),
                cmap='Blues',
                label='Left-hand position')
     ax.scatter(subsampled_camera_data[:].T[1],
                subsampled_camera_data[:].T[3],
                subsampled_camera_data[:].T[2],
-               c=camera_data[start_index:end_index:subsample, 0] / max(camera_data[:,0]),
+               c=camera_data[start_index:end_index:subsample, 0] /
+               max(camera_data[:, 0]),
                cmap='Greens',
                label='Camera position')
     ax.scatter(subsampled_end_eff_data[:].T[1],
                subsampled_end_eff_data[:].T[3],
                subsampled_end_eff_data[:].T[2],
-               c=end_eff_data[start_index:end_index:subsample, 0] / max(end_eff_data[:,0]),
+               c=end_eff_data[start_index:end_index:subsample, 0] /
+               max(end_eff_data[:, 0]),
                cmap='Purples',
                label='End-effector position')
 
@@ -292,3 +296,43 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     leg.legendHandles[2].set_color('green')
     leg.legendHandles[3].set_color('purple')
 
+
+def view_participant_robot_gesture(robot_name, singlePIDval, gesture_num,
+                                   followup, singlePID):
+    """
+    Provides a quick way to visualize a single gesture for one or all participants.
+    """
+    #Initialize data arrays
+    total_end_eff = np.array([])
+    total_camera = np.array([])
+    total_rh = np.array([])
+    total_lh = np.array([])
+    total_joint = np.array([])
+
+    if singlePID:
+        PID_begin_range = singlePIDval
+        PID_end_range = singlePIDval + 1  #Don't forget to +1 to whatever your last PID is
+    else:
+        PID_begin_range = 1
+        if followup:
+            PID_end_range = 10  #Don't forget to +1 to whatever your last PID is
+        else:
+            PID_end_range = 17
+    for PID in tqdm(range(PID_begin_range, PID_end_range)):
+        end_eff, camera, rh, lh, joint = load_npzs(robot_name, PID, followup,
+                                                   gesture_num)
+        if (PID == PID_begin_range):
+            total_end_eff = end_eff
+            total_camera = camera
+            total_rh = rh
+            total_lh = lh
+            total_joint = joint
+        else:
+            total_end_eff = np.vstack((total_end_eff, end_eff))
+            total_camera = np.vstack((total_camera, camera))
+            total_rh = np.vstack((total_rh, rh))
+            total_lh = np.vstack((total_lh, lh))
+            total_joint = np.vstack((total_joint, joint))
+    # plot_raw_data(end_eff, rh, lh, camera, joint, start_index, end_index)
+    plot_raw_data_subsampled(1, total_end_eff, total_camera, total_rh,
+                             total_lh, total_joint)
