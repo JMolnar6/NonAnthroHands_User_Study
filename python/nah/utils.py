@@ -3,6 +3,8 @@ from nah.alignments import dtw_data_import, get_filename
 import numpy as np
 from fastdtw import fastdtw
 
+from scipy.signal import find_peaks
+
 
 def norm_data(x, y):
     """Take in two time-stamped data streams. Scale and 
@@ -183,7 +185,13 @@ def load_npzs(robot_name, PID, followup, gesture_num):
 
 
 def segmentbydemo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
-                  demo_max, peaks):
+                  demo_max):
+
+    peaks, _ = find_peaks(end_eff_data[:, 0], height=0)
+
+    peaks = np.hstack((0, peaks))
+    peaks = np.hstack((peaks, -1))
+
     end_eff = [''] * demo_max
     camera = [''] * demo_max
     rh = [''] * demo_max
@@ -191,18 +199,11 @@ def segmentbydemo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
     joints = [''] * demo_max
 
     for i in range(0, demo_max):
-        if i == 0:
-            end_eff[i] = end_eff_data[1:peaks[0], :]
-            camera[i] = camera_data[1:peaks[0], :]
-            rh[i] = rh_data[1:peaks[0], :]
-            lh[i] = lh_data[1:peaks[0], :]
-            joints[i] = joint_data[1:peaks[0], :]
-        else:
-            end_eff[i] = end_eff_data[peaks[i - 1]:peaks[i], :]
-            camera[i] = camera_data[peaks[i - 1]:peaks[i], :]
-            rh[i] = rh_data[peaks[i - 1]:peaks[i], :]
-            lh[i] = lh_data[peaks[i - 1]:peaks[i], :]
-            joints[i] = joint_data[peaks[i - 1]:peaks[i], :]
+        end_eff[i] = end_eff_data[peaks[i]:peaks[i + 1], :]
+        camera[i] = camera_data[peaks[i]:peaks[i + 1], :]
+        rh[i] = rh_data[peaks[i]:peaks[i + 1], :]
+        lh[i] = lh_data[peaks[i]:peaks[i + 1], :]
+        joints[i] = joint_data[peaks[i]:peaks[i + 1], :]
 
     # end_eff = np.array(end_eff)
     # rh      = np.array(rh)
