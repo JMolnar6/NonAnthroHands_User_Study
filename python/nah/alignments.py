@@ -30,7 +30,10 @@ def get_filename(participant_id,
                  follow_up=False):
     """Get the experiment data filename based on arguments."""
 
-    data_path = Path("data")
+    # Path to project root directory
+    project_root = Path(__file__).parent.parent.parent.resolve()
+    data_path = project_root / "data"
+
     if follow_up:
         data_path /= "Follow-up Study"
         is_followup = 'B'

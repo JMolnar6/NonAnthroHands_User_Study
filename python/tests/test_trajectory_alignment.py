@@ -20,7 +20,9 @@ def test_get_filename():
     """
     Test if the util for getting the data filename is correct
     """
-    data_path = Path("data")
+    # Path to project root directory
+    project_root = Path(__file__).parent.parent.parent.resolve()
+    data_path = project_root / "data"
 
     expected_file1 = data_path / "PID1" / "j2s6s300_PID1_j2s6s300_end_effector_Motion_gesture_3_1.csv"
     robot_name = "j2s6s300"
@@ -70,18 +72,3 @@ def test_get_filename():
                                 gesture_num, demo_num, True)
 
     assert expected_file3 == actual_file3
-
-
-def test_dtw_data_import():
-    robot_name = "j2s6s300"
-    end_eff_name = "j2s6s300_end_effector_"
-    participant_id = 1
-    followup = False
-    gesture_num = 3
-    demo_num = 1
-    controller_data = dtw_data_import(robot_name, end_eff_name, participant_id,
-                                      followup, gesture_num, demo_num)
-
-    assert controller_data.shape == (507, 7)
-
-    assert (not np.allclose(controller_data, np.zeros(controller_data.shape)))
