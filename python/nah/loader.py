@@ -1,6 +1,5 @@
 """Code for loading data"""
 
-
 from pathlib import Path
 
 
@@ -93,3 +92,28 @@ def dtw_data_import(robot_name, end_eff_name, PID, followup, gesture_num,
                                    gesture_num,
                                    demo_num,
                                    followup=True)
+
+
+def load_npzs(robot_name, participant_id, followup, gesture_num):
+    """Load .npz file corresponding to provided arguments."""
+    try:
+        if followup:
+            filename = "C:\\Users\\jmoln\\Dropbox (GaTech)\\Non-Anthropomorphic Hands User Study Data\\npz files\\data_PID" + str(
+                participant_id) + "B_" + str(robot_name) + "_gesture_" + str(
+                    gesture_num) + ".npz"
+        else:
+            filename = "C:\\Users\\jmoln\\Dropbox (GaTech)\\Non-Anthropomorphic Hands User Study Data\\npz files\\data_PID" + str(
+                participant_id) + "_" + str(robot_name) + "_gesture_" + str(
+                    gesture_num) + ".npz"
+    except Exception:
+        print(filename + " NOT FOUND")
+
+    # # Import data from csvs
+    # data = np.load(filename)
+    # end_eff_data = data['end_eff_data']
+    # camera_data = data['camera_data']
+    # rh_data = data['rh_data']
+    # lh_data = data['lh_data']
+    # joint_data = data['joint_data']
+
+    # return end_eff_data, camera_data, rh_data, lh_data, joint_data

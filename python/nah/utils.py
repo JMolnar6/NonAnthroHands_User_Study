@@ -1,7 +1,7 @@
 """ Contains useful functions for accessing/processing user data"""
 import numpy as np
 from fastdtw import fastdtw
-from nah.alignments import dtw_data_import, get_filename
+from nah.loader import dtw_data_import, get_filename
 
 
 def norm_data(x, y):
@@ -159,31 +159,8 @@ def clean_rot_data(gesture_num, demo_num, hand_rot_aligned):
     return hand_rot_aligned
 
 
-def load_npzs(robot_name, PID, followup, gesture_num):
-    try:
-        if followup:
-            filename = "C:\\Users\\jmoln\\Dropbox (GaTech)\\Non-Anthropomorphic Hands User Study Data\\npz files\\data_PID" + str(
-                PID) + "B_" + str(robot_name) + "_gesture_" + str(
-                    gesture_num) + ".npz"
-        else:
-            filename = "C:\\Users\\jmoln\\Dropbox (GaTech)\\Non-Anthropomorphic Hands User Study Data\\npz files\\data_PID" + str(
-                PID) + "_" + str(robot_name) + "_gesture_" + str(
-                    gesture_num) + ".npz"
-    except:
-        print(filename + " NOT FOUND")
-    # Import data from csvs
-    data = np.load(filename)
-    end_eff_data = data['end_eff_data']
-    camera_data = data['camera_data']
-    rh_data = data['rh_data']
-    lh_data = data['lh_data']
-    joint_data = data['joint_data']
-
-    return end_eff_data, camera_data, rh_data, lh_data, joint_data
-
-
 def segment_by_demo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
-                  demo_max, peaks):
+                    demo_max, peaks):
     end_eff = [''] * demo_max
     camera = [''] * demo_max
     rh = [''] * demo_max
