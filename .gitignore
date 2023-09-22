@@ -7,5 +7,4 @@ HandsLoggerWithURDF/tempdata/PID 0 (test)/
 
 .ipynb_checkpoints/
 
-data/
-pre_proposal_data/
+data
