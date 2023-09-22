@@ -3,16 +3,20 @@
 from pathlib import Path
 
 import numpy as np
-from nah.loader import dtw_data_import, get_filename
+from nah.loader import (dtw_data_import, get_filename, get_npz_filename,
+                        load_npzs)
 
 
 def test_get_filename():
     """
     Test if the util for getting the data filename is correct
     """
-    data_path = Path("data")
+    # Path to project root directory
+    project_root = Path(__file__).parent.parent.parent.resolve()
+    data_path = project_root / "data"
 
-    expected_file1 = data_path / "PID1" / "j2s6s300_PID1_j2s6s300_end_effector_Motion_gesture_3_1.csv"
+    expected_file1 = data_path / "PID1" / \
+        "j2s6s300_PID1_j2s6s300_end_effector_Motion_gesture_3_1.csv"
     robot_name = "j2s6s300"
     end_eff_name = "j2s6s300_end_effector_"
     participant_id = 1
@@ -23,7 +27,8 @@ def test_get_filename():
 
     assert expected_file1 == actual_file1
 
-    expected_file2 = data_path / "PID1" / "j2s6s300_PID1_RightHand Controller_Motion_gesture_3_1.csv"
+    expected_file2 = data_path / "PID1" / \
+        "j2s6s300_PID1_RightHand Controller_Motion_gesture_3_1.csv"
 
     robot_name = "j2s6s300"
     end_eff_name = "RightHand Controller_"
@@ -63,6 +68,23 @@ def test_get_filename():
     assert expected_file3 == actual_file3
 
 
+def test_get_npz_filename():
+    """
+    Test if the util for getting the npz data filename is correct
+    """
+    # Path to project root directory
+    project_root = Path(__file__).parent.parent.parent.resolve()
+    data_path = project_root / "npz_files"
+
+    expected_file1 = data_path / "data_PID1_j2s6s300_gesture_3.npz"
+    robot_name = "j2s6s300"
+    participant_id = 1
+    gesture_num = 3
+    actual_file1 = get_npz_filename(robot_name, participant_id, gesture_num, False)
+
+    assert expected_file1 == actual_file1
+
+
 def test_dtw_data_import():
     """Test the dtw_data_import function."""
     robot_name = "j2s6s300"
@@ -77,3 +99,13 @@ def test_dtw_data_import():
     assert controller_data.shape == (507, 7)
 
     assert (not np.allclose(controller_data, np.zeros(controller_data.shape)))
+
+
+def test_load_npzs():
+    """Test the load_npzs function."""
+    robot_name = "j2s6s300"
+    participant_id = 1
+    followup = False
+    gesture_num = 3
+
+    load_npzs(robot_name, participant_id, followup, gesture_num)
