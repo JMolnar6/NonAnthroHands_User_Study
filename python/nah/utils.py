@@ -1,7 +1,7 @@
 """ Contains useful functions for accessing/processing user data"""
-from nah.alignments import dtw_data_import, get_filename
 import numpy as np
 from fastdtw import fastdtw
+from nah.alignments import dtw_data_import, get_filename
 
 
 def norm_data(x, y):
