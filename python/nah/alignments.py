@@ -2,6 +2,7 @@
 
 # Plotting Packages
 from pathlib import Path
+import os
 
 import matplotlib as mpl
 # import matplotlib.pyplot as plt
@@ -37,8 +38,7 @@ def get_filename(participant_id,
         is_followup = ''
 
     participant_directory = f"PID{participant_id}{is_followup}"
-    experiment_file = f"{robot_name}_PID{participant_id}{is_followup}_{end_eff_name}"\
-        f"Motion_gesture_{gesture_num}_{demo_num}.csv"
+    experiment_file = f"{robot_name}_PID{participant_id}{is_followup}_{end_eff_name}" f"Motion_gesture_{gesture_num}_{demo_num}.csv"
 
     filename = data_path / participant_directory / experiment_file
 
@@ -88,8 +88,8 @@ def dtw_data_import(robot_name, end_eff_name, PID, followup, gesture_num,
     Import data for running DTW.
 
     :param: controller: Tells us which end effector was used
-        ("", "RightHand Controller", "LeftHand Controller",
-         "Main Camera", "JointMotion").
+        ("", "RightHand Controller_", "LeftHand Controller_",
+         "Main Camera_", "Joint").
     """
 
     # Y-position of hand and end-effector tend to be most consistently aligned.
