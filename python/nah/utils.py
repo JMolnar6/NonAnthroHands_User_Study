@@ -5,10 +5,12 @@ from scipy.signal import find_peaks
 
 
 def norm_data(x, y):
-    """Take in two time-stamped data streams. Scale and 
-    align them vertically based on their max/min. Trim
-    the ends to make them even, if necessary. 
-    Return the DTW alignment between them as a 'warp path.' """
+    """
+    Take in two time-stamped data streams.
+    Scale and align them vertically based on their max/min.
+    Trim the ends to make them even, if necessary. 
+    Return the DTW alignment between them as a 'warp path.'
+    """
     # Separate time from position
     # x = (end_eff_data[...,0],end_eff_data[...,1])
     # y = (hand_data[...,0],hand_data[...,1])
@@ -27,7 +29,7 @@ def norm_data(x, y):
     x_norm = np.vstack((x[0], (x[1] - center_x) * scale_x))
     y_norm = np.vstack((y[0], (y[1] - center_y) * scale_y))
 
-    # TO-DO: trim ends for cleaner DTW
+    # TODO: trim ends for cleaner DTW
     # (Not done yet)
 
     # If X and Y are different lengths, fastdtw has issues
@@ -40,7 +42,10 @@ def norm_data(x, y):
 
 
 def full_align(warp_path, end_eff_data, hand_data):
-    """Take the warp_path generated from normalized hand/URDF data and use that to align all other hand data"""
+    """
+    Take the warp_path generated from normalized hand/URDF data and
+    use that to align all other hand data
+    """
     # Time marks:
     time_URDF = end_eff_data[..., 0]
     time_hand = hand_data[..., 0]
@@ -48,7 +53,8 @@ def full_align(warp_path, end_eff_data, hand_data):
     # remember that x = end_eff_pos
     #               y = hand_pos
 
-    # Z-data (forward/back) is offset by the distance between the viewer and the robot. Let's remove that distance for comparison purposes
+    # Z-data (forward/back) is offset by the distance between the viewer and the robot.
+    # Let's remove that distance for comparison purposes
 
     wp_size = len(warp_path)
     time_URDF_aligned = np.zeros(wp_size)
@@ -66,7 +72,8 @@ def full_align(warp_path, end_eff_data, hand_data):
         hand_pos_aligned[i][0:3] = hand_data[map_y][1:4]
         hand_rot_aligned[i][0:3] = hand_data[map_y][4:]
 
-    return time_URDF_aligned, time_hand_aligned, end_eff_pos_aligned, end_eff_rot_aligned, hand_pos_aligned, hand_rot_aligned
+    return time_URDF_aligned, time_hand_aligned, end_eff_pos_aligned, \
+        end_eff_rot_aligned, hand_pos_aligned, hand_rot_aligned
 
 
 def full_joint_align(time_URDF_aligned, joint_data):
@@ -160,7 +167,7 @@ def clean_rot_data(gesture_num, demo_num, hand_rot_aligned):
 
 
 def segment_by_demo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
-                  demo_max):
+                    demo_max):
 
     peaks, _ = find_peaks(end_eff_data[:, 0], height=0)
 
@@ -186,6 +193,6 @@ def segment_by_demo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
     return end_eff, camera, rh, lh, joints
 
 
-def sumofsquares(a):
+def sum_of_squares(a):
     return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:7], a[:, 1:7]),
                                       axis=1)))

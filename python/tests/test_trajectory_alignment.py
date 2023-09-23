@@ -2,7 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from nah.alignments import dtw_data_import, get_filename
+from nah.loader import get_filename, load_raw_csv_data
 
 
 @pytest.fixture
@@ -14,4 +14,3 @@ def trajectory():
     print(traj_file)
     traj = np.load(traj_file)
     return traj
-
