@@ -216,10 +216,15 @@ def plot_raw_data(end_eff_data, rh_data, lh_data, camera_data, joint_data,
     ax.legend()
 
 
-def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
-                             lh_data, joint_data):
+def plot_raw_data_subsampled(subsample,
+                             end_eff_data,
+                             camera_data,
+                             rh_data,
+                             lh_data,
+                             joint_data,
+                             title="Raw Data"):
 
-    #     # Quick and dirty clipping (should be done by DTW instead)
+    # Quick and dirty clipping (should be done by DTW instead)
     time = end_eff_data[..., 0]
     # start_index = np.where(time>time[0]+1)[0][0]
     # end_index   = np.where(time>time[-1]-1)[0][0]
@@ -229,6 +234,9 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
 
     fig, ax = plt.subplots(figsize=(7, 6))
     fig.patch.set_visible(True)
+    fig.suptitle(title)
+    fig.canvas.manager.set_window_title(title.lower())
+
     ax.axis('off')
     ax = plt.axes(projection='3d')
     ax.view_init(30, 60)
@@ -249,52 +257,48 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     subsampled_camera_data = camera_data[start_index:end_index:subsample, :]
     subsampled_end_eff_data = end_eff_data[start_index:end_index:subsample, :]
 
-    #     ax.scatter(rh_data[:].T[1], rh_data[:].T[2], -rh_data[:].T[3],\
-    #                 c=time/max(time), cmap='Reds', label='Right-hand position')
-    #     ax.scatter(lh_data[:].T[1], lh_data[:].T[2], -lh_data[:].T[3], \
-    #                c=time/max(time), cmap='Blues', label='Left-hand position')
-    #     ax.scatter(camera_data[:].T[1], camera_data[:].T[2], -camera_data[:].T[3], \
-    #                c=time/max(time), cmap='Greens', label='Camera position')
+    # ax.scatter(rh_data[:].T[1], rh_data[:].T[2], -rh_data[:].T[3],\
+    #             c=time/max(time), cmap='Reds', label='Right-hand position')
+    # ax.scatter(lh_data[:].T[1], lh_data[:].T[2], -lh_data[:].T[3], \
+    #             c=time/max(time), cmap='Blues', label='Left-hand position')
+    # ax.scatter(camera_data[:].T[1], camera_data[:].T[2], -camera_data[:].T[3], \
+    #             c=time/max(time), cmap='Greens', label='Camera position')
 
-    ax.scatter(subsampled_rh_data[:].T[1],
-               subsampled_rh_data[:].T[3],
-               subsampled_rh_data[:].T[2],
+    ax.scatter(subsampled_rh_data[:, 1],
+               subsampled_rh_data[:, 3],
+               subsampled_rh_data[:, 2],
                c=rh_data[start_index:end_index:subsample, 0] /
                max(rh_data[:, 0]),
                cmap='Reds',
                label='Right-hand position')
-    ax.scatter(subsampled_lh_data[:].T[1],
-               subsampled_lh_data[:].T[3],
-               subsampled_lh_data[:].T[2],
+    ax.scatter(subsampled_lh_data[:, 1],
+               subsampled_lh_data[:, 3],
+               subsampled_lh_data[:, 2],
                c=lh_data[start_index:end_index:subsample, 0] /
                max(lh_data[:, 0]),
                cmap='Blues',
                label='Left-hand position')
-    ax.scatter(subsampled_camera_data[:].T[1],
-               subsampled_camera_data[:].T[3],
-               subsampled_camera_data[:].T[2],
+    ax.scatter(subsampled_camera_data[:, 1],
+               subsampled_camera_data[:, 3],
+               subsampled_camera_data[:, 2],
                c=camera_data[start_index:end_index:subsample, 0] /
                max(camera_data[:, 0]),
-               cmap='Greens',
+               cmap='Greens_r',
                label='Camera position')
-    ax.scatter(subsampled_end_eff_data[:].T[1],
-               subsampled_end_eff_data[:].T[3],
-               subsampled_end_eff_data[:].T[2],
+    ax.scatter(subsampled_end_eff_data[:, 1],
+               subsampled_end_eff_data[:, 3],
+               subsampled_end_eff_data[:, 2],
                c=end_eff_data[start_index:end_index:subsample, 0] /
                max(end_eff_data[:, 0]),
-               cmap='Purples',
+               cmap='copper',
                label='End-effector position')
-
-    # ax.plot(subsampled_rh_data[:].T[1], subsampled_rh_data[:].T[3], subsampled_rh_data[:].T[2])
-    # ax.plot(subsampled_lh_data[:].T[1], subsampled_lh_data[:].T[3], subsampled_lh_data[:].T[2])
-    # ax.plot(subsampled_camera_data[:].T[1], subsampled_camera_data[:].T[3], subsampled_camera_data[:].T[2])
 
     ax.legend()
     leg = ax.get_legend()
     leg.legendHandles[0].set_color('red')
     leg.legendHandles[1].set_color('blue')
     leg.legendHandles[2].set_color('green')
-    leg.legendHandles[3].set_color('purple')
+    leg.legendHandles[3].set_color('#B87333')
 
 
 def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
