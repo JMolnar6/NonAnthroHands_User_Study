@@ -2,7 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from nah.loader import dtw_data_import, get_filename
+from nah.loader import get_filename, load_raw_csv_data
 
 
 @pytest.fixture

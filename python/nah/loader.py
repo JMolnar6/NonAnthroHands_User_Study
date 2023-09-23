@@ -33,17 +33,6 @@ def get_filename(participant_id,
     return filename
 
 
-def get_npz_filename(robot_name, participant_id, gesture_num, followup=False):
-    """Get the filename for the processed npz file containing the user and robot trajectories."""
-    # Path to project root directory
-    project_root = Path(__file__).parent.parent.parent.resolve()
-    data_path = project_root / "npz_files"
-
-    follow_up = "B" if followup else ""
-    filename = f"data_PID{participant_id}{follow_up}_{robot_name}_gesture_{gesture_num}.npz"
-    return data_path / filename
-
-
 def load_alternate_data(robot_name, gesture_num, demo_num, followup=True):
     """
     If JointMotion data is missing, the good news is that
@@ -81,10 +70,10 @@ def load_alternate_data(robot_name, gesture_num, demo_num, followup=True):
         raise FileNotFoundError(error_msg) from exc
 
 
-def dtw_data_import(robot_name, end_eff_name, participant_id, followup,
+def load_raw_csv_data(robot_name, end_eff_name, participant_id, followup,
                     gesture_num, demo_num):
     """
-    Import data for running DTW.
+    Import the raw data from the CSV file.
 
     :param: controller: Tells us which end effector was used
         ("", "RightHand Controller_", "LeftHand Controller_",
@@ -110,6 +99,17 @@ def dtw_data_import(robot_name, end_eff_name, participant_id, followup,
                                    gesture_num,
                                    demo_num,
                                    followup=followup)
+
+
+def get_npz_filename(robot_name, participant_id, gesture_num, followup=False):
+    """Get the filename for the processed npz file containing the user and robot trajectories."""
+    # Path to project root directory
+    project_root = Path(__file__).parent.parent.parent.resolve()
+    data_path = project_root / "npz_files"
+
+    follow_up = "B" if followup else ""
+    filename = f"data_PID{participant_id}{follow_up}_{robot_name}_gesture_{gesture_num}.npz"
+    return data_path / filename
 
 
 def load_npzs(robot_name, participant_id, followup, gesture_num):

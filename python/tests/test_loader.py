@@ -3,8 +3,8 @@
 from pathlib import Path
 
 import numpy as np
-from nah.loader import (dtw_data_import, get_filename, get_npz_filename,
-                        load_npzs)
+from nah.loader import (get_filename, get_npz_filename, load_npzs,
+                        load_raw_csv_data)
 
 
 def test_get_filename():
@@ -93,15 +93,15 @@ def test_load_npzs():
     load_npzs(robot_name, participant_id, followup, gesture_num)
 
 
-def test_dtw_data_import():
-    """Test the dtw_data_import function."""
+def test_load_raw_csv_data():
+    """Test the load_raw_csv_data function."""
     robot_name = "j2s6s300"
     end_eff_name = "j2s6s300_end_effector_"
     participant_id = 1
     followup = False
     gesture_num = 3
     demo_num = 1
-    controller_data = dtw_data_import(robot_name, end_eff_name, participant_id,
+    controller_data = load_raw_csv_data(robot_name, end_eff_name, participant_id,
                                       followup, gesture_num, demo_num)
 
     assert controller_data.shape == (507, 7)
@@ -112,7 +112,7 @@ def test_dtw_data_import():
     participant_id = 3
     gesture_num = 4
     demo_num = 1
-    controller_data = dtw_data_import(robot_name, end_eff_name, participant_id,
+    controller_data = load_raw_csv_data(robot_name, end_eff_name, participant_id,
                                       followup, gesture_num, demo_num)
 
     assert controller_data.shape == (555, 7)
@@ -127,7 +127,7 @@ def test_load_alternate_data():
     followup = True
     gesture_num = 2
     demo_num = 1
-    data = dtw_data_import(robot_name, end_eff_name, participant_id, followup,
+    data = load_raw_csv_data(robot_name, end_eff_name, participant_id, followup,
                            gesture_num, demo_num)
 
     assert data.shape == (421, 8)
@@ -136,7 +136,7 @@ def test_load_alternate_data():
     participant_id = 9
     gesture_num = 7
     demo_num = 3
-    data = dtw_data_import(robot_name, end_eff_name, participant_id, followup,
+    data = load_raw_csv_data(robot_name, end_eff_name, participant_id, followup,
                            gesture_num, demo_num)
 
     assert data.shape == (353, 8)
