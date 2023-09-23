@@ -193,6 +193,6 @@ def segment_by_demo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
     return end_eff, camera, rh, lh, joints
 
 
-def sumofsquares(a):
+def sum_of_squares(a):
     return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:7], a[:, 1:7]),
                                       axis=1)))
