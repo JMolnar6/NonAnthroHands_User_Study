@@ -297,42 +297,36 @@ def plot_raw_data_subsampled(subsample, end_eff_data, camera_data, rh_data,
     leg.legendHandles[3].set_color('purple')
 
 
-def view_participant_robot_gesture(robot_name, singlePIDval, gesture_num,
-                                   followup, singlePID):
+def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
+                                   followup):
     """
     Provides a quick way to visualize a single gesture for one or all participants.
-    """
-    #Initialize data arrays
-    total_end_eff = np.array([])
-    total_camera = np.array([])
-    total_rh = np.array([])
-    total_lh = np.array([])
-    total_joint = np.array([])
 
-    if singlePID:
-        PID_begin_range = singlePIDval
-        PID_end_range = singlePIDval + 1  #Don't forget to +1 to whatever your last PID is
+    `participant_ids` is a tuple of ids, e.g. (1, 2, 3, 7).
+    """
+    if followup:
+        assert max(particiant_ids) == 10, \
+            "followup is true, so the maximum ID value should be 10"
     else:
-        PID_begin_range = 1
-        if followup:
-            PID_end_range = 10  #Don't forget to +1 to whatever your last PID is
-        else:
-            PID_end_range = 17
-    for PID in tqdm(range(PID_begin_range, PID_end_range)):
-        end_eff, camera, rh, lh, joint = load_npzs(robot_name, PID, followup,
-                                                   gesture_num)
-        if (PID == PID_begin_range):
-            total_end_eff = end_eff
-            total_camera = camera
-            total_rh = rh
-            total_lh = lh
-            total_joint = joint
-        else:
-            total_end_eff = np.vstack((total_end_eff, end_eff))
-            total_camera = np.vstack((total_camera, camera))
-            total_rh = np.vstack((total_rh, rh))
-            total_lh = np.vstack((total_lh, lh))
-            total_joint = np.vstack((total_joint, joint))
+        assert max(particiant_ids) == 17
+
+    #Initialize data arrays
+    total_end_eff = np.empty((0, 7))
+    total_camera = np.empty((0, 7))
+    total_rh = np.empty((0, 7))
+    total_lh = np.empty((0, 7))
+    total_joint = np.empty((0, 8))
+
+    for participant_id in tqdm(particiant_ids):
+        end_eff, camera, rh, lh, joint = load_npzs(robot_name, participant_id,
+                                                   followup, gesture_num)
+
+        total_end_eff = np.vstack((total_end_eff, end_eff))
+        total_camera = np.vstack((total_camera, camera))
+        total_rh = np.vstack((total_rh, rh))
+        total_lh = np.vstack((total_lh, lh))
+        total_joint = np.vstack((total_joint, joint))
+
     # plot_raw_data(end_eff, rh, lh, camera, joint, start_index, end_index)
     plot_raw_data_subsampled(1, total_end_eff, total_camera, total_rh,
                              total_lh, total_joint)
