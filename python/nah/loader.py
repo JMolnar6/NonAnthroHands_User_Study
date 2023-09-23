@@ -71,7 +71,7 @@ def load_alternate_data(robot_name, gesture_num, demo_num, followup=True):
 
 
 def load_raw_csv_data(robot_name, end_eff_name, participant_id, followup,
-                    gesture_num, demo_num):
+                      gesture_num, demo_num):
     """
     Import the raw data from the CSV file.
 
@@ -113,7 +113,12 @@ def get_npz_filename(robot_name, participant_id, gesture_num, followup=False):
 
 
 def load_npzs(robot_name, participant_id, followup, gesture_num):
-    """Load .npz file corresponding to provided arguments."""
+    """
+    Load .npz file corresponding to provided arguments.
+
+    The trajectories returned are concatenated demos.
+    Please use `segment_by_demo` to separate them.
+    """
     filename = get_npz_filename(robot_name, participant_id, gesture_num,
                                 followup)
     # Import data from npz file
