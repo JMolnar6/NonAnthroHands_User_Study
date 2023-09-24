@@ -106,8 +106,9 @@ def plot_pos(gesture_num, demo_num, warp_path, end_eff_pos_aligned,
     ax.set_title("DTW Alignment of Hand and URDF End-Effector Position",
                  fontsize=18,
                  fontweight="bold")
-    plt.savefig('DTW_Pos' + str(demo_num) + '.png')
-    plt.close('all')
+    plt.show()
+    # plt.savefig('DTW_Pos' + str(demo_num) + '.png')
+    # plt.close('all')
 
     return
 
@@ -152,6 +153,43 @@ def plot_rot(gesture_num, demo_num, warp_path, end_eff_rot_aligned,
     plt.close('all')
 
     return
+
+def plot_rot_2D(time, traj):
+    """
+    Plot rotation data over time, one line per euler angle
+    Arguments: time[n]
+               traj[n,3] 
+    """
+    
+    fig, ax = plt.subplots(figsize=(10, 7))
+    ax.plot(time,
+            traj[:].T[0],
+            '-ko',
+            label='x',
+            linewidth=0.2,
+            markersize=2,
+            markerfacecolor='lightcoral',
+            markeredgecolor='lightcoral')
+    ax.plot(time,
+            traj[:].T[1],
+            '-bo',
+            label='x',
+            linewidth=0.2,
+            markersize=2,
+            markerfacecolor='skyblue',
+            markeredgecolor='skyblue')
+    ax.plot(time,
+            traj[:].T[2],
+            '-ro',
+            label='x',
+            linewidth=0.2,
+            markersize=2,
+            markerfacecolor='red',
+            markeredgecolor='red')
+    
+    plt.show()
+    # plt.savefig('DTW_Rot_corrected_' + str(demo_num) + '.png')
+    # plt.close('all')
 
 
 def plot_raw_data(end_eff_data, rh_data, lh_data, camera_data, joint_data,
@@ -309,10 +347,10 @@ def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
     `participant_ids` is a tuple of ids, e.g. (1, 2, 3, 7).
     """
     if followup:
-        assert max(particiant_ids) == 10, \
-            "followup is true, so the maximum ID value should be 10"
+        assert max(particiant_ids) <= 9, \
+            "followup is true, so the maximum ID value should be 9"
     else:
-        assert max(particiant_ids) == 17
+        assert max(particiant_ids) <= 16
 
     #Initialize data arrays
     total_end_eff = np.empty((0, 7))

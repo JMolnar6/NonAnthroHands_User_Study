@@ -101,8 +101,6 @@ def full_joint_align(time_URDF_aligned, joint_data):
 def clean_rot_data(gesture_num, demo_num, hand_rot_aligned):
     """Fix angle inversion issues for hand data"""
 
-    fig, ax = plt.subplots(figsize=(10, 7))
-
     for i, [x_rot, y_rot, z_rot] in enumerate(hand_rot_aligned, start=1):
         # Singularities should occur in all axes simultaneously
         if i == len(hand_rot_aligned):
@@ -135,33 +133,6 @@ def clean_rot_data(gesture_num, demo_num, hand_rot_aligned):
     #         print(time_hand_aligned[i], hand_rot_aligned[i-2], hand_rot_aligned[i])
     #         hand_rot_aligned[i] = -hand_rot_aligned[i]
 
-    ax.plot(time_hand_aligned,
-            hand_rot_aligned[:].T[0],
-            '-ko',
-            label='x',
-            linewidth=0.2,
-            markersize=2,
-            markerfacecolor='lightcoral',
-            markeredgecolor='lightcoral')
-    ax.plot(time_hand_aligned,
-            hand_rot_aligned[:].T[1],
-            '-bo',
-            label='x',
-            linewidth=0.2,
-            markersize=2,
-            markerfacecolor='skyblue',
-            markeredgecolor='skyblue')
-    ax.plot(time_hand_aligned,
-            hand_rot_aligned[:].T[2],
-            '-ro',
-            label='x',
-            linewidth=0.2,
-            markersize=2,
-            markerfacecolor='red',
-            markeredgecolor='red')
-
-    plt.savefig('DTW_Rot_corrected_' + str(demo_num) + '.png')
-    plt.close('all')
 
     return hand_rot_aligned
 
@@ -194,5 +165,13 @@ def segment_by_demo(end_eff_data, camera_data, rh_data, lh_data, joint_data,
 
 
 def sum_of_squares(a):
-    return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:7], a[:, 1:7]),
-                                      axis=1)))
+    """
+    Returns the L2 norm (distance from the origin). Used for DTW alignment,
+    but other distance metrics could be better. 
+    """
+    return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:4], a[:, 1:4]),
+                                  axis=1)))
+    
+    # return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:7], a[:, 1:7]),
+    #                                   axis=1)))
+
