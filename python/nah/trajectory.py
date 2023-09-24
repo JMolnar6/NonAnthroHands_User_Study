@@ -60,6 +60,10 @@ def evaluate_ape(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
     return metric
 
 def get_evo_metrics(traj1, traj2):
+    """
+    Take two trajectories of equal length and calculate
+    the error between them.
+    """
     traj1_evo = get_evo_trajectory(traj1)
     traj2_evo = get_evo_trajectory(traj2)   
     
@@ -69,12 +73,20 @@ def get_evo_metrics(traj1, traj2):
     return(metric.get_all_statistics())
 
 def get_aligned_evo_metrics(traj1, traj2):
+    """
+    Take two trajectories of equal length and calculate
+    the error between them.
+    """
     traj1_evo = get_evo_trajectory(traj1)
     traj2_evo = get_evo_trajectory(traj2)   
-    
+
+    """TODO: Jennifer
+    Temporal alignment. DTW should go here instead
+    """
     traj1_evo, traj2_evo = evo_sync(traj1_evo, traj2_evo)    
     # metric = evaluate_ape(traj1_evo, traj2_evo)
-    
+
+    # Spatial alignment
     traj2_evo = evo_align(traj2_evo, traj1_evo)
 
     traj1_aligned = convert_evo_to_np(traj1_evo)
