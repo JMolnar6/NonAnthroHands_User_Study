@@ -35,6 +35,7 @@ def norm_data(x, y):
     # If X and Y are different lengths, fastdtw has issues
     lim = min(x.shape[1], y.shape[1])
 
+    # TODO: Varun, this is where your new distance metric goes
     dtw_distance, warp_path = fastdtw(x_norm[1, 0:lim],
                                       y_norm[1, 0:lim])  #, dist=euclidean)
 
