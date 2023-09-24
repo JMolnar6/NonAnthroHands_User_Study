@@ -50,7 +50,7 @@ def plot_norm(warp_path, x_norm, y_norm):
 
 def plot_pos(gesture_num, demo_num, warp_path, end_eff_pos_aligned,
              hand_pos_aligned, time_URDF_aligned, time_hand_aligned):
-    fig, ax = plt.subplots(figsize=(15, 10))
+    fig, ax = plt.subplots(figsize=(6, 4))
 
     # Show the border and axes ticks,
     fig.patch.set_visible(True)
@@ -117,7 +117,7 @@ def plot_rot(gesture_num, demo_num, warp_path, end_eff_rot_aligned,
              hand_rot_aligned, time_URDF_aligned, time_hand_aligned):
     # Plot DTW-aligned hand/end-effector orientation
 
-    fig, ax = plt.subplots(figsize=(15, 10))
+    fig, ax = plt.subplots(figsize=(6, 4))
 
     # Show the border and axes ticks
     fig.patch.set_visible(True)
@@ -149,8 +149,9 @@ def plot_rot(gesture_num, demo_num, warp_path, end_eff_rot_aligned,
     ax.set_title("DTW Alignment of Hand and URDF End-Effector Orientation",
                  fontsize=20,
                  fontweight="bold")
-    plt.savefig('DTW_Rot' + str(demo_num) + '.png')
-    plt.close('all')
+    # plt.savefig('DTW_Rot' + str(demo_num) + '.png')
+    # plt.close('all')
+    plt.show()
 
     return
 
