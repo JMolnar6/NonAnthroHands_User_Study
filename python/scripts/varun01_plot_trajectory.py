@@ -1,4 +1,8 @@
-"""Plot trajectories for a demo before and after spatial alignment."""
+"""
+Plot trajectories for a demo before and after spatial alignment.
+
+python varun01_plot_trajectory.py -r j2s6s300 -p 2
+"""
 
 import argparse
 
@@ -18,10 +22,12 @@ def parse_args():
                         help="The participant ID",
                         default=1)
     parser.add_argument("--gesture_num",
+                        "-g",
                         type=int,
                         help="The gesture number",
                         default=1)
     parser.add_argument("--demo_num",
+                        "-d",
                         type=int,
                         help="Which demo to use",
                         default=1)
@@ -43,26 +49,28 @@ def main():
                                                      rh_data, lh_data,
                                                      joint_data, demo_max)
 
+    demo = args.demo_num
+
     plot_raw_data_subsampled(1,
-                             end_eff[0],
-                             camera[0],
-                             rh[0],
-                             lh[0],
-                             joint[0],
+                             end_eff[demo],
+                             camera[demo],
+                             rh[demo],
+                             lh[demo],
+                             joint[demo],
                              title="Unaligned trajectories")
 
-    end_eff_traj = get_evo_trajectory(end_eff[0])
-    rh_traj = get_evo_trajectory(rh[0])
+    end_eff_traj = get_evo_trajectory(end_eff[demo])
+    rh_traj = get_evo_trajectory(rh[demo])
 
     # Just align without doing explicit timestamp matching.
     rh_traj_aligned = evo_align(rh_traj, end_eff_traj)
 
     plot_raw_data_subsampled(1,
-                             end_eff[0],
-                             camera[0],
+                             end_eff[demo],
+                             camera[demo],
                              convert_evo_to_np(rh_traj_aligned),
-                             lh[0],
-                             joint[0],
+                             lh[demo],
+                             joint[demo],
                              title="Spatially Aligned Trajectories")
 
     plt.show()
