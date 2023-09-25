@@ -2,9 +2,10 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from nah.loader import get_filename, load_raw_csv_data, load_npzs
-from nah.trajectory import get_evo_metrics
+from nah.loader import load_npzs
+from nah.trajectory import Alignment, get_evo_metrics
 from nah.utils import segment_by_demo
+
 
 @pytest.fixture
 def trajectory():
@@ -16,35 +17,44 @@ def trajectory():
     traj = np.load(traj_file)
     return traj
 
+
 def test_get_evo_metrics():
+    """Test APE metrics for vanilla trajectories."""
     robot_name = "Reachy"
     participant_id = 13
     followup = False
     gesture_num = 1
-    demo_max=2
-    
-    end_eff_data, camera_data, rh_data, lh_data, joint_data = load_npzs(robot_name, participant_id, followup, gesture_num)
-    end_eff, camera, rh, lh, joints = segment_by_demo(end_eff_data, camera_data, rh_data, lh_data, joint_data, demo_max)
-    
-    metrics = get_evo_metrics(end_eff[0],end_eff[1])
-    assert metrics['mean']<0.01
+    demo_max = 2
 
-    metrics = get_evo_metrics(rh[0],rh[1])
-    assert (metrics['mean']>0.1 and metrics['mean']<0.14)
+    end_eff_data, camera_data, rh_data, lh_data, joint_data = load_npzs(
+        robot_name, participant_id, followup, gesture_num)
+    end_eff, _, rh, lh, _ = segment_by_demo(end_eff_data, camera_data, rh_data,
+                                            lh_data, joint_data, demo_max)
+
+    metrics = get_evo_metrics(end_eff[0], end_eff[1])
+    assert metrics['mean'] < 0.01
+
+    metrics = get_evo_metrics(rh[0], rh[1])
+    assert (metrics['mean'] > 0.1 and metrics['mean'] < 0.14)
 
 
 def test_get_aligned_evo_metrics():
+    """Test APE metrics for aligned trajectories."""
     robot_name = "Reachy"
     participant_id = 13
     followup = False
     gesture_num = 1
-    demo_max=2
-    
-    end_eff_data, camera_data, rh_data, lh_data, joint_data = load_npzs(robot_name, participant_id, followup, gesture_num)
-    end_eff, camera, rh, lh, joints = segment_by_demo(end_eff_data, camera_data, rh_data, lh_data, joint_data, demo_max)
-    
-    metrics = get_aligned_evo_metrics(end_eff[0],end_eff[1])
-    assert metrics['mean']<0.01
+    demo_max = 2
 
-    metrics = get_evo_metrics(rh[0],rh[1])
-    assert (metrics['mean']>0.1 and metrics['mean']<0.14)
+    end_eff_data, camera_data, rh_data, lh_data, joint_data = load_npzs(
+        robot_name, participant_id, followup, gesture_num)
+    end_eff, _, rh, lh, _ = segment_by_demo(end_eff_data, camera_data, rh_data,
+                                            lh_data, joint_data, demo_max)
+
+    metrics = get_evo_metrics(end_eff[0],
+                              end_eff[1],
+                              alignment=Alignment.Spatial)
+    assert metrics['mean'] < 0.01
+
+    metrics = get_evo_metrics(rh[0], rh[1])
+    assert (metrics['mean'] > 0.1 and metrics['mean'] < 0.14)

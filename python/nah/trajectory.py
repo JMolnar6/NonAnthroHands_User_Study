@@ -68,7 +68,7 @@ class Alignment(Enum):
     Temporal = 2  # Use Dynamic Time Waring to temporally align trajectories.
 
 
-def get_evo_metrics(traj1, traj2, alignment=Alignment.Spatial):
+def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
     """
     Take two trajectories of equal length and calculate
     the error between them.
@@ -93,4 +93,4 @@ def get_evo_metrics(traj1, traj2, alignment=Alignment.Spatial):
         raise RuntimeError("Invalid Alignment specified.")
 
     metric = evaluate_ape(traj1_evo, traj2_evo)
-    return metric
+    return metric.get_all_statistics()
