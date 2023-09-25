@@ -35,7 +35,7 @@ def norm_data(x, y):
     # If X and Y are different lengths, fastdtw has issues
     lim = min(x.shape[1], y.shape[1])
 
-    # TODO: Varun, this is where your new distance metric goes
+    # TODO(Jennifer): Varun, this is where your new distance metric goes
     dtw_distance, warp_path = fastdtw(x_norm[1, 0:lim],
                                       y_norm[1, 0:lim])  #, dist=euclidean)
 
@@ -134,7 +134,6 @@ def clean_rot_data(gesture_num, demo_num, hand_rot_aligned):
     #         print(time_hand_aligned[i], hand_rot_aligned[i-2], hand_rot_aligned[i])
     #         hand_rot_aligned[i] = -hand_rot_aligned[i]
 
-
     return hand_rot_aligned
 
 
@@ -171,8 +170,4 @@ def sum_of_squares(a):
     but other distance metrics could be better. 
     """
     return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:4], a[:, 1:4]),
-                                  axis=1)))
-    
-    # return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:7], a[:, 1:7]),
-    #                                   axis=1)))
-
+                                      axis=1)))

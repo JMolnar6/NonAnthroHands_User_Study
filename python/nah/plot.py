@@ -5,9 +5,9 @@ from nah.loader import load_npzs
 from tqdm import tqdm
 
 
-def plot_norm(warp_path, x_norm, y_norm):
+def plot_norm(warp_path, x_norm, y_norm, fig_size=(12, 6)):
     """Show normalized plots"""
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=fig_size)
 
     # Remove the border and axes ticks
     fig.patch.set_visible(True)
@@ -72,9 +72,15 @@ def _set_axes_radius(ax, origin, radius):
     ax.set_zlim3d([z - radius, z + radius])
 
 
-def plot_pos(gesture_num, demo_num, warp_path, end_eff_pos_aligned,
-             hand_pos_aligned, time_URDF_aligned, time_hand_aligned):
-    fig, ax = plt.subplots(figsize=(6, 4))
+def plot_pos(gesture_num,
+             demo_num,
+             warp_path,
+             end_eff_pos_aligned,
+             hand_pos_aligned,
+             time_URDF_aligned,
+             time_hand_aligned,
+             fig_size=(6, 4)):
+    fig, ax = plt.subplots(figsize=fig_size)
 
     # Show the border and axes ticks,
     fig.patch.set_visible(True)
@@ -88,31 +94,31 @@ def plot_pos(gesture_num, demo_num, warp_path, end_eff_pos_aligned,
     end_eff_pos_aligned = end_eff_pos_aligned - end_eff_pos_aligned[1]
     hand_pos_aligned = hand_pos_aligned - hand_pos_aligned[1]
 
-    # ax.plot(time_URDF_aligned, end_eff_pos_aligned[:].T[0], '-ro', label='End-effector position', \
+    # ax.plot(time_URDF_aligned, end_eff_pos_aligned[:, 0], '-ro', label='End-effector position', \
     #     linewidth=0.2, markersize=2, markerfacecolor='lightcoral', markeredgecolor='lightcoral')
-    # ax.plot(time_URDF_aligned, end_eff_pos_aligned[:].T[1], '-ro', label='End-effector position', \
+    # ax.plot(time_URDF_aligned, end_eff_pos_aligned[:, 1], '-ro', label='End-effector position', \
     #     linewidth=0.2, markersize=2, markerfacecolor='lightcoral', markeredgecolor='lightcoral')
-    # ax.plot(time_URDF_aligned, end_eff_pos_aligned[:].T[2], '-ro', label='End-effector position', \
+    # ax.plot(time_URDF_aligned, end_eff_pos_aligned[:, 2], '-ro', label='End-effector position', \
     #     linewidth=0.2, markersize=2, markerfacecolor='lightcoral', markeredgecolor='lightcoral')
 
     # Unity uses a left-handed coordinate system, so plot your position data in the orientation in which it was gathered:
     #  X moving left to right, Z moving front to back, and Y pointing up and down
-    ax.scatter(end_eff_pos_aligned[:].T[0],
-               -end_eff_pos_aligned[:].T[2],
-               end_eff_pos_aligned[:].T[1],
+    ax.scatter(end_eff_pos_aligned[:, 0],
+               -end_eff_pos_aligned[:, 2],
+               end_eff_pos_aligned[:, 1],
                c=time_URDF_aligned / max(time_URDF_aligned),
                cmap='Reds',
                label='End-effector position')
-    ax.scatter(hand_pos_aligned[:].T[0],
-               -hand_pos_aligned[:].T[2],
-               hand_pos_aligned[:].T[1],
+    ax.scatter(hand_pos_aligned[:, 0],
+               -hand_pos_aligned[:, 2],
+               hand_pos_aligned[:, 1],
                c=time_hand_aligned / max(time_hand_aligned),
                cmap='Blues',
                label='Hand position')
 
-    # ax.plot3D(end_eff_pos_aligned[:].T[0], end_eff_pos_aligned[:].T[1], end_eff_pos_aligned[:].T[2], \
+    # ax.plot3D(end_eff_pos_aligned[:, 0], end_eff_pos_aligned[:, 1], end_eff_pos_aligned[:, 2], \
     #     '-ro', label='End-effector position', linewidth=0.2, markersize=2, markerfacecolor='lightcoral', markeredgecolor='lightcoral')
-    # ax.plot3D(hand_pos_aligned[:].T[0]   , hand_pos_aligned[:].T[1]   , hand_pos_aligned[:].T[2]   , \
+    # ax.plot3D(hand_pos_aligned[:, 0]   , hand_pos_aligned[:, 1]   , hand_pos_aligned[:, 2]   , \
     #     '-bo', label='Hand position', linewidth=0.2, markersize=2, markerfacecolor='skyblue', markeredgecolor='skyblue')
 
     for [map_x, map_y] in warp_path:
@@ -141,11 +147,17 @@ def plot_pos(gesture_num, demo_num, warp_path, end_eff_pos_aligned,
     return
 
 
-def plot_rot(gesture_num, demo_num, warp_path, end_eff_rot_aligned,
-             hand_rot_aligned, time_URDF_aligned, time_hand_aligned):
+def plot_rot(gesture_num,
+             demo_num,
+             warp_path,
+             end_eff_rot_aligned,
+             hand_rot_aligned,
+             time_URDF_aligned,
+             time_hand_aligned,
+             fig_size=(6, 4)):
     # Plot DTW-aligned hand/end-effector orientation
 
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=fig_size)
 
     # Show the border and axes ticks
     fig.patch.set_visible(True)
@@ -154,15 +166,15 @@ def plot_rot(gesture_num, demo_num, warp_path, end_eff_rot_aligned,
     ax = plt.axes(projection='3d')
     ax.set_box_aspect([1.0, 1.0, 1.0])
 
-    ax.scatter(end_eff_rot_aligned[:].T[0],
-               -end_eff_rot_aligned[:].T[2],
-               end_eff_rot_aligned[:].T[1],
+    ax.scatter(end_eff_rot_aligned[:, 0],
+               -end_eff_rot_aligned[:, 2],
+               end_eff_rot_aligned[:, 1],
                c=time_URDF_aligned / max(time_URDF_aligned),
                cmap='Reds',
                label='End-effector orientation')
-    ax.scatter(hand_rot_aligned[:].T[0],
-               -hand_rot_aligned[:].T[2],
-               hand_rot_aligned[:].T[1],
+    ax.scatter(hand_rot_aligned[:, 0],
+               -hand_rot_aligned[:, 2],
+               hand_rot_aligned[:, 1],
                c=time_hand_aligned / max(time_hand_aligned),
                cmap='Blues',
                label='Hand orientation')
@@ -188,16 +200,19 @@ def plot_rot(gesture_num, demo_num, warp_path, end_eff_rot_aligned,
     return
 
 
-def plot_rot_2D(time, traj):
+def plot_rot_2D(time,
+                traj,
+                fig_size=(10, 7),
+                save_name='DTW_Rot_corrected.png'):
     """
     Plot rotation data over time, one line per euler angle
     Arguments: time[n]
                traj[n,3] 
     """
 
-    fig, ax = plt.subplots(figsize=(10, 7))
+    _, ax = plt.subplots(figsize=fig_size)
     ax.plot(time,
-            traj[:].T[0],
+            traj[:, 0],
             '-ko',
             label='x',
             linewidth=0.2,
@@ -205,7 +220,7 @@ def plot_rot_2D(time, traj):
             markerfacecolor='lightcoral',
             markeredgecolor='lightcoral')
     ax.plot(time,
-            traj[:].T[1],
+            traj[:, 1],
             '-bo',
             label='x',
             linewidth=0.2,
@@ -213,7 +228,7 @@ def plot_rot_2D(time, traj):
             markerfacecolor='skyblue',
             markeredgecolor='skyblue')
     ax.plot(time,
-            traj[:].T[2],
+            traj[:, 2],
             '-ro',
             label='x',
             linewidth=0.2,
@@ -222,19 +237,32 @@ def plot_rot_2D(time, traj):
             markeredgecolor='red')
 
     plt.show()
-    # plt.savefig('DTW_Rot_corrected_' + str(demo_num) + '.png')
+    # plt.savefig(save_name)
     # plt.close('all')
 
 
-def plot_raw_data(end_eff_data, rh_data, lh_data, camera_data, joint_data,
-                  start_index, end_index):
+def plot_raw_data(end_eff_data,
+                  rh_data,
+                  lh_data,
+                  camera_data,
+                  joint_data,
+                  start_index,
+                  end_index,
+                  title="Raw Data",
+                  fig_size=(12, 16)):
 
-    #     # Quick and dirty clipping (should be done by DTW instead)
+    # Quick and dirty clipping (should be done by DTW instead)
     time = end_eff_data[..., 0]
     # start_index = np.where(time>time[0]+1)[0][0]
     # end_index   = np.where(time>time[-1]-1)[0][0]
 
+    #TODO(Varun) This plotting is very similar to plot_raw_data. Maybe combine them?
     fig, ax = plt.subplots(figsize=(12, 16))
+
+    fig.patch.set_visible(True)
+    fig.suptitle(title)
+    fig.canvas.manager.set_window_title(title.lower())
+
     fig.patch.set_visible(True)
     ax.axis('off')
     ax = plt.axes(projection='3d')
@@ -247,10 +275,12 @@ def plot_raw_data(end_eff_data, rh_data, lh_data, camera_data, joint_data,
     ax.set_ylim(-.25, .75)
     ax.set_zlim(-.5, .5)
 
+    #TODO(Varun) What is happening in these 3 lines?
     subsampled_rh_data = rh_data - camera_data
     subsampled_lh_data = lh_data - camera_data
     subsampled_camera_data = camera_data - camera_data
 
+    #TODO(Varun) This is just plot_raw_data_subsampled with subsample = 1
     subsampled_rh_data = subsampled_rh_data[start_index:end_index, :]
     subsampled_lh_data = subsampled_lh_data[start_index:end_index, :]
     subsampled_camera_data = subsampled_camera_data[start_index:end_index, :]
@@ -259,28 +289,28 @@ def plot_raw_data(end_eff_data, rh_data, lh_data, camera_data, joint_data,
     # And clip ends (~1sec at beginning, 2sec at end (but DTW should help with this))
     # np.where(time_hand_aligned>time_hand_aligned[0]+1)[0][0]
 
-    #     ax.scatter(rh_data[:].T[1], rh_data[:].T[2], -rh_data[:].T[3],\
+    #     ax.scatter(rh_data[:, 1], rh_data[:, 2], -rh_data[:, 3],\
     #                 c=time/max(time), cmap='Reds', label='Right-hand position')
-    #     ax.scatter(lh_data[:].T[1], lh_data[:].T[2], -lh_data[:].T[3], \
+    #     ax.scatter(lh_data[:, 1], lh_data[:, 2], -lh_data[:, 3], \
     #                c=time/max(time), cmap='Blues', label='Left-hand position')
-    #     ax.scatter(camera_data[:].T[1], camera_data[:].T[2], -camera_data[:].T[3], \
+    #     ax.scatter(camera_data[:, 1], camera_data[:, 2], -camera_data[:, 3], \
     #                c=time/max(time), cmap='Greens', label='Camera position')
 
-    ax.scatter(subsampled_rh_data[:].T[1],
-               subsampled_rh_data[:].T[3],
-               subsampled_rh_data[:].T[2],
+    ax.scatter(subsampled_rh_data[:, 1],
+               subsampled_rh_data[:, 3],
+               subsampled_rh_data[:, 2],
                c=time[start_index:end_index] / max(time),
                cmap='Reds',
                label='Right-hand position')
-    ax.scatter(subsampled_lh_data[:].T[1],
-               subsampled_lh_data[:].T[3],
-               subsampled_lh_data[:].T[2],
+    ax.scatter(subsampled_lh_data[:, 1],
+               subsampled_lh_data[:, 3],
+               subsampled_lh_data[:, 2],
                c=time[start_index:end_index] / max(time),
                cmap='Blues',
                label='Left-hand position')
-    ax.scatter(subsampled_camera_data[:].T[1],
-               subsampled_camera_data[:].T[3],
-               subsampled_camera_data[:].T[2],
+    ax.scatter(subsampled_camera_data[:, 1],
+               subsampled_camera_data[:, 3],
+               subsampled_camera_data[:, 2],
                c=time[start_index:end_index] / max(time),
                cmap='Greens',
                label='Camera position')
@@ -288,23 +318,24 @@ def plot_raw_data(end_eff_data, rh_data, lh_data, camera_data, joint_data,
     ax.legend()
 
 
-def plot_raw_data_subsampled(subsample,
-                             end_eff_data,
-                             camera_data,
-                             rh_data,
-                             lh_data,
-                             joint_data,
-                             title="Raw Data"):
+def plot_raw_data_subsampled(
+    subsample,
+    end_eff_data,
+    camera_data,
+    rh_data,
+    lh_data,
+    joint_data,
+    start_index=1,  #77
+    end_index=-1,  #-154
+    title="Raw Data",
+    fig_size=(7, 6)):
 
     # Quick and dirty clipping (should be done by DTW instead)
     time = end_eff_data[..., 0]
     # start_index = np.where(time>time[0]+1)[0][0]
     # end_index   = np.where(time>time[-1]-1)[0][0]
 
-    start_index = 1  #77
-    end_index = -1  #-154
-
-    fig, ax = plt.subplots(figsize=(7, 6))
+    fig, ax = plt.subplots(figsize=fig_size)
     fig.patch.set_visible(True)
     fig.suptitle(title)
     fig.canvas.manager.set_window_title(title.lower())
@@ -324,16 +355,17 @@ def plot_raw_data_subsampled(subsample,
     # centered_lh_data = lh_data - camera_data
     # centered_camera_data = camera_data - camera_data
 
+    # Subsample the data.
     subsampled_rh_data = rh_data[start_index:end_index:subsample, :]
     subsampled_lh_data = lh_data[start_index:end_index:subsample, :]
     subsampled_camera_data = camera_data[start_index:end_index:subsample, :]
     subsampled_end_eff_data = end_eff_data[start_index:end_index:subsample, :]
 
-    # ax.scatter(rh_data[:].T[1], rh_data[:].T[2], -rh_data[:].T[3],\
+    # ax.scatter(rh_data[:, 1], rh_data[:, 2], -rh_data[:, 3],\
     #             c=time/max(time), cmap='Reds', label='Right-hand position')
-    # ax.scatter(lh_data[:].T[1], lh_data[:].T[2], -lh_data[:].T[3], \
+    # ax.scatter(lh_data[:, 1], lh_data[:, 2], -lh_data[:, 3], \
     #             c=time/max(time), cmap='Blues', label='Left-hand position')
-    # ax.scatter(camera_data[:].T[1], camera_data[:].T[2], -camera_data[:].T[3], \
+    # ax.scatter(camera_data[:, 1], camera_data[:, 2], -camera_data[:, 3], \
     #             c=time/max(time), cmap='Greens', label='Camera position')
 
     ax.scatter(subsampled_rh_data[:, 1],
