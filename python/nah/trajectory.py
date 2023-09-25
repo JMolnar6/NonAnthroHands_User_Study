@@ -66,6 +66,7 @@ class Alignment(Enum):
     No = 0
     Spatial = 1  # Use Umeyama method for spatial alignment.
     Temporal = 2  # Use Dynamic Time Waring to temporally align trajectories.
+    SpatioTemporal = 3  # Perform spatial and then temporal alignment
 
 
 def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
@@ -87,7 +88,13 @@ def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
         traj2_evo = evo_align(traj2_evo, traj1_evo)
 
     elif alignment == Alignment.Temporal:
-        raise NotImplementedError("DTW alignment not implemented yet")
+        # traj2_evo = dtw_align(traj2_evo_spatial, traj1_evo)
+        raise NotImplementedError("Temporal alignment not implemented.")
+
+    elif alignment == Alignment.SpatioTemporal:
+        traj2_evo_spatial = evo_align(traj2_evo, traj1_evo)
+        # traj2_evo = dtw_align(traj2_evo_spatial, traj1_evo)
+        raise NotImplementedError("Temporal alignment not implemented.")
 
     else:
         raise RuntimeError("Invalid Alignment specified.")
