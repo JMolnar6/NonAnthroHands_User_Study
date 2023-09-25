@@ -48,6 +48,30 @@ def plot_norm(warp_path, x_norm, y_norm):
     return
 
 
+def set_axes_equal(ax: plt.Axes):
+    """Set 3D plot axes to equal scale.
+
+    Make axes of 3D plot have equal scale so that spheres appear as
+    spheres and cubes as cubes.  Required since `ax.axis('equal')`
+    and `ax.set_aspect('equal')` don't work on 3D.
+    """
+    limits = np.array([
+        ax.get_xlim3d(),
+        ax.get_ylim3d(),
+        ax.get_zlim3d(),
+    ])
+    origin = np.mean(limits, axis=1)
+    radius = 0.5 * np.max(np.abs(limits[:, 1] - limits[:, 0]))
+    _set_axes_radius(ax, origin, radius)
+
+
+def _set_axes_radius(ax, origin, radius):
+    x, y, z = origin
+    ax.set_xlim3d([x - radius, x + radius])
+    ax.set_ylim3d([y - radius, y + radius])
+    ax.set_zlim3d([z - radius, z + radius])
+
+
 def plot_pos(gesture_num, demo_num, warp_path, end_eff_pos_aligned,
              hand_pos_aligned, time_URDF_aligned, time_hand_aligned):
     fig, ax = plt.subplots(figsize=(6, 4))
@@ -56,9 +80,10 @@ def plot_pos(gesture_num, demo_num, warp_path, end_eff_pos_aligned,
     fig.patch.set_visible(True)
     ax.axis('on')
     ax = plt.axes(projection='3d')
-    ax.tick_params(axis='x', labelsize=10)
-    ax.tick_params(axis='y', labelsize=10)
-    ax.tick_params(axis='z', labelsize=10)
+    ax.tick_params(axis='x')  #, labelsize=10)
+    ax.tick_params(axis='y')  #, labelsize=10)
+    ax.tick_params(axis='z')  #, labelsize=10)
+    ax.set_box_aspect([1.0, 1.0, 1.0])
 
     end_eff_pos_aligned = end_eff_pos_aligned - end_eff_pos_aligned[1]
     hand_pos_aligned = hand_pos_aligned - hand_pos_aligned[1]
@@ -98,14 +123,17 @@ def plot_pos(gesture_num, demo_num, warp_path, end_eff_pos_aligned,
             '--k',
             linewidth=0.2)
 
+    set_axes_equal(ax)
+
     ax.set_xlabel('Horizontal position (m)', fontsize=16)
     ax.set_ylabel('Forward/Back position (m)', fontsize=16)
     ax.set_zlabel('Vertical position (m)', fontsize=16)
     ax.legend(loc='lower right', fontsize=14)
 
     ax.set_title("DTW Alignment of Hand and URDF End-Effector Position",
-                 fontsize=18,
+                 fontsize=14,
                  fontweight="bold")
+    plt.tight_layout()
     plt.show()
     # plt.savefig('DTW_Pos' + str(demo_num) + '.png')
     # plt.close('all')
@@ -124,6 +152,7 @@ def plot_rot(gesture_num, demo_num, warp_path, end_eff_rot_aligned,
     ax.axis('on')
 
     ax = plt.axes(projection='3d')
+    ax.set_box_aspect([1.0, 1.0, 1.0])
 
     ax.scatter(end_eff_rot_aligned[:].T[0],
                -end_eff_rot_aligned[:].T[2],
@@ -146,14 +175,18 @@ def plot_rot(gesture_num, demo_num, warp_path, end_eff_rot_aligned,
             '--k',
             linewidth=0.2)
 
+    set_axes_equal(ax)
+
     ax.set_title("DTW Alignment of Hand and URDF End-Effector Orientation",
-                 fontsize=20,
+                 fontsize=14,
                  fontweight="bold")
     # plt.savefig('DTW_Rot' + str(demo_num) + '.png')
     # plt.close('all')
+    plt.tight_layout()
     plt.show()
 
     return
+
 
 def plot_rot_2D(time, traj):
     """
@@ -161,7 +194,7 @@ def plot_rot_2D(time, traj):
     Arguments: time[n]
                traj[n,3] 
     """
-    
+
     fig, ax = plt.subplots(figsize=(10, 7))
     ax.plot(time,
             traj[:].T[0],
@@ -187,7 +220,7 @@ def plot_rot_2D(time, traj):
             markersize=2,
             markerfacecolor='red',
             markeredgecolor='red')
-    
+
     plt.show()
     # plt.savefig('DTW_Rot_corrected_' + str(demo_num) + '.png')
     # plt.close('all')
@@ -348,8 +381,9 @@ def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
     `participant_ids` is a tuple of ids, e.g. (1, 2, 3, 7).
     """
     if followup:
-        assert max(particiant_ids) <= 9, \
-            "followup is true, so the maximum ID value should be 9"
+        assert max(
+            particiant_ids
+        ) <= 9, "followup is true, so the maximum ID value should be 9"
     else:
         assert max(particiant_ids) <= 16
 
