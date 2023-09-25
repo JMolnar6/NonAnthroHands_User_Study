@@ -1,6 +1,7 @@
 """Trajectory utilities"""
 
 from copy import deepcopy
+from enum import Enum
 
 import numpy as np
 from evo.core import metrics, sync
@@ -59,38 +60,37 @@ def evaluate_ape(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
 
     return metric
 
-def get_evo_metrics(traj1, traj2):
+
+class Alignment(Enum):
+    """Options for trajectory alignment"""
+    No = 0
+    Spatial = 1  # Use Umeyama method for spatial alignment.
+    Temporal = 2  # Use Dynamic Time Waring to temporally align trajectories.
+
+
+def get_evo_metrics(traj1, traj2, alignment=Alignment.Spatial):
     """
     Take two trajectories of equal length and calculate
     the error between them.
     """
     traj1_evo = get_evo_trajectory(traj1)
-    traj2_evo = get_evo_trajectory(traj2)   
-    
+    traj2_evo = get_evo_trajectory(traj2)
+
+    # Synchronize the trajectories based on timestamps
     traj1_evo, traj2_evo = evo_sync(traj1_evo, traj2_evo)
-    
+
+    if alignment == Alignment.No:
+        # Don't do any alignment
+        pass
+
+    elif alignment == Alignment.Spatial:
+        traj2_evo = evo_align(traj2_evo, traj1_evo)
+
+    elif alignment == Alignment.Temporal:
+        raise NotImplementedError("DTW alignment not implemented yet")
+
+    else:
+        raise RuntimeError("Invalid Alignment specified.")
+
     metric = evaluate_ape(traj1_evo, traj2_evo)
-    return(metric.get_all_statistics())
-
-def get_aligned_evo_metrics(traj1, traj2):
-    """
-    Take two trajectories of equal length and calculate
-    the error between them.
-    """
-    traj1_evo = get_evo_trajectory(traj1)
-    traj2_evo = get_evo_trajectory(traj2)   
-
-    """TODO: Jennifer
-    Temporal alignment. DTW should go here instead
-    """
-    traj1_evo, traj2_evo = evo_sync(traj1_evo, traj2_evo)    
-    # metric = evaluate_ape(traj1_evo, traj2_evo)
-
-    # Spatial alignment
-    traj2_evo = evo_align(traj2_evo, traj1_evo)
-
-    traj1_aligned = convert_evo_to_np(traj1_evo)
-    traj2_aligned = convert_evo_to_np(traj2_evo)
-
-    metric = evaluate_ape(traj1_aligned, traj2_aligned)
-    return(metric.get_all_statistics())
+    return metric
