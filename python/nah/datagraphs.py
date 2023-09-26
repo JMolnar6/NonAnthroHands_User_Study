@@ -3,17 +3,12 @@
 import numpy as np
 from nah.utils import segment_by_demo
 from nah.loader import load_npzs
-from nah.trajectory import get_evo_metrics
+from nah.trajectory import get_evo_metrics, Alignment
 
 
 def generate_self_similarity_heat_map(robot_name, followup, demo_max):
 
-    if followup:
-        PIDmax = 9
-        gesturemax = 6
-    else:
-        PIDmax = 16
-        gesturemax = 15
+    PIDmax, gesturemax = study_range_vals(followup)
 
     heatmap_array = np.array([])
     handedness_array = np.zeros([PIDmax, gesturemax])
@@ -40,15 +35,13 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
             # the primary hand that they used. If both hands were used, can we calculate and present
             # both? Not the way the heat map is currently drawn, but at least print out a statement
             # so that I can resolve it with my notes.
-            rh_range = hand_range(rh_multi_demo[0])
-            lh_range = hand_range(lh_multi_demo[0])
-            camera_range = hand_range(camera_multi_demo[0])
+            is_right_hand = right_handedness(rh_multi_demo[0],
+                                             lh_multi_demo[0])
 
-            print("Right hand range:" + str(np.linalg.norm(rh_range)))
-            print("Left hand range:" + str(np.linalg.norm(lh_range)))
+            camera_range = hand_range(camera_multi_demo[0])
             print("Camera range:" + str(np.linalg.norm(camera_range)))
 
-            if (rh_range > lh_range):
+            if (is_right_hand):
                 hand_data = rh_multi_demo
             else:
                 hand_data = lh_multi_demo
@@ -117,6 +110,8 @@ def hand_range(hand_data):
 
 
 def right_handedness(rh_data, lh_data):
+    # print("Right hand range:" + str(hand_range(rh_data)))
+    # print("Left hand range:" + str(hand_range(lh_data)))
     if (hand_range(rh_data) > hand_range(lh_data)):
         return True
     else:
@@ -133,3 +128,56 @@ def study_range_vals(followup):
         PIDmax = 17
         gesturemax = 16
     return PIDmax, gesturemax
+
+
+def generate_cross_correlation_matrix(robot_name, gesture, followup, demo_max):
+    PID_max, gesture_max = study_range_vals(followup)
+
+    correlation_array = np.zeros([PID_max, PID_max])
+    handedness_array = np.zeros([PID_max, PID_max])
+
+    for PID1 in range(1, PID_max + 1):
+        for PID2 in range(1, PID_max + 1):
+            end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
+                robot_name, PID1, followup, gesture)
+            end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
+                robot_name, PID2, followup, gesture)
+
+            end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1 = segment_by_demo(
+                end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max)
+            end_eff_multi_demo2, camera_multi_demo2, rh_multi_demo2, lh_multi_demo2, joints_multi_demo2 = segment_by_demo(
+                end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max)
+
+            is_right_hand1 = right_handedness(rh_multi_demo1[0],
+                                              lh_multi_demo1[0])
+            # Only change the handedness array for PID1
+            # (in case PID2 uses a different hand)
+            handedness_array[PID1 - 1, PID2 - 1] = 1
+
+            is_right_hand2 = right_handedness(rh_multi_demo2[0],
+                                              lh_multi_demo2[0])
+
+            temp_metrics = np.zeros([demo_max, demo_max])
+
+            for demo_num1 in range(0, demo_max):
+                for demo_num2 in range(0, demo_max):
+
+                    if (is_right_hand1):
+                        traj1 = rh_multi_demo1[demo_num1]
+                    else:
+                        traj1 = lh_multi_demo1[demo_num1]
+
+                    if (is_right_hand2):
+                        traj2 = rh_multi_demo2[demo_num2]
+                    else:
+                        traj2 = lh_multi_demo2[demo_num2]
+
+                    metrics = get_evo_metrics(
+                        traj1, traj2, alignment=Alignment.SpatioTemporal)
+
+                    temp_metrics[demo_num1, demo_num2] = metrics['rmse']
+
+            correlation_array[PID1 - 1,
+                              PID2 - 1] = temp_metrics.mean(0).mean(0)
+
+    return correlation_array, handedness_array
