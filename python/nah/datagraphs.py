@@ -40,21 +40,18 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
             # the primary hand that they used. If both hands were used, can we calculate and present
             # both? Not the way the heat map is currently drawn, but at least print out a statement
             # so that I can resolve it with my notes.
-            rh_range = np.max(rh[:, 1:4], axis=0)[1:4] - np.min(rh[:, 1:4],
-                                                                axis=0)[1:4]
-            lh_range = np.max(lh[:, 1:4], axis=0)[1:4] - np.min(lh[:, 1:4],
-                                                                axis=0)[1:4]
-            camera_range = np.max(camera[:, 1:4], axis=0)[1:4] - np.min(
-                camera[:, 1:4], axis=0)[1:4]
+            rh_range = hand_range(rh_multi_demo[0])
+            lh_range = hand_range(lh_multi_demo[0])
+            camera_range = hand_range(camera_multi_demo[0])
 
-            # print("Right hand range:"+ str(np.linalg.norm(rh_range)))
-            # print("Left hand range:" + str(np.linalg.norm(lh_range)))
-            # print("Camera range:" + str(np.linalg.norm(camera_range)))
+            print("Right hand range:" + str(np.linalg.norm(rh_range)))
+            print("Left hand range:" + str(np.linalg.norm(lh_range)))
+            print("Camera range:" + str(np.linalg.norm(camera_range)))
             """ TODO(Jennifer): Is it possible to print the heatmap with different colors for different 
                 entries, depending on which hand was used? I'd want the luminance to be similar, so that
                 a B/W print still makes it easy to see how well things correlate
             """
-            if (np.linalg.norm(rh_range)) > (np.linalg.norm(lh_range)):
+            if (rh_range > lh_range):
                 hand_data = rh_multi_demo
             else:
                 hand_data = lh_multi_demo
@@ -77,10 +74,13 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
                 for j in range(i + 1, 5):
                     try:
                         # Centering code, for participants who clearly walked around during or between their demos:
+                        camera_range_i = hand_range(camera_multi_demo[i])
+                        camera_range_j = hand_range(camera_multi_demo[j])
                         camera_shift = np.linalg.norm(
                             camera_multi_demo[i][1:4] -
                             camera_multi_demo[j][1:4])
-                        if (np.linalg.norm(camera_range) > shift_limit
+                        if (camera_range_i > shift_limit
+                                or camera_range_j > shift_limit
                                 or camera_shift > shift_limit):
                             print("Centering data for participant " +
                                   str(PID) + " gesture " + str(gesture_num))
@@ -119,3 +119,20 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
 
     # print(heatmap_array)
     return heatmap_array, handedness_array
+
+
+def hand_range(hand_data):
+    movement_range = np.zeros([3, 1])
+    for i in range(1, 4):
+        movement_range[i -
+                       1] = np.max(hand_data[:, i]) - np.min(hand_data[:, i])
+
+    return np.linalg.norm(movement_range)
+
+
+def right_handedness(rh_data, lh_data):
+    if (hand_range(rh_data) > hand_range(lh_data)):
+        return True
+    else:
+        return False
+    #TODO(Jennifer) Make unit tests for this
