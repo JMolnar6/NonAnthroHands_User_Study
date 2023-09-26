@@ -377,6 +377,8 @@ def view_participant_robot_gesture(robot_name,
 
 
 def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
+    if (robot_name == "j2s6s300"):
+        robot_name = "Jaco"
     participant_labels = []
     gesture_labels = []
     if followup:
