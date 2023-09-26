@@ -4,6 +4,7 @@ from copy import deepcopy
 from enum import Enum
 
 import gtsam
+import numpy as np
 from evo.core.trajectory import PoseTrajectory3D
 
 
@@ -31,5 +32,34 @@ def evo_to_gtsam(traj: PoseTrajectory3D):
     return gtsam_traj
 
 
-def manifold_align(traj1, traj2):
-    pass
+def gtsam_to_evo(traj: list, timestamps):
+    """Convert evo.PoseTrajectory3D to a list of gtsam Pose3 objects."""
+    xyz = np.empty((len(traj), 3))
+    quat_wxyz = np.empty((len(traj), 4))
+    for i, pose in enumerate(traj):
+        xyz[i] = pose.translation()
+        q = pose.rotation().toQuaternion()
+        quat_wxyz[i] = np.asarray([q.w(), q.x(), q.y(), q.z()])
+
+    return PoseTrajectory3D(positions_xyz=xyz,
+                            orientations_quat_wxyz=quat_wxyz,
+                            timestamps=timestamps)
+
+
+def manifold_align(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
+    """Perform manifold optimization to find the best Sim(3) alignment between two trajectories."""
+    # Get list of (a_pose, b_pose) tuples
+    # max_len = max(len(traj1))
+    gtsam_traj1 = evo_to_gtsam(traj1)
+    gtsam_traj2 = evo_to_gtsam(traj2)
+
+    min_len = min(len(gtsam_traj1), len(gtsam_traj2))
+    pose3_pairs = [
+        (pose1, pose2)
+        for pose1, pose2 in zip(gtsam_traj1[:min_len], gtsam_traj2[:min_len])
+    ]
+    aSb = gtsam.Similarity3.Align(pose3_pairs)
+
+    gtsam_traj2_aligned = [aSb.transformFrom(bTi) for bTi in gtsam_traj2]
+    traj2_aligned = gtsam_to_evo(gtsam_traj2_aligned, traj2.timestamps)
+    return traj2_aligned
