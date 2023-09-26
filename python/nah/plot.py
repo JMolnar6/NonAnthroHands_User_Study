@@ -353,9 +353,9 @@ def plot_raw_data_subsampled(
     ax.set_zlim(-1.5, 1.5)
 
     if centered:
-        rh_data[:,1:7] = rh_data[:,1:7] - camera_data[:,1:7]
-        lh_data[:,1:7] = lh_data[:,1:7] - camera_data[:,1:7]
-        camera_data[:,1:7] = camera_data[:,1:7] - camera_data[:,1:7]
+        rh_data[:, 1:7] = rh_data[:, 1:7] - camera_data[:, 1:7]
+        lh_data[:, 1:7] = lh_data[:, 1:7] - camera_data[:, 1:7]
+        camera_data[:, 1:7] = camera_data[:, 1:7] - camera_data[:, 1:7]
 
     # Subsample the data.
     subsampled_rh_data = rh_data[start_index:end_index:subsample, :]
@@ -407,8 +407,11 @@ def plot_raw_data_subsampled(
     leg.legendHandles[3].set_color('#B87333')
 
 
-def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
-                                   followup,centered=False):
+def view_participant_robot_gesture(robot_name,
+                                   particiant_ids,
+                                   gesture_num,
+                                   followup,
+                                   centered=False):
     """
     Provides a quick way to visualize a single gesture for one or all participants.
 
@@ -439,5 +442,10 @@ def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
         total_joint = np.vstack((total_joint, joint))
 
     # plot_raw_data(end_eff, rh, lh, camera, joint, start_index, end_index)
-    plot_raw_data_subsampled(1, total_end_eff, total_camera, total_rh,
-                             total_lh, total_joint, centered=centered)
+    plot_raw_data_subsampled(1,
+                             total_end_eff,
+                             total_camera,
+                             total_rh,
+                             total_lh,
+                             total_joint,
+                             centered=centered)
