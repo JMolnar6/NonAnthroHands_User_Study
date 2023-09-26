@@ -1,26 +1,29 @@
 """Figure Generation Utilities"""
 
 import numpy as np
-import pandas as pd
 from nah.utils import segment_by_demo
 from nah.loader import load_npzs
 from nah.trajectory import get_evo_metrics
 
 
 def generate_self_similarity_heat_map(robot_name, followup, demo_max):
+
     if followup:
-        PIDmax = 10
-        gesturemax = 7
+        PIDmax = 9
+        gesturemax = 6
     else:
-        PIDmax = 17
-        gesturemax = 16
+        PIDmax = 16
+        gesturemax = 15
 
     heatmap_array = np.array([])
+    handedness_array = np.zeros([PIDmax, gesturemax])
 
-    for PID in range(1, PIDmax):
+    shift_limit = 0.3
+
+    for PID in range(1, PIDmax + 1):
         gesture_metrics = np.array([])
 
-        for gesture_num in range(1, gesturemax):
+        for gesture_num in range(1, gesturemax + 1):
             end_eff, camera, rh, lh, joint = load_npzs(robot_name, PID,
                                                        followup, gesture_num)
             try:
@@ -55,6 +58,7 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
                 hand_data = rh_multi_demo
             else:
                 hand_data = lh_multi_demo
+                handedness_array[PID - 1, gesture_num - 1] = 1
             """TODO(Jennifer): Handle it when both rh_range and lh_range are above the threshold that 
                 indicates this is a 2-handed motion"""
             """TODO(Jennifer)
@@ -76,8 +80,8 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
                         camera_shift = np.linalg.norm(
                             camera_multi_demo[i][1:4] -
                             camera_multi_demo[j][1:4])
-                        if (np.linalg.norm(camera_range) > 0.25
-                                or camera_shift > 0.25):
+                        if (np.linalg.norm(camera_range) > shift_limit
+                                or camera_shift > shift_limit):
                             print("Centering data for participant " +
                                   str(PID) + " gesture " + str(gesture_num))
                             temp_metrics = get_evo_metrics(
@@ -113,5 +117,5 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
         else:
             heatmap_array = np.vstack((heatmap_array, gesture_metrics))
 
-    print(heatmap_array)
-    return heatmap_array
+    # print(heatmap_array)
+    return heatmap_array, handedness_array
