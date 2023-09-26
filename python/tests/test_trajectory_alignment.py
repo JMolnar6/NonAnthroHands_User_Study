@@ -1,6 +1,7 @@
 import unittest
 
 import numpy as np
+from fastdtw import fastdtw
 from nah.alignments import Alignment, evo_to_gtsam, manifold_align, pose_dist
 from nah.loader import load_npzs
 from nah.trajectory import get_evo_metrics, get_evo_trajectory
@@ -84,3 +85,16 @@ class TestAlignment(unittest.TestCase):
         p2[1, 1] = -1
 
         assert pose_dist(p1, p2) == np.pi
+
+    def test_dtw_pose_dist(self):
+        """Test the use of the pose_dist distance function with DTW"""
+        # Trivial case when both trajectories are the same
+        traj1 = get_evo_trajectory(self.end_eff[0]).poses_se3
+        traj2 = get_evo_trajectory(self.end_eff[0]).poses_se3
+
+        distance, path = fastdtw(traj1, traj2, dist=pose_dist)
+        np.testing.assert_almost_equal(distance, 0.0)
+
+        # Since the trajectories are the same
+        expected_path = [(i, i) for i, _ in enumerate(traj1)]
+        assert path == expected_path

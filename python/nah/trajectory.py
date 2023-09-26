@@ -8,7 +8,7 @@ from scipy.spatial.transform import Rotation
 
 
 def get_evo_trajectory(trajectory):
-    """timestamp, tx, ty, tz, rx, ry, rz"""
+    """Convert trajectory [timestamp, tx, ty, tz, rx, ry, rz] to evo.PoseTrajectory3D."""
     timestamps = trajectory[:, 0]
     xyz = trajectory[:, 1:4]
 
@@ -46,6 +46,7 @@ def evaluate_ape(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
     metric.process_data((traj1, traj2))
 
     return metric
+
 
 def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
     """
