@@ -63,3 +63,22 @@ def manifold_align(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
     gtsam_traj2_aligned = [aSb.transformFrom(bTi) for bTi in gtsam_traj2]
     traj2_aligned = gtsam_to_evo(gtsam_traj2_aligned, traj2.timestamps)
     return traj2_aligned
+
+
+def pose_dist(p1: np.ndarray, p2: np.ndarray):
+    """
+    Distance metric between 2 poses to be used with Dynamic Time Warping.
+
+    Given poses p1 and p2, the distance between the two
+    is computed as the L2 norm of the vector difference of the Lie algebras.
+    """
+    aTb1 = gtsam.Pose3(p1)
+    aTb2 = gtsam.Pose3(p2)
+
+    # Compute the transformation difference in SE(3)
+    b1Tb2 = aTb1.inverse() * aTb2
+
+    # Get the se(3) vector corresponding to the difference.
+    v = gtsam.Pose3.Logmap(b1Tb2)
+
+    return np.linalg.norm(v)

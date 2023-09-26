@@ -1,9 +1,7 @@
 import unittest
-from pathlib import Path
 
 import numpy as np
-import pytest
-from nah.alignments import Alignment, evo_to_gtsam, manifold_align
+from nah.alignments import Alignment, evo_to_gtsam, manifold_align, pose_dist
 from nah.loader import load_npzs
 from nah.trajectory import get_evo_metrics, get_evo_trajectory
 from nah.utils import segment_by_demo
@@ -60,4 +58,29 @@ class TestAlignment(unittest.TestCase):
         assert traj2_aligned.timestamps.shape == (396, )
 
     def test_pose_dist(self):
-        pass
+        """Test custom pose distance metric"""
+        p1 = np.eye(4)
+        p2 = np.eye(4)
+
+        # Difference between identities should be 0
+        assert pose_dist(p1, p2) == 0.0
+
+        p1[0:3, 3] = np.arange(1, 4)
+        p2[0:3, 3] = np.arange(1, 4)
+        # Difference between the same poses should be 0
+        assert pose_dist(p1, p2) == 0.0
+
+        # Compare different translations
+        p2[0:3, 3] = np.arange(4, 7)
+
+        assert pose_dist(p1, p2) == \
+            np.linalg.norm(np.arange(1, 4) - np.arange(4, 7))
+
+        # Compare rotations
+        p1 = np.eye(4)
+        # Pose with rotation of 180 degrees
+        p2 = np.eye(4)
+        p2[0, 0] = -1
+        p2[1, 1] = -1
+
+        assert pose_dist(p1, p2) == np.pi
