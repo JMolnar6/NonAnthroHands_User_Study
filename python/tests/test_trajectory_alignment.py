@@ -2,8 +2,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from nah.alignments import Alignment, evo_to_gtsam
 from nah.loader import load_npzs
-from nah.trajectory import Alignment, get_evo_metrics
+from nah.trajectory import get_evo_metrics, get_evo_trajectory
 from nah.utils import segment_by_demo
 
 
@@ -58,3 +59,22 @@ def test_get_aligned_evo_metrics():
 
     metrics = get_evo_metrics(rh[0], rh[1])
     assert (metrics['mean'] > 0.1 and metrics['mean'] < 0.14)
+
+
+def test_evo_to_gtsam():
+    """Test conversion of evo.PoseTrajectory3D to list of gtsam.Pose3"""
+    robot_name = "Reachy"
+    participant_id = 13
+    followup = False
+    gesture_num = 1
+    demo_max = 2
+
+    end_eff_data, camera_data, rh_data, lh_data, joint_data = load_npzs(
+        robot_name, participant_id, followup, gesture_num)
+    end_eff, _, _, _, _ = segment_by_demo(end_eff_data, camera_data, rh_data,
+                                          lh_data, joint_data, demo_max)
+
+    evo_traj = get_evo_trajectory(end_eff[0])
+    gtsam_traj = evo_to_gtsam(evo_traj)
+
+    assert len(gtsam_traj) == 401

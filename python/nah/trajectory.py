@@ -1,11 +1,9 @@
 """Trajectory utilities"""
 
-from copy import deepcopy
-from enum import Enum
-
 import numpy as np
 from evo.core import metrics, sync
 from evo.core.trajectory import PoseTrajectory3D
+from nah.alignments import Alignment, evo_align
 from scipy.spatial.transform import Rotation
 
 
@@ -42,31 +40,12 @@ def evo_sync(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
     return traj1, traj2
 
 
-def evo_align(traj1, traj2, correct_scale=True):
-    """
-    Align the second trajectory to the first one.
-    Returns the aligned second trajectory.
-    """
-    traj2_aligned = deepcopy(traj2)
-    r, t, s = traj2_aligned.align(traj1, correct_scale=correct_scale)
-    return traj2_aligned
-
-
 def evaluate_ape(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
     """Evaluate the Absolute Pose Error (APE) between 2 trajectories."""
     metric = metrics.APE(metrics.PoseRelation.full_transformation)
     metric.process_data((traj1, traj2))
 
     return metric
-
-
-class Alignment(Enum):
-    """Options for trajectory alignment"""
-    No = 0
-    Spatial = 1  # Use Manifold optimizatio from GTSAM for spatial alignment.
-    Temporal = 2  # Use Dynamic Time Waring to temporally align trajectories.
-    SpatioTemporal = 3  # Perform spatial and then temporal alignment
-
 
 def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
     """
