@@ -1,6 +1,9 @@
 """Plotting utilities"""
 import numpy as np
+import pandas as pd
+import seaborn as sns
 from matplotlib import pyplot as plt
+from matplotlib.colors import LogNorm, Normalize
 from nah.loader import load_npzs
 from tqdm import tqdm
 
@@ -48,6 +51,30 @@ def plot_norm(warp_path, x_norm, y_norm, fig_size=(12, 6)):
     return
 
 
+def set_axes_equal(ax: plt.Axes):
+    """Set 3D plot axes to equal scale.
+
+    Make axes of 3D plot have equal scale so that spheres appear as
+    spheres and cubes as cubes.  Required since `ax.axis('equal')`
+    and `ax.set_aspect('equal')` don't work on 3D.
+    """
+    limits = np.array([
+        ax.get_xlim3d(),
+        ax.get_ylim3d(),
+        ax.get_zlim3d(),
+    ])
+    origin = np.mean(limits, axis=1)
+    radius = 0.5 * np.max(np.abs(limits[:, 1] - limits[:, 0]))
+    _set_axes_radius(ax, origin, radius)
+
+
+def _set_axes_radius(ax, origin, radius):
+    x, y, z = origin
+    ax.set_xlim3d([x - radius, x + radius])
+    ax.set_ylim3d([y - radius, y + radius])
+    ax.set_zlim3d([z - radius, z + radius])
+
+
 def plot_pos(gesture_num,
              demo_num,
              warp_path,
@@ -62,9 +89,10 @@ def plot_pos(gesture_num,
     fig.patch.set_visible(True)
     ax.axis('on')
     ax = plt.axes(projection='3d')
-    ax.tick_params(axis='x', labelsize=10)
-    ax.tick_params(axis='y', labelsize=10)
-    ax.tick_params(axis='z', labelsize=10)
+    ax.tick_params(axis='x')  #, labelsize=10)
+    ax.tick_params(axis='y')  #, labelsize=10)
+    ax.tick_params(axis='z')  #, labelsize=10)
+    ax.set_box_aspect([1.0, 1.0, 1.0])
 
     end_eff_pos_aligned = end_eff_pos_aligned - end_eff_pos_aligned[1]
     hand_pos_aligned = hand_pos_aligned - hand_pos_aligned[1]
@@ -104,14 +132,17 @@ def plot_pos(gesture_num,
             '--k',
             linewidth=0.2)
 
+    set_axes_equal(ax)
+
     ax.set_xlabel('Horizontal position (m)', fontsize=16)
     ax.set_ylabel('Forward/Back position (m)', fontsize=16)
     ax.set_zlabel('Vertical position (m)', fontsize=16)
     ax.legend(loc='lower right', fontsize=14)
 
     ax.set_title("DTW Alignment of Hand and URDF End-Effector Position",
-                 fontsize=18,
+                 fontsize=14,
                  fontweight="bold")
+    plt.tight_layout()
     plt.show()
     # plt.savefig('DTW_Pos' + str(demo_num) + '.png')
     # plt.close('all')
@@ -136,6 +167,7 @@ def plot_rot(gesture_num,
     ax.axis('on')
 
     ax = plt.axes(projection='3d')
+    ax.set_box_aspect([1.0, 1.0, 1.0])
 
     ax.scatter(end_eff_rot_aligned[:, 0],
                -end_eff_rot_aligned[:, 2],
@@ -158,11 +190,14 @@ def plot_rot(gesture_num,
             '--k',
             linewidth=0.2)
 
+    set_axes_equal(ax)
+
     ax.set_title("DTW Alignment of Hand and URDF End-Effector Orientation",
-                 fontsize=20,
+                 fontsize=14,
                  fontweight="bold")
     # plt.savefig('DTW_Rot' + str(demo_num) + '.png')
     # plt.close('all')
+    plt.tight_layout()
     plt.show()
 
     return
@@ -209,90 +244,14 @@ def plot_rot_2D(time,
     # plt.close('all')
 
 
-def plot_raw_data(end_eff_data,
-                  rh_data,
-                  lh_data,
-                  camera_data,
-                  joint_data,
-                  start_index,
-                  end_index,
-                  title="Raw Data",
-                  fig_size=(12, 16)):
-
-    # Quick and dirty clipping (should be done by DTW instead)
-    time = end_eff_data[..., 0]
-    # start_index = np.where(time>time[0]+1)[0][0]
-    # end_index   = np.where(time>time[-1]-1)[0][0]
-
-    #TODO(Varun) This plotting is very similar to plot_raw_data. Maybe combine them?
-    fig, ax = plt.subplots(figsize=(12, 16))
-
-    fig.patch.set_visible(True)
-    fig.suptitle(title)
-    fig.canvas.manager.set_window_title(title.lower())
-
-    fig.patch.set_visible(True)
-    ax.axis('off')
-    ax = plt.axes(projection='3d')
-    ax.view_init(30, 60)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-
-    ax.set_xlim(-.5, .5)
-    ax.set_ylim(-.25, .75)
-    ax.set_zlim(-.5, .5)
-
-    #TODO(Varun) What is happening in these 3 lines?
-    subsampled_rh_data = rh_data - camera_data
-    subsampled_lh_data = lh_data - camera_data
-    subsampled_camera_data = camera_data - camera_data
-
-    #TODO(Varun) This is just plot_raw_data_subsampled with subsample = 1
-    subsampled_rh_data = subsampled_rh_data[start_index:end_index, :]
-    subsampled_lh_data = subsampled_lh_data[start_index:end_index, :]
-    subsampled_camera_data = subsampled_camera_data[start_index:end_index, :]
-
-    # Ideally, also need to normalize by participant height (wingspan)
-    # And clip ends (~1sec at beginning, 2sec at end (but DTW should help with this))
-    # np.where(time_hand_aligned>time_hand_aligned[0]+1)[0][0]
-
-    #     ax.scatter(rh_data[:, 1], rh_data[:, 2], -rh_data[:, 3],\
-    #                 c=time/max(time), cmap='Reds', label='Right-hand position')
-    #     ax.scatter(lh_data[:, 1], lh_data[:, 2], -lh_data[:, 3], \
-    #                c=time/max(time), cmap='Blues', label='Left-hand position')
-    #     ax.scatter(camera_data[:, 1], camera_data[:, 2], -camera_data[:, 3], \
-    #                c=time/max(time), cmap='Greens', label='Camera position')
-
-    ax.scatter(subsampled_rh_data[:, 1],
-               subsampled_rh_data[:, 3],
-               subsampled_rh_data[:, 2],
-               c=time[start_index:end_index] / max(time),
-               cmap='Reds',
-               label='Right-hand position')
-    ax.scatter(subsampled_lh_data[:, 1],
-               subsampled_lh_data[:, 3],
-               subsampled_lh_data[:, 2],
-               c=time[start_index:end_index] / max(time),
-               cmap='Blues',
-               label='Left-hand position')
-    ax.scatter(subsampled_camera_data[:, 1],
-               subsampled_camera_data[:, 3],
-               subsampled_camera_data[:, 2],
-               c=time[start_index:end_index] / max(time),
-               cmap='Greens',
-               label='Camera position')
-
-    ax.legend()
-
-
-def plot_raw_data_subsampled(
+def plot_raw_data(
     subsample,
     end_eff_data,
     camera_data,
     rh_data,
     lh_data,
     joint_data,
+    centered=False,
     start_index=1,  #77
     end_index=-1,  #-154
     title="Raw Data",
@@ -319,9 +278,10 @@ def plot_raw_data_subsampled(
     ax.set_ylim(-.75, 2.15)
     ax.set_zlim(-1.5, 1.5)
 
-    # centered_rh_data = rh_data - camera_data
-    # centered_lh_data = lh_data - camera_data
-    # centered_camera_data = camera_data - camera_data
+    if centered:
+        rh_data[:, 1:7] = rh_data[:, 1:7] - camera_data[:, 1:7]
+        lh_data[:, 1:7] = lh_data[:, 1:7] - camera_data[:, 1:7]
+        camera_data[:, 1:7] = camera_data[:, 1:7] - camera_data[:, 1:7]
 
     # Subsample the data.
     subsampled_rh_data = rh_data[start_index:end_index:subsample, :]
@@ -373,16 +333,20 @@ def plot_raw_data_subsampled(
     leg.legendHandles[3].set_color('#B87333')
 
 
-def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
-                                   followup):
+def view_participant_robot_gesture(robot_name,
+                                   particiant_ids,
+                                   gesture_num,
+                                   followup,
+                                   centered=False):
     """
     Provides a quick way to visualize a single gesture for one or all participants.
 
     `participant_ids` is a tuple of ids, e.g. (1, 2, 3, 7).
     """
     if followup:
-        assert max(particiant_ids) <= 9, \
-            "followup is true, so the maximum ID value should be 9"
+        assert max(
+            particiant_ids
+        ) <= 9, "followup is true, so the maximum ID value should be 9"
     else:
         assert max(particiant_ids) <= 16
 
@@ -403,6 +367,77 @@ def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
         total_lh = np.vstack((total_lh, lh))
         total_joint = np.vstack((total_joint, joint))
 
-    # plot_raw_data(end_eff, rh, lh, camera, joint, start_index, end_index)
-    plot_raw_data_subsampled(1, total_end_eff, total_camera, total_rh,
-                             total_lh, total_joint)
+    plot_raw_data(1,
+                  total_end_eff,
+                  total_camera,
+                  total_rh,
+                  total_lh,
+                  total_joint,
+                  centered=centered)
+
+
+def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
+    if (robot_name == "j2s6s300"):
+        robot_name = "Jaco"
+    participant_labels = []
+    gesture_labels = []
+    if followup:
+        participant_max = 9
+        gesture_max = 6
+    else:
+        participant_max = 16
+        gesture_max = 15
+    for i in range(1, participant_max + 1):
+        participant_labels.append("Participant " + str(i))
+    for i in range(1, gesture_max + 1):
+        gesture_labels.append("Gesture " + str(i))
+
+    df = pd.DataFrame(demo_heatmap_array, columns=gesture_labels)
+    df.index = participant_labels
+
+    ax = sns.heatmap(demo_heatmap_array,
+                     cmap='cividis',
+                     vmin=0,
+                     vmax=np.max(demo_heatmap_array))
+    sns.heatmap(df,
+                cmap='rocket',
+                ax=ax,
+                mask=handed_array,
+                vmin=0,
+                vmax=np.max(demo_heatmap_array))
+
+    title = "Participant Demonstration Self-Similarity (RMSE)\n for " + robot_name + " Robot"
+    if followup:
+        title += ",\n Follow-up Study"
+
+    ax.set_title(title, fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    plt.show()
+    figname = 'Self_Similarity_' + robot_name + '_v0_LinearPlot_withCentering'
+    if followup:
+        figname += '_FollowUpStudy'
+    figname += '.png'
+    plt.savefig(figname)
+    # plt.close("all")
+
+    # figname = 'Self_Similarity_' + robot_name + '_v0_LogPlot_withCentering'
+    # if followup:
+    #     figname += '_FollowUpStudy'
+    # figname += '.png'
+    # ax = sns.heatmap(df,
+    #                  cmap='rocket',
+    #                  vmin=0,
+    #                  vmax=np.max(demo_heatmap_array),
+    #                  norm=LogNorm())
+    # sns.heatmap(demo_heatmap_array,
+    #             mask=handed_array,
+    #             cmap='cividis',
+    #             ax=ax,
+    #             vmin=0,
+    #             vmax=np.max(demo_heatmap_array),
+    #             norm=LogNorm())
+    # # ax = sns.heatmap(df, norm=LogNorm())
+    # ax.set_title(title, fontsize=14, fontweight="bold")
+    # plt.tight_layout()
+    # plt.show()
+    # plt.savefig(figname)
