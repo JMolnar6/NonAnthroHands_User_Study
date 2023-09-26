@@ -241,84 +241,7 @@ def plot_rot_2D(time,
     # plt.close('all')
 
 
-def plot_raw_data(end_eff_data,
-                  rh_data,
-                  lh_data,
-                  camera_data,
-                  joint_data,
-                  start_index,
-                  end_index,
-                  title="Raw Data",
-                  fig_size=(12, 16)):
-
-    # Quick and dirty clipping (should be done by DTW instead)
-    time = end_eff_data[..., 0]
-    # start_index = np.where(time>time[0]+1)[0][0]
-    # end_index   = np.where(time>time[-1]-1)[0][0]
-
-    #TODO(Varun) This plotting is very similar to plot_raw_data. Maybe combine them?
-    fig, ax = plt.subplots(figsize=(12, 16))
-
-    fig.patch.set_visible(True)
-    fig.suptitle(title)
-    fig.canvas.manager.set_window_title(title.lower())
-
-    fig.patch.set_visible(True)
-    ax.axis('off')
-    ax = plt.axes(projection='3d')
-    ax.view_init(30, 60)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('Z')
-
-    ax.set_xlim(-.5, .5)
-    ax.set_ylim(-.25, .75)
-    ax.set_zlim(-.5, .5)
-
-    #TODO(Varun) What is happening in these 3 lines?
-    subsampled_rh_data = rh_data - camera_data
-    subsampled_lh_data = lh_data - camera_data
-    subsampled_camera_data = camera_data - camera_data
-
-    #TODO(Varun) This is just plot_raw_data_subsampled with subsample = 1
-    subsampled_rh_data = subsampled_rh_data[start_index:end_index, :]
-    subsampled_lh_data = subsampled_lh_data[start_index:end_index, :]
-    subsampled_camera_data = subsampled_camera_data[start_index:end_index, :]
-
-    # Ideally, also need to normalize by participant height (wingspan)
-    # And clip ends (~1sec at beginning, 2sec at end (but DTW should help with this))
-    # np.where(time_hand_aligned>time_hand_aligned[0]+1)[0][0]
-
-    #     ax.scatter(rh_data[:, 1], rh_data[:, 2], -rh_data[:, 3],\
-    #                 c=time/max(time), cmap='Reds', label='Right-hand position')
-    #     ax.scatter(lh_data[:, 1], lh_data[:, 2], -lh_data[:, 3], \
-    #                c=time/max(time), cmap='Blues', label='Left-hand position')
-    #     ax.scatter(camera_data[:, 1], camera_data[:, 2], -camera_data[:, 3], \
-    #                c=time/max(time), cmap='Greens', label='Camera position')
-
-    ax.scatter(subsampled_rh_data[:, 1],
-               subsampled_rh_data[:, 3],
-               subsampled_rh_data[:, 2],
-               c=time[start_index:end_index] / max(time),
-               cmap='Reds',
-               label='Right-hand position')
-    ax.scatter(subsampled_lh_data[:, 1],
-               subsampled_lh_data[:, 3],
-               subsampled_lh_data[:, 2],
-               c=time[start_index:end_index] / max(time),
-               cmap='Blues',
-               label='Left-hand position')
-    ax.scatter(subsampled_camera_data[:, 1],
-               subsampled_camera_data[:, 3],
-               subsampled_camera_data[:, 2],
-               c=time[start_index:end_index] / max(time),
-               cmap='Greens',
-               label='Camera position')
-
-    ax.legend()
-
-
-def plot_raw_data_subsampled(
+def plot_raw_data(
     subsample,
     end_eff_data,
     camera_data,
@@ -353,9 +276,9 @@ def plot_raw_data_subsampled(
     ax.set_zlim(-1.5, 1.5)
 
     if centered:
-        rh_data[:,1:7] = rh_data[:,1:7] - camera_data[:,1:7]
-        lh_data[:,1:7] = lh_data[:,1:7] - camera_data[:,1:7]
-        camera_data[:,1:7] = camera_data[:,1:7] - camera_data[:,1:7]
+        rh_data[:, 1:7] = rh_data[:, 1:7] - camera_data[:, 1:7]
+        lh_data[:, 1:7] = lh_data[:, 1:7] - camera_data[:, 1:7]
+        camera_data[:, 1:7] = camera_data[:, 1:7] - camera_data[:, 1:7]
 
     # Subsample the data.
     subsampled_rh_data = rh_data[start_index:end_index:subsample, :]
@@ -407,8 +330,11 @@ def plot_raw_data_subsampled(
     leg.legendHandles[3].set_color('#B87333')
 
 
-def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
-                                   followup,centered=False):
+def view_participant_robot_gesture(robot_name,
+                                   particiant_ids,
+                                   gesture_num,
+                                   followup,
+                                   centered=False):
     """
     Provides a quick way to visualize a single gesture for one or all participants.
 
@@ -438,6 +364,10 @@ def view_participant_robot_gesture(robot_name, particiant_ids, gesture_num,
         total_lh = np.vstack((total_lh, lh))
         total_joint = np.vstack((total_joint, joint))
 
-    # plot_raw_data(end_eff, rh, lh, camera, joint, start_index, end_index)
-    plot_raw_data_subsampled(1, total_end_eff, total_camera, total_rh,
-                             total_lh, total_joint, centered=centered)
+    plot_raw_data(1,
+                  total_end_eff,
+                  total_camera,
+                  total_rh,
+                  total_lh,
+                  total_joint,
+                  centered=centered)
