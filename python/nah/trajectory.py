@@ -44,13 +44,12 @@ def evo_sync(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
 
 def evo_align(traj1, traj2, correct_scale=True):
     """
-    Align the first trajectory to the second one.
-    Returns the aligned first trajectory.
+    Align the second trajectory to the first one.
+    Returns the aligned second trajectory.
     """
-    traj1_aligned = deepcopy(traj1)
-    r, t, s = traj1_aligned.align(traj2, correct_scale=correct_scale)
-    print(r, t, s)
-    return traj1_aligned
+    traj2_aligned = deepcopy(traj2)
+    r, t, s = traj2_aligned.align(traj1, correct_scale=correct_scale)
+    return traj2_aligned
 
 
 def evaluate_ape(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
@@ -64,7 +63,7 @@ def evaluate_ape(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
 class Alignment(Enum):
     """Options for trajectory alignment"""
     No = 0
-    Spatial = 1  # Use Umeyama method for spatial alignment.
+    Spatial = 1  # Use Manifold optimizatio from GTSAM for spatial alignment.
     Temporal = 2  # Use Dynamic Time Waring to temporally align trajectories.
     SpatioTemporal = 3  # Perform spatial and then temporal alignment
 
@@ -85,14 +84,14 @@ def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
         pass
 
     elif alignment == Alignment.Spatial:
-        traj2_evo = evo_align(traj2_evo, traj1_evo)
+        traj2_evo = evo_align(traj1_evo, traj2_evo)
 
     elif alignment == Alignment.Temporal:
         # traj2_evo = dtw_align(traj2_evo_spatial, traj1_evo)
         raise NotImplementedError("Temporal alignment not implemented.")
 
     elif alignment == Alignment.SpatioTemporal:
-        traj2_evo_spatial = evo_align(traj2_evo, traj1_evo)
+        traj2_evo_spatial = evo_align(traj1_evo, traj2_evo)
         # traj2_evo = dtw_align(traj2_evo_spatial, traj1_evo)
         raise NotImplementedError("Temporal alignment not implemented.")
 

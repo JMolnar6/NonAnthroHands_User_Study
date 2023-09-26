@@ -63,7 +63,7 @@ def main():
     rh_traj = get_evo_trajectory(rh[demo])
 
     # Just align without doing explicit timestamp matching.
-    rh_traj_aligned = evo_align(rh_traj, end_eff_traj)
+    rh_traj_aligned = evo_align(end_eff_traj, rh_traj)
 
     plot_raw_data_subsampled(1,
                              end_eff[demo],
