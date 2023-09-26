@@ -1,16 +1,14 @@
 """Trajectory utilities"""
 
-from copy import deepcopy
-from enum import Enum
-
 import numpy as np
 from evo.core import metrics, sync
 from evo.core.trajectory import PoseTrajectory3D
+from nah.alignments import Alignment, evo_align
 from scipy.spatial.transform import Rotation
 
 
 def get_evo_trajectory(trajectory):
-    """timestamp, tx, ty, tz, rx, ry, rz"""
+    """Convert trajectory [timestamp, tx, ty, tz, rx, ry, rz] to evo.PoseTrajectory3D."""
     timestamps = trajectory[:, 0]
     xyz = trajectory[:, 1:4]
 
@@ -42,31 +40,12 @@ def evo_sync(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
     return traj1, traj2
 
 
-def evo_align(traj1, traj2, correct_scale=True):
-    """
-    Align the first trajectory to the second one.
-    Returns the aligned first trajectory.
-    """
-    traj1_aligned = deepcopy(traj1)
-    r, t, s = traj1_aligned.align(traj2, correct_scale=correct_scale)
-    print(r, t, s)
-    return traj1_aligned
-
-
 def evaluate_ape(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
     """Evaluate the Absolute Pose Error (APE) between 2 trajectories."""
     metric = metrics.APE(metrics.PoseRelation.full_transformation)
     metric.process_data((traj1, traj2))
 
     return metric
-
-
-class Alignment(Enum):
-    """Options for trajectory alignment"""
-    No = 0
-    Spatial = 1  # Use Umeyama method for spatial alignment.
-    Temporal = 2  # Use Dynamic Time Waring to temporally align trajectories.
-    SpatioTemporal = 3  # Perform spatial and then temporal alignment
 
 
 def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
@@ -85,14 +64,14 @@ def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
         pass
 
     elif alignment == Alignment.Spatial:
-        traj2_evo = evo_align(traj2_evo, traj1_evo)
+        traj2_evo = evo_align(traj1_evo, traj2_evo)
 
     elif alignment == Alignment.Temporal:
         # traj2_evo = dtw_align(traj2_evo_spatial, traj1_evo)
         raise NotImplementedError("Temporal alignment not implemented.")
 
     elif alignment == Alignment.SpatioTemporal:
-        traj2_evo_spatial = evo_align(traj2_evo, traj1_evo)
+        traj2_evo_spatial = evo_align(traj1_evo, traj2_evo)
         # traj2_evo = dtw_align(traj2_evo_spatial, traj1_evo)
         raise NotImplementedError("Temporal alignment not implemented.")
 
