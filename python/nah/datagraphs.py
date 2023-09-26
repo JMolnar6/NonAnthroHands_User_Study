@@ -47,10 +47,7 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
             print("Right hand range:" + str(np.linalg.norm(rh_range)))
             print("Left hand range:" + str(np.linalg.norm(lh_range)))
             print("Camera range:" + str(np.linalg.norm(camera_range)))
-            """ TODO(Jennifer): Is it possible to print the heatmap with different colors for different 
-                entries, depending on which hand was used? I'd want the luminance to be similar, so that
-                a B/W print still makes it easy to see how well things correlate
-            """
+
             if (rh_range > lh_range):
                 hand_data = rh_multi_demo
             else:
@@ -58,18 +55,7 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
                 handedness_array[PID - 1, gesture_num - 1] = 1
             """TODO(Jennifer): Handle it when both rh_range and lh_range are above the threshold that 
                 indicates this is a 2-handed motion"""
-            """TODO(Jennifer)
-            Check these results: I guess it makes sense that you get a black line for gesture 6, b/c
-            it's almost purely rotation and very little movement. Does APE take rotation into account,
-            or is this low error simply because the gesture is so short? Is there a way to normalize
-            across gestures? (Should we bother?)
-            Ans: No need to bother--we'll showcase participant self-similarity anyway, through the 
-            cross-correlation matrices.
 
-            Follow-up question: should we align participant gestures in any way? I didn't think we 
-            needed to, but Participant 4 wandered all over the room, so at least for them, it might
-            be worth it
-            """
             for i in range(0, 4):
                 for j in range(i + 1, 5):
                     try:
@@ -136,3 +122,14 @@ def right_handedness(rh_data, lh_data):
     else:
         return False
     #TODO(Jennifer) Make unit tests for this
+    #TODO(Jennifer) Mkae something that tests for 2-handedness
+
+
+def study_range_vals(followup):
+    if followup:
+        PIDmax = 10
+        gesturemax = 7
+    else:
+        PIDmax = 17
+        gesturemax = 16
+    return PIDmax, gesturemax
