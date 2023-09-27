@@ -5,9 +5,9 @@ from enum import Enum
 
 import gtsam
 import numpy as np
-from nah.utils import norm_data, full_align, full_joint_align, clean_rot_data, sum_of_squares
-from nah.plot import plot_pos, plot_rot, plot_rot_2D
 from evo.core.trajectory import PoseTrajectory3D
+from nah.utils import clean_rot_data, compute_dtw_alignment, full_align,
+                       norm_data, sum_of_squares
 
 
 class Alignment(Enum):
@@ -86,26 +86,31 @@ def pose_dist(p1: np.ndarray, p2: np.ndarray):
     return np.linalg.norm(v)
 
 
-def dtw_align(traj1, traj2):
+def dtw_align(traj1: np.ndarray, traj2: np.ndarray):
     """Take two trajectories (preferably already spatially aligned) and compute
     the """
-    warp_path, _, _ = norm_data(sum_of_squares(traj1), sum_of_squares(traj2))
-    time_URDF_aligned, time_hand_aligned, end_eff_pos_aligned, end_eff_rot_aligned, hand_pos_aligned, hand_rot_aligned = full_align(
-        warp_path, traj1, traj2)
-    hand_rot_aligned = clean_rot_data(hand_rot_aligned)
-    # plot_rot_2D(time_hand_aligned, hand_rot_aligned)
+    x_norm, y_norm = norm_data(sum_of_squares(traj1), sum_of_squares(traj2))
 
-    #Seems to work better if you do it twice for some reason
-    hand_rot_aligned = clean_rot_data(hand_rot_aligned)
-    # plot_rot_2D(time_hand_aligned, hand_rot_aligned)
+    _, warp_path = compute_dtw_alignment(x_norm, y_norm)
 
-    # The following is just for debug. Comment it out when you're actually running
-    # the correlation matrix code; this is for making sure the DTW stuff is working
-    try:
-        plot_pos(warp_path, end_eff_pos_aligned, hand_pos_aligned,
-                 time_URDF_aligned, time_hand_aligned)
-        plot_rot(warp_path, end_eff_rot_aligned, hand_rot_aligned,
-                 time_URDF_aligned, time_hand_aligned)
-    except:
-        print("Plot data failed")
-        raise
+    aligned = full_align(warp_path, traj1, traj2)
+    traj1_time_aligned, traj2_time_aligned, traj1_pos_aligned, \
+        traj1_rot_aligned, traj2_pos_aligned, traj2_rot_aligned = aligned
+
+    traj2_rot_aligned = clean_rot_data(traj2_rot_aligned)
+    # Seems to work better if you do it twice for some reason
+    traj2_rot_aligned = clean_rot_data(traj2_rot_aligned)
+
+    # Return the correct aligned trajectory
+    traj1_aligned = np.empty(traj1.shape)
+    traj1_aligned[:, 0] = traj1_time_aligned
+    traj1_aligned[:, 1:4] = traj1_pos_aligned
+    traj1_aligned[:, 4:7] = traj1_rot_aligned
+
+    # Return the correct aligned trajectory
+    traj2_aligned = np.empty(traj2.shape)
+    traj2_aligned[:, 0] = traj2_time_aligned
+    traj2_aligned[:, 1:4] = traj2_pos_aligned
+    traj2_aligned[:, 4:7] = traj2_rot_aligned
+
+    return traj1_aligned, traj2_aligned
