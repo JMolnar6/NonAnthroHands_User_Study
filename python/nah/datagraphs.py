@@ -1,9 +1,9 @@
 """Figure Generation Utilities"""
 
 import numpy as np
-from nah.utils import segment_by_demo
 from nah.loader import load_npzs
-from nah.trajectory import get_evo_metrics, Alignment
+from nah.trajectory import Alignment, get_evo_metrics
+from nah.utils import segment_by_demo
 
 
 def generate_self_similarity_heat_map(robot_name, followup, demo_max):
@@ -122,15 +122,57 @@ def right_handedness(rh_data, lh_data):
 
 def study_range_vals(followup):
     if followup:
-        PIDmax = 10
-        gesturemax = 7
+        PIDmax = 9
+        gesturemax = 6
     else:
-        PIDmax = 17
-        gesturemax = 16
+        PIDmax = 16
+        gesturemax = 15
     return PIDmax, gesturemax
 
 
-def generate_cross_correlation_matrix(robot_name, gesture, followup, demo_max):
+def generate_pairwise_comparison(participant_1, participant_2, robot_name,
+                                 gesture, followup, demo_max, alignment=Alignment.SpatioTemporal):
+
+    end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
+        robot_name, participant_1, followup, gesture)
+    end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
+        robot_name, participant_2, followup, gesture)
+
+    end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1\
+        = segment_by_demo(end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max)
+    end_eff_multi_demo2, camera_multi_demo2, rh_multi_demo2, lh_multi_demo2, joints_multi_demo2\
+        = segment_by_demo(end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max)
+
+    is_right_hand1 = right_handedness(rh_multi_demo1[0], lh_multi_demo1[0])
+
+    is_right_hand2 = right_handedness(rh_multi_demo2[0], lh_multi_demo2[0])
+
+    temp_metrics = np.zeros([demo_max, demo_max])
+
+    for demo_num1 in range(0, demo_max):
+        for demo_num2 in range(0, demo_max):
+
+            if is_right_hand1:
+                traj1 = rh_multi_demo1[demo_num1]
+            else:
+                traj1 = lh_multi_demo1[demo_num1]
+
+            if is_right_hand2:
+                traj2 = rh_multi_demo2[demo_num2]
+            else:
+                traj2 = lh_multi_demo2[demo_num2]
+
+            metrics = get_evo_metrics(traj1,
+                                      traj2,
+                                      alignment=alignment)
+
+            temp_metrics[demo_num1, demo_num2] = metrics['rmse']
+
+    return temp_metrics.mean(0).mean(0)
+
+
+def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
+                                          demo_max):
     PID_max, gesture_max = study_range_vals(followup)
 
     correlation_array = np.zeros([PID_max, PID_max])
@@ -138,6 +180,9 @@ def generate_cross_correlation_matrix(robot_name, gesture, followup, demo_max):
 
     for PID1 in range(1, PID_max + 1):
         for PID2 in range(1, PID_max + 1):
+            if PID1 == PID2:
+                continue
+
             end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
                 robot_name, PID1, followup, gesture)
             end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
