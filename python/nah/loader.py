@@ -130,3 +130,51 @@ def load_npzs(robot_name, participant_id, followup, gesture_num):
     joint_data = data['joint_data']
 
     return end_eff_data, camera_data, rh_data, lh_data, joint_data
+
+
+def process_data(robot_name,
+                 end_eff_name,
+                 participant_id,
+                 gesture_num,
+                 demo_num,
+                 start_index=1,
+                 end_index=-1,
+                 followup=False):
+    # Load the data for each type of end effector
+    end_eff_data_raw = load_raw_csv_data(robot_name, end_eff_name,
+                                         participant_id, followup, gesture_num,
+                                         demo_num)
+    camera_data_raw = load_raw_csv_data(robot_name, "Main Camera_",
+                                        participant_id, followup, gesture_num,
+                                        demo_num)
+    rh_data_raw = load_raw_csv_data(robot_name, "RightHand Controller_",
+                                    participant_id, followup, gesture_num,
+                                    demo_num)
+    lh_data_raw = load_raw_csv_data(robot_name, "LeftHand Controller_",
+                                    participant_id, followup, gesture_num,
+                                    demo_num)
+    joint_data_raw = load_raw_csv_data(robot_name, "Joint", participant_id,
+                                       followup, gesture_num, demo_num)
+
+    # Make time start from 0.0
+    end_eff_data_raw[:, 0] = end_eff_data_raw[:, 0] - end_eff_data_raw[0, 0]
+    camera_data_raw[:, 0] = camera_data_raw[:, 0] - camera_data_raw[0, 0]
+    rh_data_raw[:, 0] = rh_data_raw[:, 0] - rh_data_raw[0, 0]
+    lh_data_raw[:, 0] = lh_data_raw[:, 0] - lh_data_raw[0, 0]
+    joint_data_raw[:, 0] = joint_data_raw[:, 0] - joint_data_raw[0, 0]
+
+    # Crop out the trajectory data
+    end_eff_data_raw = end_eff_data_raw[start_index:end_index, :]
+    camera_data_raw = camera_data_raw[start_index:end_index, :]
+    rh_data_raw = rh_data_raw[start_index:end_index, :]
+    lh_data_raw = lh_data_raw[start_index:end_index, :]
+    joint_data_raw = joint_data_raw[start_index:end_index, :]
+
+    # More participant-specific exceptions:
+    if (participant_id == 3 and not followup and gesture_num >= 3):
+        holding_variable = rh_data_temp
+        rh_data_temp = lh_data_temp
+        lh_data_temp = holding_variable
+
+    #TODO Normalize by participant wingspan
+
