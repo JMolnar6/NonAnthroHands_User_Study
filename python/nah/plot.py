@@ -75,11 +75,11 @@ def _set_axes_radius(ax, origin, radius):
     ax.set_zlim3d([z - radius, z + radius])
 
 
-def plot_pos(warp_path,
-             end_eff_pos_aligned,
+def plot_pos(end_eff_pos_aligned,
              hand_pos_aligned,
              time_URDF_aligned,
              time_hand_aligned,
+             warp_path=None,
              fig_size=(6, 4)):
     fig, ax = plt.subplots(figsize=fig_size)
 
@@ -122,20 +122,21 @@ def plot_pos(warp_path,
     # ax.plot3D(hand_pos_aligned[:, 0]   , hand_pos_aligned[:, 1]   , hand_pos_aligned[:, 2]   , \
     #     '-bo', label='Hand position', linewidth=0.2, markersize=2, markerfacecolor='skyblue', markeredgecolor='skyblue')
 
-    for [map_x, map_y] in warp_path:
-        ax.plot3D(
-            [end_eff_pos_aligned[map_x].T[0], hand_pos_aligned[map_y].T[0]],
-            [-end_eff_pos_aligned[map_x].T[2], -hand_pos_aligned[map_y].T[2]],
-            [end_eff_pos_aligned[map_x].T[1], hand_pos_aligned[map_y].T[1]],
-            '--k',
-            linewidth=0.2)
+    if warp_path:
+        for [map_x, map_y] in warp_path:
+            ax.plot3D(
+                [end_eff_pos_aligned[map_x].T[0], hand_pos_aligned[map_y].T[0]],
+                [-end_eff_pos_aligned[map_x].T[2], -hand_pos_aligned[map_y].T[2]],
+                [end_eff_pos_aligned[map_x].T[1], hand_pos_aligned[map_y].T[1]],
+                '--k',
+                linewidth=0.2)
 
     set_axes_equal(ax)
 
-    ax.set_xlabel('Horizontal position (m)', fontsize=16)
-    ax.set_ylabel('Forward/Back position (m)', fontsize=16)
-    ax.set_zlabel('Vertical position (m)', fontsize=16)
-    ax.legend(loc='lower right', fontsize=14)
+    ax.set_xlabel('Horizontal position (m)', fontsize=10)
+    ax.set_ylabel('Forward/Back position (m)', fontsize=10)
+    ax.set_zlabel('Vertical position (m)', fontsize=10)
+    ax.legend(loc='lower right', fontsize=10)
 
     ax.set_title("DTW Alignment of Hand and URDF End-Effector Position",
                  fontsize=14,
@@ -148,11 +149,12 @@ def plot_pos(warp_path,
     return
 
 
-def plot_rot(warp_path,
+def plot_rot(
              end_eff_rot_aligned,
              hand_rot_aligned,
              time_URDF_aligned,
              time_hand_aligned,
+             warp_path=None,
              fig_size=(6, 4)):
     # Plot DTW-aligned hand/end-effector orientation
 
@@ -178,13 +180,14 @@ def plot_rot(warp_path,
                cmap='Blues',
                label='Hand orientation')
 
-    for [map_x, map_y] in warp_path:
-        ax.plot3D(
-            [end_eff_rot_aligned[map_x].T[0], hand_rot_aligned[map_y].T[0]],
-            [-end_eff_rot_aligned[map_x].T[2], -hand_rot_aligned[map_y].T[2]],
-            [end_eff_rot_aligned[map_x].T[1], hand_rot_aligned[map_y].T[1]],
-            '--k',
-            linewidth=0.2)
+    if warp_path:
+        for [map_x, map_y] in warp_path:
+            ax.plot3D(
+                [end_eff_rot_aligned[map_x].T[0], hand_rot_aligned[map_y].T[0]],
+                [-end_eff_rot_aligned[map_x].T[2], -hand_rot_aligned[map_y].T[2]],
+                [end_eff_rot_aligned[map_x].T[1], hand_rot_aligned[map_y].T[1]],
+                '--k',
+                linewidth=0.2)
 
     set_axes_equal(ax)
 
@@ -436,4 +439,5 @@ def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
     # ax.set_title(title, fontsize=14, fontweight="bold")
     # plt.tight_layout()
     # plt.show()
+    # plt.savefig(figname)
     # plt.savefig(figname)
