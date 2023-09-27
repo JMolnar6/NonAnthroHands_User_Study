@@ -4,6 +4,17 @@ from fastdtw import fastdtw
 from scipy.signal import find_peaks
 
 
+def compute_dtw_alignment(x, y, dist=None):
+    """Align trajectories with DTW"""
+    if dist is not None:
+        dtw_distance, warp_path = fastdtw(x, y, dist=dist)
+    else:
+        # TODO(Jennifer): Varun, this is where your new distance metric goes
+        dtw_distance, warp_path = fastdtw(x, y)
+
+    return dtw_distance, warp_path
+
+
 def norm_data(x, y):
     """
     Take in two time-stamped data streams.
@@ -35,11 +46,7 @@ def norm_data(x, y):
     # If X and Y are different lengths, fastdtw has issues
     lim = min(x.shape[1], y.shape[1])
 
-    # TODO(Jennifer): Varun, this is where your new distance metric goes
-    dtw_distance, warp_path = fastdtw(x_norm[1, 0:lim],
-                                      y_norm[1, 0:lim])  #, dist=euclidean)
-
-    return warp_path, x_norm, y_norm
+    return x_norm[1, 0:lim], y_norm[1, 0:lim]
 
 
 def full_align(warp_path, end_eff_data, hand_data):
@@ -68,10 +75,10 @@ def full_align(warp_path, end_eff_data, hand_data):
     for i, [map_x, map_y] in enumerate(warp_path, start=0):
         time_URDF_aligned[i] = time_URDF[map_x]
         time_hand_aligned[i] = time_hand[map_y]
-        end_eff_pos_aligned[i][0:3] = end_eff_data[map_x][1:4]
-        end_eff_rot_aligned[i][0:3] = end_eff_data[map_x][4:]
-        hand_pos_aligned[i][0:3] = hand_data[map_y][1:4]
-        hand_rot_aligned[i][0:3] = hand_data[map_y][4:]
+        end_eff_pos_aligned[i, 0:3] = end_eff_data[map_x, 1:4]
+        end_eff_rot_aligned[i, 0:3] = end_eff_data[map_x, 4:]
+        hand_pos_aligned[i, 0:3] = hand_data[map_y, 1:4]
+        hand_rot_aligned[i, 0:3] = hand_data[map_y, 4:]
 
     return time_URDF_aligned, time_hand_aligned, end_eff_pos_aligned, \
         end_eff_rot_aligned, hand_pos_aligned, hand_rot_aligned
