@@ -99,7 +99,7 @@ def full_joint_align(time_URDF_aligned, joint_data):
     return time_ja_aligned, joint_data_aligned
 
 
-def clean_rot_data(gesture_num, demo_num, hand_rot_aligned):
+def clean_rot_data(hand_rot_aligned):
     """Fix angle inversion issues for hand data"""
 
     for i, [x_rot, y_rot, z_rot] in enumerate(hand_rot_aligned, start=1):

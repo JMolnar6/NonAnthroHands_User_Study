@@ -75,9 +75,7 @@ def _set_axes_radius(ax, origin, radius):
     ax.set_zlim3d([z - radius, z + radius])
 
 
-def plot_pos(gesture_num,
-             demo_num,
-             warp_path,
+def plot_pos(warp_path,
              end_eff_pos_aligned,
              hand_pos_aligned,
              time_URDF_aligned,
@@ -150,9 +148,7 @@ def plot_pos(gesture_num,
     return
 
 
-def plot_rot(gesture_num,
-             demo_num,
-             warp_path,
+def plot_rot(warp_path,
              end_eff_rot_aligned,
              hand_rot_aligned,
              time_URDF_aligned,

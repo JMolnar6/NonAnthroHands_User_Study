@@ -3,7 +3,7 @@
 import numpy as np
 from evo.core import metrics, sync
 from evo.core.trajectory import PoseTrajectory3D
-from nah.alignments import Alignment, evo_align
+from nah.alignments import evo_align, manifold_align, dtw_align, Alignment
 from scipy.spatial.transform import Rotation
 
 
@@ -71,8 +71,9 @@ def get_evo_metrics(traj1, traj2, alignment=Alignment.No):
         raise NotImplementedError("Temporal alignment not implemented.")
 
     elif alignment == Alignment.SpatioTemporal:
-        traj2_evo_spatial = evo_align(traj1_evo, traj2_evo)
-        # traj2_evo = dtw_align(traj2_evo_spatial, traj1_evo)
+        # traj2_evo_spatial = evo_align(traj1_evo, traj2_evo)
+        traj2_evo_spatial = manifold_align(traj1_evo, traj2_evo)
+        traj2_evo = dtw_align(traj2_evo_spatial, traj1_evo)
         raise NotImplementedError("Temporal alignment not implemented.")
 
     else:

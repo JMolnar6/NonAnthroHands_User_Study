@@ -5,6 +5,8 @@ from enum import Enum
 
 import gtsam
 import numpy as np
+from nah.utils import norm_data, full_align, full_joint_align, clean_rot_data, sum_of_squares
+from nah.plot import plot_pos, plot_rot, plot_rot_2D
 from evo.core.trajectory import PoseTrajectory3D
 
 
@@ -82,3 +84,28 @@ def pose_dist(p1: np.ndarray, p2: np.ndarray):
     v = gtsam.Pose3.Logmap(b1Tb2)
 
     return np.linalg.norm(v)
+
+
+def dtw_align(traj1, traj2):
+    """Take two trajectories (preferably already spatially aligned) and compute
+    the """
+    warp_path, _, _ = norm_data(sum_of_squares(traj1), sum_of_squares(traj2))
+    time_URDF_aligned, time_hand_aligned, end_eff_pos_aligned, end_eff_rot_aligned, hand_pos_aligned, hand_rot_aligned = full_align(
+        warp_path, traj1, traj2)
+    hand_rot_aligned = clean_rot_data(hand_rot_aligned)
+    # plot_rot_2D(time_hand_aligned, hand_rot_aligned)
+
+    #Seems to work better if you do it twice for some reason
+    hand_rot_aligned = clean_rot_data(hand_rot_aligned)
+    # plot_rot_2D(time_hand_aligned, hand_rot_aligned)
+
+    # The following is just for debug. Comment it out when you're actually running
+    # the correlation matrix code; this is for making sure the DTW stuff is working
+    try:
+        plot_pos(warp_path, end_eff_pos_aligned, hand_pos_aligned,
+                 time_URDF_aligned, time_hand_aligned)
+        plot_rot(warp_path, end_eff_rot_aligned, hand_rot_aligned,
+                 time_URDF_aligned, time_hand_aligned)
+    except:
+        print("Plot data failed")
+        raise
