@@ -150,3 +150,12 @@ def sum_of_squares(a):
     """
     return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:4], a[:, 1:4]),
                                       axis=1)))
+
+def study_range_vals(followup):
+    if followup:
+        PIDmax = 9
+        gesturemax = 6
+    else:
+        PIDmax = 16
+        gesturemax = 15
+    return PIDmax, gesturemax
