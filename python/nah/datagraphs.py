@@ -199,7 +199,7 @@ def generate_pairwise_comparison(participant_1, participant_2, robot_name,
 
 
 def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
-                                          demo_max):
+                                          demo_max, alignment=Alignment.SpatioTemporal):
     PID_max, gesture_max = study_range_vals(followup)
 
     correlation_array = np.zeros([PID_max, PID_max])
@@ -209,7 +209,7 @@ def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
         for PID2 in range(1, PID_max + 1):
             print("Getting metrics for Participants " + str(PID1) + " and " + str(PID2) + ": ")
             temp_metrics, is_right_hand1 = generate_pairwise_comparison(PID1, PID2, robot_name,
-                                 gesture, followup, demo_max)
+                                 gesture, followup, demo_max, alignment=alignment)
             if is_right_hand1:
                 handedness_array[PID1 - 1, PID2 - 1] = 1
 
