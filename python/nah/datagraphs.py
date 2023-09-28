@@ -126,15 +126,23 @@ def generate_pairwise_comparison(participant_1,
                                  gesture,
                                  followup,
                                  demo_max,
-                                 alignment=Alignment.SpatioTemporal):
+                                 alignment=Alignment.SpatioTemporal,
+                                 isfollowup2=False,
+                                 followup_2=False):
     """Aligns two participant hand motions and produces a numerical error metric between them.
        Tests for handedness and compares both participants' dominant hand motions for the gesture.
     """
 
+    followup1 = followup
+    if isfollowup2:
+        followup2 = followup_2
+    else:
+        followup2= followup
     #Check to make sure demos for this gesture exist for both participants:
+
     try:
         end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
-            robot_name, participant_1, followup, gesture)
+            robot_name, participant_1, followup1, gesture)
     except:
         print("No demos available for participant" + str(participant_1) +
               " for this gesture")
@@ -142,10 +150,10 @@ def generate_pairwise_comparison(participant_1,
 
     try:
         end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
-            robot_name, participant_2, followup, gesture)
+            robot_name, participant_2, followup2, gesture)
     except:
         print("No demos available for participant" + str(participant_2) +
-              " for this gesture")
+            " for this gesture")
         return np.nan
 
     for demo_max_temp in range(demo_max,0,-1):
@@ -154,7 +162,8 @@ def generate_pairwise_comparison(participant_1,
                 end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max_temp)
             break
         except:
-            print("Demo_max not equal to "+str(demo_max) +"for PID "+str(participant_1) +", gesture "+str(gesture))
+            print("Demo_max not equal to "+str(demo_max) +"for PID "+str(participant_1) +\
+                  ", gesture "+str(gesture)+", followup = "+str(followup1))
             continue
 
     for demo_max_temp in range(demo_max,0,-1):
@@ -163,7 +172,8 @@ def generate_pairwise_comparison(participant_1,
                 end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max_temp)
             break
         except:
-            print("Demo_max not equal to "+str(demo_max) +"for PID "+str(participant_2) +", gesture "+str(gesture))
+            print("Demo_max not equal to "+str(demo_max) +"for PID "+str(participant_2) +\
+                  ", gesture "+str(gesture)+", followup = "+str(followup2))
             continue
 
     
@@ -171,13 +181,13 @@ def generate_pairwise_comparison(participant_1,
     is_right_hand2 = right_handedness(rh_multi_demo2[0], lh_multi_demo2[0])
 
     #Insert manual handedness override for Reachy PID9, gesture 5, and PID2, gesture 2
-    if (participant_1==9 and gesture==5 and robot_name=="Reachy"):
+    if (participant_1==9 and gesture==5 and robot_name=="Reachy" and not followup1):
         is_right_hand1=True
-    elif (participant_1==2 and gesture==2 and robot_name=="Reachy"):
+    elif (participant_1==2 and gesture==2 and robot_name=="Reachy" and not followup1):
         is_right_hand1=True
-    if (participant_2==9 and gesture==5 and robot_name=="Reachy"):
+    if (participant_2==9 and gesture==5 and robot_name=="Reachy" and not followup2):
         is_right_hand2=True
-    elif (participant_2==2 and gesture==2 and robot_name=="Reachy"):
+    elif (participant_2==2 and gesture==2 and robot_name=="Reachy" and not followup2):
         is_right_hand2=True
 
     temp_metrics = np.zeros([demo_max, demo_max])
@@ -238,14 +248,21 @@ def generate_all_cross_correlation_matrix(robot_name,
                                           gesture,
                                           followup,
                                           demo_max,
-                                          alignment=Alignment.SpatioTemporal):
-    PID_max, gesture_max = study_range_vals(followup)
+                                          alignment=Alignment.SpatioTemporal,
+                                          isfollowup2=False,
+                                          followup2=False):
+    
+    PID_max1, gesture_max1 = study_range_vals(followup)
+    if isfollowup2:
+        PID_max2, gesture_max2 = study_range_vals(followup2)
+    else:
+        PID_max2 = PID_max1
 
-    correlation_array = np.zeros([PID_max, PID_max])
-    handedness_array = np.zeros([PID_max, PID_max])
+    correlation_array = np.zeros([PID_max1, PID_max2])
+    handedness_array = np.zeros([PID_max1, PID_max2])
 
-    for PID1 in range(1, PID_max + 1):
-        for PID2 in range(1, PID_max + 1):
+    for PID1 in range(1, PID_max1 + 1):
+        for PID2 in range(1, PID_max2 + 1):
             print("Getting metrics for Participants " + str(PID1) + " and " +
                   str(PID2) + ": ")
             temp_metrics, is_right_hand1 = generate_pairwise_comparison(
@@ -255,7 +272,9 @@ def generate_all_cross_correlation_matrix(robot_name,
                 gesture,
                 followup,
                 demo_max,
-                alignment=alignment)
+                alignment=alignment,
+                isfollowup2=isfollowup2,
+                followup_2=followup2)
 
             if is_right_hand1:
                 handedness_array[PID1 - 1, PID2 - 1] = 1
