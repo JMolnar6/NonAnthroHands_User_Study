@@ -4,17 +4,6 @@ from fastdtw import fastdtw
 from scipy.signal import find_peaks
 
 
-def compute_dtw_alignment(x, y, dist=None):
-    """Align trajectories with DTW"""
-    if dist is not None:
-        dtw_distance, warp_path = fastdtw(x, y, dist=dist)
-    else:
-        # TODO(Jennifer): Varun, this is where your new distance metric goes
-        dtw_distance, warp_path = fastdtw(x, y)
-
-    return dtw_distance, warp_path
-
-
 def norm_data(x, y):
     """
     Take in two time-stamped data streams.
@@ -49,61 +38,44 @@ def norm_data(x, y):
     return x_norm[1, 0:lim], y_norm[1, 0:lim]
 
 
-def full_align(warp_path, end_eff_data, hand_data):
+def full_align(warp_path, traj1, traj2):
     """
-    Take the warp_path generated from normalized hand/URDF data and
-    use that to align all other hand data
+    Take the warp_path generated from whatever parts 
+    of the traj1/traj2 data were needed for DTW alignment,
+    and use that to align the two trajectories
     """
-    # Time marks:
-    time_URDF = end_eff_data[..., 0]
-    time_hand = hand_data[..., 0]
-
-    # remember that x = end_eff_pos
-    #               y = hand_pos
-
-    # Z-data (forward/back) is offset by the distance between the viewer and the robot.
-    # Let's remove that distance for comparison purposes
 
     wp_size = len(warp_path)
-    time_URDF_aligned = np.zeros(wp_size)
-    time_hand_aligned = np.zeros(wp_size)
-    end_eff_pos_aligned = np.zeros((wp_size, 3))
-    end_eff_rot_aligned = np.zeros((wp_size, 3))
-    hand_pos_aligned = np.zeros((wp_size, 3))
-    hand_rot_aligned = np.zeros((wp_size, 3))
+    traj1_aligned = np.zeros((wp_size,7))
+    traj2_aligned = np.zeros((wp_size,7))
 
     for i, [map_x, map_y] in enumerate(warp_path, start=0):
-        time_URDF_aligned[i] = time_URDF[map_x]
-        time_hand_aligned[i] = time_hand[map_y]
-        end_eff_pos_aligned[i, 0:3] = end_eff_data[map_x, 1:4]
-        end_eff_rot_aligned[i, 0:3] = end_eff_data[map_x, 4:]
-        hand_pos_aligned[i, 0:3] = hand_data[map_y, 1:4]
-        hand_rot_aligned[i, 0:3] = hand_data[map_y, 4:]
+        traj1_aligned[i] = traj1[map_x,:]
+        traj2_aligned[i] = traj2[map_y,:]
 
-    return time_URDF_aligned, time_hand_aligned, end_eff_pos_aligned, \
-        end_eff_rot_aligned, hand_pos_aligned, hand_rot_aligned
+    return traj1_aligned,traj2_aligned
 
 
-def full_joint_align(time_URDF_aligned, joint_data):
-    # Time marks:
-    time_ja = joint_data[..., 0]
+# def full_joint_align(time_URDF_aligned, joint_data):
+#     # Time marks:
+#     time_ja = joint_data[..., 0]
 
-    # remember that x = end_eff_pos
-    #               y = hand_pos
+#     # remember that x = end_eff_pos
+#     #               y = hand_pos
 
-    # Z-data (forward/back) is offset by the distance between the viewer and the robot. Let's remove that distance for comparison purposes
+#     # Z-data (forward/back) is offset by the distance between the viewer and the robot. Let's remove that distance for comparison purposes
 
-    wp_size = len(warp_path)
-    time_ja_aligned = np.zeros(wp_size)
-    joint_data_aligned = np.zeros((wp_size, 6))
+#     wp_size = len(warp_path)
+#     time_ja_aligned = np.zeros(wp_size)
+#     joint_data_aligned = np.zeros((wp_size, 6))
 
-    for i, [map_x, map_y] in enumerate(warp_path, start=0):
-        time_ja_aligned[i] = time_ja[map_x]
-        time_hand_aligned[i] = time_hand[map_y]
-        joint_data_aligned[i][0:5] = end_eff_data[map_x][1:6]
-        hand_data_aligned[i][0:5] = hand_data[map_y][1:6]
+#     for i, [map_x, map_y] in enumerate(warp_path, start=0):
+#         time_ja_aligned[i] = time_ja[map_x]
+#         time_hand_aligned[i] = time_hand[map_y]
+#         joint_data_aligned[i][0:5] = end_eff_data[map_x][1:6]
+#         hand_data_aligned[i][0:5] = hand_data[map_y][1:6]
 
-    return time_ja_aligned, joint_data_aligned
+#     return time_ja_aligned, joint_data_aligned
 
 
 def clean_rot_data(hand_rot_aligned):
