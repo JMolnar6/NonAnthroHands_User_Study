@@ -120,11 +120,13 @@ def right_handedness(rh_data, lh_data):
     #TODO(Jennifer) Mkae something that tests for 2-handedness
 
 
-
-
-
-def generate_pairwise_comparison(participant_1, participant_2, robot_name,
-                                 gesture, followup, demo_max, alignment=Alignment.SpatioTemporal):
+def generate_pairwise_comparison(participant_1,
+                                 participant_2,
+                                 robot_name,
+                                 gesture,
+                                 followup,
+                                 demo_max,
+                                 alignment=Alignment.SpatioTemporal):
     """Aligns two participant hand motions and produces a numerical error metric between them.
        Tests for handedness and compares both participants' dominant hand motions for the gesture.
     """
@@ -132,22 +134,24 @@ def generate_pairwise_comparison(participant_1, participant_2, robot_name,
     #Check to make sure demos for this gesture exist for both participants:
     try:
         end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
-        robot_name, participant_1, followup, gesture)
-    except: 
-        print("No demos available for participant"+str(participant_1)+" for this gesture")
-        return np.nan
-    
-    try: 
-        end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
-        robot_name, participant_2, followup, gesture)
+            robot_name, participant_1, followup, gesture)
     except:
-        print("No demos available for participant"+str(participant_2)+" for this gesture")
+        print("No demos available for participant" + str(participant_1) +
+              " for this gesture")
         return np.nan
 
-    end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1\
-        = segment_by_demo(end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max)
-    end_eff_multi_demo2, camera_multi_demo2, rh_multi_demo2, lh_multi_demo2, joints_multi_demo2\
-        = segment_by_demo(end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max)
+    try:
+        end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
+            robot_name, participant_2, followup, gesture)
+    except:
+        print("No demos available for participant" + str(participant_2) +
+              " for this gesture")
+        return np.nan
+
+    end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1 = segment_by_demo(
+        end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max)
+    end_eff_multi_demo2, camera_multi_demo2, rh_multi_demo2, lh_multi_demo2, joints_multi_demo2 = segment_by_demo(
+        end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max)
 
     is_right_hand1 = right_handedness(rh_multi_demo1[0], lh_multi_demo1[0])
 
@@ -176,7 +180,7 @@ def generate_pairwise_comparison(participant_1, participant_2, robot_name,
             # Sometimes something goes wrong and get_evo_metrics fails,
             # but if you try it again it succeeds. We don't want to lose
             # all our work if this is the case.
-            max_tries=10
+            max_tries = 10
             for tries in range(max_tries):
                 try:
                     metrics = get_evo_metrics(traj1,
@@ -185,11 +189,19 @@ def generate_pairwise_comparison(participant_1, participant_2, robot_name,
                     # print("get_evo_metrics_succeeded on try "+str(tries+1))
                     break
                 except:
-                    print("Gesture "+str(gesture)+": Failed to get metrics for participant "+str(participant_1)+" demo "+str(demo_num1+1)+", "+str(participant_2)+" demo "+str(demo_num2+1)+".\n Retrying...")
-                    if tries<max_tries-1:
+                    print("Gesture " + str(gesture) +
+                          ": Failed to get metrics for participant " +
+                          str(participant_1) + " demo " + str(demo_num1 + 1) +
+                          ", " + str(participant_2) + " demo " +
+                          str(demo_num2 + 1) + ".\n Retrying...")
+                    if tries < max_tries - 1:
                         continue
                     else:
-                        print("Unable to compare participants "+str(participant_1)+" demo "+str(demo_num1+1)+" and "+str(participant_2)+" demo "+str(demo_num2+1))
+                        print("Unable to compare participants " +
+                              str(participant_1) + " demo " +
+                              str(demo_num1 + 1) + " and " +
+                              str(participant_2) + " demo " +
+                              str(demo_num2 + 1))
                         raise
 
             temp_metrics[demo_num1, demo_num2] = metrics['rmse']
@@ -198,8 +210,11 @@ def generate_pairwise_comparison(participant_1, participant_2, robot_name,
     return np.nanmean(temp_metrics), is_right_hand1
 
 
-def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
-                                          demo_max, alignment=Alignment.SpatioTemporal):
+def generate_all_cross_correlation_matrix(robot_name,
+                                          gesture,
+                                          followup,
+                                          demo_max,
+                                          alignment=Alignment.SpatioTemporal):
     PID_max, gesture_max = study_range_vals(followup)
 
     correlation_array = np.zeros([PID_max, PID_max])
@@ -207,9 +222,16 @@ def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
 
     for PID1 in range(1, PID_max + 1):
         for PID2 in range(1, PID_max + 1):
-            print("Getting metrics for Participants " + str(PID1) + " and " + str(PID2) + ": ")
-            temp_metrics, is_right_hand1 = generate_pairwise_comparison(PID1, PID2, robot_name,
-                                 gesture, followup, demo_max, alignment=alignment)
+            print("Getting metrics for Participants " + str(PID1) + " and " +
+                  str(PID2) + ": ")
+            temp_metrics, is_right_hand1 = generate_pairwise_comparison(
+                PID1,
+                PID2,
+                robot_name,
+                gesture,
+                followup,
+                demo_max,
+                alignment=alignment)
             if is_right_hand1:
                 handedness_array[PID1 - 1, PID2 - 1] = 1
 
@@ -311,5 +333,3 @@ def generate_hand_endeff_similarity_matrix(robot_name, followup, demo_max):
 
     # print(heatmap_array)
     return heatmap_array, handedness_array
-
-

@@ -25,8 +25,7 @@ def get_filename(participant_id,
         is_followup = ''
 
     participant_directory = f"PID{participant_id}{is_followup}"
-    experiment_file = f"{robot_name}_PID{participant_id}{is_followup}_{end_eff_name}"\
-        f"Motion_gesture_{gesture_num}_{demo_num}.csv"
+    experiment_file = f"{robot_name}_PID{participant_id}{is_followup}_{end_eff_name}" f"Motion_gesture_{gesture_num}_{demo_num}.csv"
 
     filename = data_path / participant_directory / experiment_file
 

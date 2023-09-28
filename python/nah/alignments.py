@@ -85,6 +85,7 @@ def pose_dist(p1: np.ndarray, p2: np.ndarray):
 
     return np.linalg.norm(v)
 
+
 def compute_dtw_alignment(x, y, dist=None):
     """Align trajectories with DTW"""
     if dist is not None:
@@ -93,6 +94,7 @@ def compute_dtw_alignment(x, y, dist=None):
         dtw_distance, warp_path = fastdtw(x, y)
 
     return dtw_distance, warp_path
+
 
 def dtw_align(traj1: np.ndarray, traj2: np.ndarray, dist=None):
     """Take two trajectories (preferably already spatially aligned) and 
@@ -104,8 +106,8 @@ def dtw_align(traj1: np.ndarray, traj2: np.ndarray, dist=None):
     dtw_distance, warp_path = compute_dtw_alignment(traj1, traj2, dist=dist)
 
     traj1_aligned, traj2_aligned = full_align(warp_path, traj1, traj2)
-    traj1_rot_aligned = traj1_aligned[:,4:7]
-    traj2_rot_aligned = traj2_aligned[:,4:7]
+    traj1_rot_aligned = traj1_aligned[:, 4:7]
+    traj2_rot_aligned = traj2_aligned[:, 4:7]
 
     traj1_rot_aligned = clean_rot_data(traj1_rot_aligned)
     traj1_rot_aligned = clean_rot_data(traj1_rot_aligned)

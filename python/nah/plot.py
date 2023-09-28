@@ -125,12 +125,13 @@ def plot_pos(end_eff_pos_aligned,
 
     if warp_path:
         for [map_x, map_y] in warp_path:
-            ax.plot3D(
-                [end_eff_pos_aligned[map_x].T[0], hand_pos_aligned[map_y].T[0]],
-                [-end_eff_pos_aligned[map_x].T[2], -hand_pos_aligned[map_y].T[2]],
-                [end_eff_pos_aligned[map_x].T[1], hand_pos_aligned[map_y].T[1]],
-                '--k',
-                linewidth=0.2)
+            ax.plot3D([
+                end_eff_pos_aligned[map_x].T[0], hand_pos_aligned[map_y].T[0]
+            ], [
+                -end_eff_pos_aligned[map_x].T[2], -hand_pos_aligned[map_y].T[2]
+            ], [end_eff_pos_aligned[map_x].T[1], hand_pos_aligned[map_y].T[1]],
+                      '--k',
+                      linewidth=0.2)
 
     set_axes_equal(ax)
 
@@ -150,8 +151,7 @@ def plot_pos(end_eff_pos_aligned,
     return
 
 
-def plot_rot(
-             end_eff_rot_aligned,
+def plot_rot(end_eff_rot_aligned,
              hand_rot_aligned,
              time_URDF_aligned,
              time_hand_aligned,
@@ -183,12 +183,13 @@ def plot_rot(
 
     if warp_path:
         for [map_x, map_y] in warp_path:
-            ax.plot3D(
-                [end_eff_rot_aligned[map_x].T[0], hand_rot_aligned[map_y].T[0]],
-                [-end_eff_rot_aligned[map_x].T[2], -hand_rot_aligned[map_y].T[2]],
-                [end_eff_rot_aligned[map_x].T[1], hand_rot_aligned[map_y].T[1]],
-                '--k',
-                linewidth=0.2)
+            ax.plot3D([
+                end_eff_rot_aligned[map_x].T[0], hand_rot_aligned[map_y].T[0]
+            ], [
+                -end_eff_rot_aligned[map_x].T[2], -hand_rot_aligned[map_y].T[2]
+            ], [end_eff_rot_aligned[map_x].T[1], hand_rot_aligned[map_y].T[1]],
+                      '--k',
+                      linewidth=0.2)
 
     set_axes_equal(ax)
 
@@ -415,7 +416,9 @@ def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
     plt.savefig(figname)
     # plt.close("all")
 
-def plot_correlation_matrix(robot_name, gesture, followup, alignment, heatmap_array, handed_array):
+
+def plot_correlation_matrix(robot_name, gesture, followup, alignment,
+                            heatmap_array, handed_array):
     if (robot_name == "j2s6s300"):
         robot_name = "Jaco"
     participant_labels = []
@@ -438,14 +441,16 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment, heatmap_ar
                 vmin=0,
                 vmax=np.max(heatmap_array))
 
-    title = robot_name + " Robot, Gesture "+str(gesture)+" Correlation Matrix"
+    title = robot_name + " Robot, Gesture " + str(
+        gesture) + " Correlation Matrix"
     if followup:
         title += ",\n Follow-up Study"
 
     ax.set_title(title, fontsize=14, fontweight="bold")
     plt.tight_layout()
     plt.show()
-    figname = robot_name + '_gesture_'+str(gesture)+'_correlation_matrix_'+str(alignment)
+    figname = robot_name + '_gesture_' + str(
+        gesture) + '_correlation_matrix_' + str(alignment)
     if followup:
         figname += '_FollowUpStudy'
     figname += '.png'

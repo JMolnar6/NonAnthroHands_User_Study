@@ -46,14 +46,14 @@ def full_align(warp_path, traj1, traj2):
     """
 
     wp_size = len(warp_path)
-    traj1_aligned = np.zeros((wp_size,7))
-    traj2_aligned = np.zeros((wp_size,7))
+    traj1_aligned = np.zeros((wp_size, 7))
+    traj2_aligned = np.zeros((wp_size, 7))
 
     for i, [map_x, map_y] in enumerate(warp_path, start=0):
-        traj1_aligned[i] = traj1[map_x,:]
-        traj2_aligned[i] = traj2[map_y,:]
+        traj1_aligned[i] = traj1[map_x, :]
+        traj2_aligned[i] = traj2[map_y, :]
 
-    return traj1_aligned,traj2_aligned
+    return traj1_aligned, traj2_aligned
 
 
 # def full_joint_align(time_URDF_aligned, joint_data):
@@ -150,6 +150,7 @@ def sum_of_squares(a):
     """
     return np.vstack((a[:, 0], np.sum(np.multiply(a[:, 1:4], a[:, 1:4]),
                                       axis=1)))
+
 
 def study_range_vals(followup):
     if followup:
