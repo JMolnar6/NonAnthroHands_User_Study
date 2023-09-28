@@ -148,10 +148,23 @@ def generate_pairwise_comparison(participant_1,
               " for this gesture")
         return np.nan
 
-    end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1 = segment_by_demo(
-        end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max)
-    end_eff_multi_demo2, camera_multi_demo2, rh_multi_demo2, lh_multi_demo2, joints_multi_demo2 = segment_by_demo(
-        end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max)
+    for demo_max_temp in range(demo_max,0,-1):
+        try:
+            end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1 = segment_by_demo(
+                end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max_temp)
+            break
+        except:
+            print("Demo_max not equal to "+str(demo_max) +"for PID "+str(participant_1) +", gesture "+str(gesture))
+            continue
+
+    for demo_max_temp in range(demo_max,0,-1):
+        try:
+            end_eff_multi_demo2, camera_multi_demo2, rh_multi_demo2, lh_multi_demo2, joints_multi_demo2 = segment_by_demo(
+                end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max_temp)
+            break
+        except:
+            print("Demo_max not equal to "+str(demo_max) +"for PID "+str(participant_2) +", gesture "+str(gesture))
+            continue
 
     
     is_right_hand1 = right_handedness(rh_multi_demo1[0], lh_multi_demo1[0])
@@ -184,6 +197,7 @@ def generate_pairwise_comparison(participant_1,
                 else:
                     traj2 = lh_multi_demo2[demo_num2]
             except:
+                
                 temp_metrics[demo_num1][demo_num2] = np.nan
                 continue
 
