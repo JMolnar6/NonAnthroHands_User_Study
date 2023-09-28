@@ -6,8 +6,8 @@ from enum import Enum
 import gtsam
 import numpy as np
 from evo.core.trajectory import PoseTrajectory3D
-from nah.utils import clean_rot_data, compute_dtw_alignment, full_align,
-                       norm_data, sum_of_squares
+from fastdtw import fastdtw
+from nah.utils import clean_rot_data, full_align, norm_data, sum_of_squares
 
 
 class Alignment(Enum):
@@ -85,32 +85,38 @@ def pose_dist(p1: np.ndarray, p2: np.ndarray):
 
     return np.linalg.norm(v)
 
+def compute_dtw_alignment(x, y, dist=None):
+    """Align trajectories with DTW"""
+    if dist is not None:
+        dtw_distance, warp_path = fastdtw(x, y, dist=dist)
+    else:
+        dtw_distance, warp_path = fastdtw(x, y)
 
-def dtw_align(traj1: np.ndarray, traj2: np.ndarray):
-    """Take two trajectories (preferably already spatially aligned) and compute
-    the """
-    x_norm, y_norm = norm_data(sum_of_squares(traj1), sum_of_squares(traj2))
+    return dtw_distance, warp_path
 
-    _, warp_path = compute_dtw_alignment(x_norm, y_norm)
+def dtw_align(traj1: np.ndarray, traj2: np.ndarray, dist=None):
+    """Take two trajectories (preferably already spatially aligned) and 
+    return the time-aligned outputs"""
+    # x_norm, y_norm = norm_data(sum_of_squares(traj1), sum_of_squares(traj2))
 
-    aligned = full_align(warp_path, traj1, traj2)
-    traj1_time_aligned, traj2_time_aligned, traj1_pos_aligned, \
-        traj1_rot_aligned, traj2_pos_aligned, traj2_rot_aligned = aligned
+    # _, warp_path = compute_dtw_alignment(x_norm, y_norm)
 
-    traj2_rot_aligned = clean_rot_data(traj2_rot_aligned)
+    dtw_distance, warp_path = compute_dtw_alignment(traj1, traj2, dist=dist)
+
+    traj1_aligned, traj2_aligned = full_align(warp_path, traj1, traj2)
+    traj1_rot_aligned = traj1_aligned[:,4:7]
+    traj2_rot_aligned = traj2_aligned[:,4:7]
+
+    traj1_rot_aligned = clean_rot_data(traj1_rot_aligned)
+    traj1_rot_aligned = clean_rot_data(traj1_rot_aligned)
     # Seems to work better if you do it twice for some reason
+    traj2_rot_aligned = clean_rot_data(traj2_rot_aligned)
     traj2_rot_aligned = clean_rot_data(traj2_rot_aligned)
 
     # Return the correct aligned trajectory
-    traj1_aligned = np.empty(traj1.shape)
-    traj1_aligned[:, 0] = traj1_time_aligned
-    traj1_aligned[:, 1:4] = traj1_pos_aligned
     traj1_aligned[:, 4:7] = traj1_rot_aligned
 
     # Return the correct aligned trajectory
-    traj2_aligned = np.empty(traj2.shape)
-    traj2_aligned[:, 0] = traj2_time_aligned
-    traj2_aligned[:, 1:4] = traj2_pos_aligned
     traj2_aligned[:, 4:7] = traj2_rot_aligned
 
     return traj1_aligned, traj2_aligned
