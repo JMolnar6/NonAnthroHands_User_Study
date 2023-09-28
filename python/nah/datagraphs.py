@@ -1,9 +1,12 @@
 """Figure Generation Utilities"""
 
 import numpy as np
+from matplotlib import pyplot as plt
 from nah.loader import load_npzs
-from nah.trajectory import Alignment, get_evo_metrics
+from nah.trajectory import get_evo_metrics, get_evo_trajectory, convert_evo_to_np, align_trajectories
+from nah.alignments import evo_align, dtw_align, Alignment
 from nah.utils import segment_by_demo, study_range_vals
+from nah.plot import plot_raw_data
 
 
 def generate_self_similarity_heat_map(robot_name, followup, demo_max):
@@ -372,4 +375,53 @@ def generate_hand_endeff_similarity_matrix(robot_name, followup, demo_max, align
 
     return heatmap_array, handedness_array
 
+def view_aligned_motions(robot_name,
+                                   participant_1,
+                                   participant_2,
+                                   gesture_num,
+                                   demo,
+                                   followup,
+                                   alignment=Alignment.SpatioTemporal):
+    """
+    Shows trajectories before and after alignment.
+    Provides a quick way to visualize a single gesture for one or all participants.
+    """
 
+    demo_max=5
+    end_eff_data1, camera_data1, rh_data1, lh_data1, joint_data1 = load_npzs(robot_name, participant_1, followup, gesture_num)
+    end_eff1, camera1, rh1, lh1, joint1 = segment_by_demo(end_eff_data1, camera_data1,
+                                                        rh_data1, lh_data1,
+                                                        joint_data1, demo_max)
+    end_eff_data2, camera_data2, rh_data2, lh_data2, joint_data2 = load_npzs(robot_name, participant_2, followup, gesture_num)
+    end_eff2, camera2, rh2, lh2, joint2 = segment_by_demo(end_eff_data2, camera_data2,
+                                                        rh_data2, lh_data2,
+                                                        joint_data2, demo_max)
+
+    traj1 = rh1
+    traj2 = rh2
+        
+    lim = min(traj1[demo].shape[0], traj2[demo].shape[0])
+    plot_raw_data(1,
+                end_eff1[demo],
+                camera1[demo],
+                traj1[demo],
+                traj2[demo],
+                joint1[demo],
+                title="Unaligned trajectories")
+
+    traj1_aligned, traj2_aligned = align_trajectories(traj1[demo][:lim], traj2[demo][:lim])   
+        
+
+        #TODO(Jennifer) Add an if statement that showcases the dtw timestamp alignment, 
+        # not just its 3D position in space
+
+    plot_raw_data(1,
+                end_eff1[demo],
+                camera1[demo],
+                convert_evo_to_np(traj1_aligned),
+                convert_evo_to_np(traj2_aligned),
+                joint1[demo],
+                title="Aligned Trajectories")
+    
+    plt.show()
+    return convert_evo_to_np(traj1_aligned), convert_evo_to_np(traj2_aligned)
