@@ -168,7 +168,7 @@ def generate_pairwise_comparison(participant_1, participant_2, robot_name,
 
             temp_metrics[demo_num1, demo_num2] = metrics['rmse']
 
-    return temp_metrics.mean(0).mean(0)
+    return temp_metrics.mean(0).mean(0), is_right_hand1
 
 
 def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
@@ -180,49 +180,13 @@ def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
 
     for PID1 in range(1, PID_max + 1):
         for PID2 in range(1, PID_max + 1):
-            if PID1 == PID2:
-                continue
+            print("Getting metrics for Participants " + str(PID1) + " and " + str(PID2) + ": ")
+            temp_metrics, is_right_hand1 = generate_pairwise_comparison(PID1, PID2, robot_name,
+                                 gesture, followup, demo_max)
+            if is_right_hand1:
+                handedness_array[PID1 - 1, PID2 - 1] = 1
 
-            end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
-                robot_name, PID1, followup, gesture)
-            end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
-                robot_name, PID2, followup, gesture)
-
-            end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1 = segment_by_demo(
-                end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max)
-            end_eff_multi_demo2, camera_multi_demo2, rh_multi_demo2, lh_multi_demo2, joints_multi_demo2 = segment_by_demo(
-                end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max)
-
-            is_right_hand1 = right_handedness(rh_multi_demo1[0],
-                                              lh_multi_demo1[0])
-            # Only change the handedness array for PID1
-            # (in case PID2 uses a different hand)
-            handedness_array[PID1 - 1, PID2 - 1] = 1
-
-            is_right_hand2 = right_handedness(rh_multi_demo2[0],
-                                              lh_multi_demo2[0])
-
-            temp_metrics = np.zeros([demo_max, demo_max])
-
-            for demo_num1 in range(0, demo_max):
-                for demo_num2 in range(0, demo_max):
-
-                    if (is_right_hand1):
-                        traj1 = rh_multi_demo1[demo_num1]
-                    else:
-                        traj1 = lh_multi_demo1[demo_num1]
-
-                    if (is_right_hand2):
-                        traj2 = rh_multi_demo2[demo_num2]
-                    else:
-                        traj2 = lh_multi_demo2[demo_num2]
-
-                    metrics = get_evo_metrics(
-                        traj1, traj2, alignment=Alignment.SpatioTemporal)
-
-                    temp_metrics[demo_num1, demo_num2] = metrics['rmse']
-
-            correlation_array[PID1 - 1,
-                              PID2 - 1] = temp_metrics.mean(0).mean(0)
+            correlation_array[PID1 - 1, PID2 - 1] = temp_metrics
+            print(str(temp_metrics))
 
     return correlation_array, handedness_array
