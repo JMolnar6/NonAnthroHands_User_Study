@@ -47,6 +47,7 @@ def evaluate_ape(traj1: PoseTrajectory3D, traj2: PoseTrajectory3D):
 
     return metric
 
+
 def align_trajectories(traj1, traj2, alignment=Alignment.No):
     traj1_evo = get_evo_trajectory(traj1)
     traj2_evo = get_evo_trajectory(traj2)
@@ -91,7 +92,7 @@ def align_trajectories(traj1, traj2, alignment=Alignment.No):
 
     else:
         raise RuntimeError("Invalid Alignment specified.")
-    
+
     return traj1_evo, traj2_evo
 
 
@@ -100,7 +101,9 @@ def get_evo_metrics(traj1, traj2, alignment=Alignment.No, suppress_plots=True):
     Take two trajectories of equal length and calculate
     the error between them.
     """
-    traj1_evo, traj2_evo = align_trajectories(traj1, traj2, alignment=alignment)
+    traj1_evo, traj2_evo = align_trajectories(traj1,
+                                              traj2,
+                                              alignment=alignment)
 
     if not suppress_plots:
         # The following is just for debug. Comment it out when you're actually running

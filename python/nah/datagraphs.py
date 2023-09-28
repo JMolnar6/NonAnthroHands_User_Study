@@ -140,7 +140,7 @@ def generate_pairwise_comparison(participant_1,
     if isfollowup2:
         followup2 = followup_2
     else:
-        followup2= followup
+        followup2 = followup
     #Check to make sure demos for this gesture exist for both participants:
 
     try:
@@ -156,42 +156,47 @@ def generate_pairwise_comparison(participant_1,
             robot_name, participant_2, followup2, gesture)
     except:
         print("No demos available for participant" + str(participant_2) +
-            " for this gesture")
+              " for this gesture")
         return np.nan
 
-    for demo_max_temp in range(demo_max,0,-1):
+    for demo_max_temp in range(demo_max, 0, -1):
         try:
             end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1 = segment_by_demo(
                 end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max_temp)
             break
         except:
-            print("Demo_max not equal to "+str(demo_max) +"for PID "+str(participant_1) +\
-                  ", gesture "+str(gesture)+", followup = "+str(followup1))
+            print("Demo_max not equal to " + str(demo_max) + "for PID " +
+                  str(participant_1) + ", gesture " + str(gesture) +
+                  ", followup = " + str(followup1))
             continue
 
-    for demo_max_temp in range(demo_max,0,-1):
+    for demo_max_temp in range(demo_max, 0, -1):
         try:
             end_eff_multi_demo2, camera_multi_demo2, rh_multi_demo2, lh_multi_demo2, joints_multi_demo2 = segment_by_demo(
                 end_eff_2, camera_2, rh_2, lh_2, joint_2, demo_max_temp)
             break
         except:
-            print("Demo_max not equal to "+str(demo_max) +"for PID "+str(participant_2) +\
-                  ", gesture "+str(gesture)+", followup = "+str(followup2))
+            print("Demo_max not equal to " + str(demo_max) + "for PID " +
+                  str(participant_2) + ", gesture " + str(gesture) +
+                  ", followup = " + str(followup2))
             continue
 
-    
     is_right_hand1 = right_handedness(rh_multi_demo1[0], lh_multi_demo1[0])
     is_right_hand2 = right_handedness(rh_multi_demo2[0], lh_multi_demo2[0])
 
     #Insert manual handedness override for Reachy PID9, gesture 5, and PID2, gesture 2
-    if (participant_1==9 and gesture==5 and robot_name=="Reachy" and not followup1):
-        is_right_hand1=True
-    elif (participant_1==2 and gesture==2 and robot_name=="Reachy" and not followup1):
-        is_right_hand1=True
-    if (participant_2==9 and gesture==5 and robot_name=="Reachy" and not followup2):
-        is_right_hand2=True
-    elif (participant_2==2 and gesture==2 and robot_name=="Reachy" and not followup2):
-        is_right_hand2=True
+    if (participant_1 == 9 and gesture == 5 and robot_name == "Reachy"
+            and not followup1):
+        is_right_hand1 = True
+    elif (participant_1 == 2 and gesture == 2 and robot_name == "Reachy"
+          and not followup1):
+        is_right_hand1 = True
+    if (participant_2 == 9 and gesture == 5 and robot_name == "Reachy"
+            and not followup2):
+        is_right_hand2 = True
+    elif (participant_2 == 2 and gesture == 2 and robot_name == "Reachy"
+          and not followup2):
+        is_right_hand2 = True
 
     temp_metrics = np.zeros([demo_max, demo_max])
 
@@ -210,7 +215,7 @@ def generate_pairwise_comparison(participant_1,
                 else:
                     traj2 = lh_multi_demo2[demo_num2]
             except:
-                
+
                 temp_metrics[demo_num1][demo_num2] = np.nan
                 continue
 
@@ -254,7 +259,7 @@ def generate_all_cross_correlation_matrix(robot_name,
                                           alignment=Alignment.SpatioTemporal,
                                           isfollowup2=False,
                                           followup2=False):
-    
+
     PID_max1, gesture_max1 = study_range_vals(followup)
     if isfollowup2:
         PID_max2, gesture_max2 = study_range_vals(followup2)
@@ -288,7 +293,10 @@ def generate_all_cross_correlation_matrix(robot_name,
     return correlation_array, handedness_array
 
 
-def generate_hand_endeff_similarity_matrix(robot_name, followup, demo_max, alignment=Alignment.SpatioTemporal):
+def generate_hand_endeff_similarity_matrix(robot_name,
+                                           followup,
+                                           demo_max,
+                                           alignment=Alignment.SpatioTemporal):
 
     PIDmax, gesturemax = study_range_vals(followup)
 
@@ -299,22 +307,24 @@ def generate_hand_endeff_similarity_matrix(robot_name, followup, demo_max, align
         gesture_metrics = np.array([])
 
         for gesture_num in range(1, gesturemax + 1):
-            try: 
-                end_eff, camera, rh, lh, joint = load_npzs(robot_name, PID,
-                                                       followup, gesture_num)
+            try:
+                end_eff, camera, rh, lh, joint = load_npzs(
+                    robot_name, PID, followup, gesture_num)
             except:
                 print("PID " + str(PID) + " is missing demos for gesture " +
                       str(gesture_num) + ".")
-                heatmap_array[PID-1,gesture_num-1] = np.nan
-                break          
-                
-            for demo_max_temp in range(demo_max,0,-1):
+                heatmap_array[PID - 1, gesture_num - 1] = np.nan
+                break
+
+            for demo_max_temp in range(demo_max, 0, -1):
                 try:
                     end_eff_multi_demo, camera_multi_demo, rh_multi_demo, lh_multi_demo, joints_multi_demo = segment_by_demo(
                         end_eff, camera, rh, lh, joint, demo_max)
                     break
                 except:
-                    print("Demo_max not equal to "+str(demo_max) +"for PID "+str(PID) +", gesture "+str(gesture_num))
+                    print("Demo_max not equal to " + str(demo_max) +
+                          "for PID " + str(PID) + ", gesture " +
+                          str(gesture_num))
                     continue
 
             temp_metrics = np.zeros(demo_max)
@@ -328,11 +338,11 @@ def generate_hand_endeff_similarity_matrix(robot_name, followup, demo_max, align
                                              lh_multi_demo[0])
 
             #Insert manual handedness override for Reachy PID9, gesture 5, and PID2, gesture 2
-            if (PID==9 and gesture_num==5 and robot_name=="Reachy"):
-                is_right_hand=True
-            elif (PID==2 and gesture_num==2 and robot_name=="Reachy"):
-                is_right_hand=True
-            
+            if (PID == 9 and gesture_num == 5 and robot_name == "Reachy"):
+                is_right_hand = True
+            elif (PID == 2 and gesture_num == 2 and robot_name == "Reachy"):
+                is_right_hand = True
+
             # print("Camera range:" + str(np.linalg.norm(camera_range)))
 
             if (is_right_hand):
@@ -352,76 +362,80 @@ def generate_hand_endeff_similarity_matrix(robot_name, followup, demo_max, align
                 for tries in range(max_tries):
                     try:
                         metrics = get_evo_metrics(hand_data[i],
-                                                end_eff_multi_demo[i],
-                                                alignment=alignment)
+                                                  end_eff_multi_demo[i],
+                                                  alignment=alignment)
                         # print("get_evo_metrics_succeeded on try "+str(tries+1))
                         break
                     except:
                         print("Gesture " + str(gesture_num) +
-                            ": Failed to get metrics for participant " +
-                            str(PID) + " demo " + str(i + 1) +
-                            ".\n Retrying...")
+                              ": Failed to get metrics for participant " +
+                              str(PID) + " demo " + str(i + 1) +
+                              ".\n Retrying...")
                         if tries < max_tries - 1:
                             continue
                         else:
-                            print("Unable to compare hand and end-effector for participant " +
-                                str(PID) + ", gesture "+str(gesture_num)+", demo "+str(i+1))
-                            metrics['rmse']=np.nan
+                            print(
+                                "Unable to compare hand and end-effector for participant "
+                                + str(PID) + ", gesture " + str(gesture_num) +
+                                ", demo " + str(i + 1))
+                            metrics['rmse'] = np.nan
                             raise
 
                 temp_metrics[i] = metrics['rmse']
-            
-            heatmap_array[PID-1,gesture_num-1] = np.nanmean(temp_metrics)
+
+            heatmap_array[PID - 1, gesture_num - 1] = np.nanmean(temp_metrics)
 
     return heatmap_array, handedness_array
 
+
 def view_aligned_motions(robot_name,
-                                   participant_1,
-                                   participant_2,
-                                   gesture_num,
-                                   demo,
-                                   followup,
-                                   alignment=Alignment.SpatioTemporal):
+                         participant_1,
+                         participant_2,
+                         gesture_num,
+                         demo,
+                         followup,
+                         alignment=Alignment.SpatioTemporal):
     """
     Shows trajectories before and after alignment.
     Provides a quick way to visualize a single gesture for one or all participants.
     """
 
-    demo_max=5
-    end_eff_data1, camera_data1, rh_data1, lh_data1, joint_data1 = load_npzs(robot_name, participant_1, followup, gesture_num)
-    end_eff1, camera1, rh1, lh1, joint1 = segment_by_demo(end_eff_data1, camera_data1,
-                                                        rh_data1, lh_data1,
-                                                        joint_data1, demo_max)
-    end_eff_data2, camera_data2, rh_data2, lh_data2, joint_data2 = load_npzs(robot_name, participant_2, followup, gesture_num)
-    end_eff2, camera2, rh2, lh2, joint2 = segment_by_demo(end_eff_data2, camera_data2,
-                                                        rh_data2, lh_data2,
-                                                        joint_data2, demo_max)
+    demo_max = 5
+    end_eff_data1, camera_data1, rh_data1, lh_data1, joint_data1 = load_npzs(
+        robot_name, participant_1, followup, gesture_num)
+    end_eff1, camera1, rh1, lh1, joint1 = segment_by_demo(
+        end_eff_data1, camera_data1, rh_data1, lh_data1, joint_data1, demo_max)
+    end_eff_data2, camera_data2, rh_data2, lh_data2, joint_data2 = load_npzs(
+        robot_name, participant_2, followup, gesture_num)
+    end_eff2, camera2, rh2, lh2, joint2 = segment_by_demo(
+        end_eff_data2, camera_data2, rh_data2, lh_data2, joint_data2, demo_max)
 
     traj1 = rh1
     traj2 = rh2
-        
+
     lim = min(traj1[demo].shape[0], traj2[demo].shape[0])
     plot_raw_data(1,
-                end_eff1[demo],
-                camera1[demo],
-                traj1[demo],
-                traj2[demo],
-                joint1[demo],
-                title="Unaligned trajectories")
+                  end_eff1[demo],
+                  camera1[demo],
+                  traj1[demo],
+                  traj2[demo],
+                  joint1[demo],
+                  title="Unaligned trajectories")
 
-    traj1_aligned, traj2_aligned = align_trajectories(traj1[demo][:lim], traj2[demo][:lim])   
-        
+    traj1_aligned, traj2_aligned = align_trajectories(traj1[demo][:lim],
+                                                      traj2[demo][:lim],
+                                                      alignment=alignment)
 
-        #TODO(Jennifer) Add an if statement that showcases the dtw timestamp alignment, 
-        # not just its 3D position in space
+    #TODO(Jennifer) Add an if statement that showcases the dtw timestamp alignment,
+    # not just its 3D position in space
 
     plot_raw_data(1,
-                end_eff1[demo],
-                camera1[demo],
-                convert_evo_to_np(traj1_aligned),
-                convert_evo_to_np(traj2_aligned),
-                joint1[demo],
-                title="Aligned Trajectories")
-    
+                  end_eff1[demo],
+                  camera1[demo],
+                  convert_evo_to_np(traj1_aligned),
+                  convert_evo_to_np(traj2_aligned),
+                  joint1[demo],
+                  title="Aligned Trajectories")
+
     plt.show()
     return convert_evo_to_np(traj1_aligned), convert_evo_to_np(traj2_aligned)
