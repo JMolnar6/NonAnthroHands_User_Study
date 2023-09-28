@@ -3,7 +3,7 @@
 import numpy as np
 from nah.loader import load_npzs
 from nah.trajectory import Alignment, get_evo_metrics
-from nah.utils import segment_by_demo
+from nah.utils import segment_by_demo, study_range_vals
 
 
 def generate_self_similarity_heat_map(robot_name, followup, demo_max):
@@ -39,7 +39,7 @@ def generate_self_similarity_heat_map(robot_name, followup, demo_max):
                                              lh_multi_demo[0])
 
             camera_range = hand_range(camera_multi_demo[0])
-            print("Camera range:" + str(np.linalg.norm(camera_range)))
+            # print("Camera range:" + str(np.linalg.norm(camera_range)))
 
             if (is_right_hand):
                 hand_data = rh_multi_demo
@@ -120,23 +120,29 @@ def right_handedness(rh_data, lh_data):
     #TODO(Jennifer) Mkae something that tests for 2-handedness
 
 
-def study_range_vals(followup):
-    if followup:
-        PIDmax = 9
-        gesturemax = 6
-    else:
-        PIDmax = 16
-        gesturemax = 15
-    return PIDmax, gesturemax
+
 
 
 def generate_pairwise_comparison(participant_1, participant_2, robot_name,
                                  gesture, followup, demo_max, alignment=Alignment.SpatioTemporal):
+    """Aligns two participant hand motions and produces a numerical error metric between them.
+       Tests for handedness and compares both participants' dominant hand motions for the gesture.
+    """
 
-    end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
+    #Check to make sure demos for this gesture exist for both participants:
+    try:
+        end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
         robot_name, participant_1, followup, gesture)
-    end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
+    except: 
+        print("No demos available for participant"+str(participant_1)+" for this gesture")
+        return np.nan
+    
+    try: 
+        end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
         robot_name, participant_2, followup, gesture)
+    except:
+        print("No demos available for participant"+str(participant_2)+" for this gesture")
+        return np.nan
 
     end_eff_multi_demo1, camera_multi_demo1, rh_multi_demo1, lh_multi_demo1, joints_multi_demo1\
         = segment_by_demo(end_eff_1, camera_1, rh_1, lh_1, joint_1, demo_max)
@@ -151,24 +157,45 @@ def generate_pairwise_comparison(participant_1, participant_2, robot_name,
 
     for demo_num1 in range(0, demo_max):
         for demo_num2 in range(0, demo_max):
+            # print("Comparing demos "+str(demo_num1+1)+" and "+str(demo_num2+1))
+            # Check to make sure all demos exist
+            try:
+                if is_right_hand1:
+                    traj1 = rh_multi_demo1[demo_num1]
+                else:
+                    traj1 = lh_multi_demo1[demo_num1]
 
-            if is_right_hand1:
-                traj1 = rh_multi_demo1[demo_num1]
-            else:
-                traj1 = lh_multi_demo1[demo_num1]
+                if is_right_hand2:
+                    traj2 = rh_multi_demo2[demo_num2]
+                else:
+                    traj2 = lh_multi_demo2[demo_num2]
+            except:
+                temp_metrics[demo_num1][demo_num2] = np.nan
+                continue
 
-            if is_right_hand2:
-                traj2 = rh_multi_demo2[demo_num2]
-            else:
-                traj2 = lh_multi_demo2[demo_num2]
-
-            metrics = get_evo_metrics(traj1,
-                                      traj2,
-                                      alignment=alignment)
+            # Sometimes something goes wrong and get_evo_metrics fails,
+            # but if you try it again it succeeds. We don't want to lose
+            # all our work if this is the case.
+            max_tries=10
+            for tries in range(max_tries):
+                try:
+                    metrics = get_evo_metrics(traj1,
+                                              traj2,
+                                              alignment=alignment)
+                    # print("get_evo_metrics_succeeded on try "+str(tries+1))
+                    break
+                except:
+                    print("Gesture "+str(gesture)+": Failed to get metrics for participant "+str(participant_1)+" demo "+str(demo_num1+1)+", "+str(participant_2)+" demo "+str(demo_num2+1)+".\n Retrying...")
+                    if tries<max_tries-1:
+                        continue
+                    else:
+                        print("Unable to compare participants "+str(participant_1)+" demo "+str(demo_num1+1)+" and "+str(participant_2)+" demo "+str(demo_num2+1))
+                        raise
 
             temp_metrics[demo_num1, demo_num2] = metrics['rmse']
+            # print(temp_metrics)
 
-    return temp_metrics.mean(0).mean(0), is_right_hand1
+    return np.nanmean(temp_metrics), is_right_hand1
 
 
 def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
@@ -190,3 +217,99 @@ def generate_all_cross_correlation_matrix(robot_name, gesture, followup,
             print(str(temp_metrics))
 
     return correlation_array, handedness_array
+
+
+def generate_hand_endeff_similarity_matrix(robot_name, followup, demo_max):
+
+    PIDmax, gesturemax = study_range_vals(followup)
+
+    heatmap_array = np.array([])
+    handedness_array = np.zeros([PIDmax, gesturemax])
+
+    shift_limit = 0.3
+
+    for PID in range(1, PIDmax + 1):
+        gesture_metrics = np.array([])
+
+        for gesture_num in range(1, gesturemax + 1):
+            end_eff, camera, rh, lh, joint = load_npzs(robot_name, PID,
+                                                       followup, gesture_num)
+            try:
+                end_eff_multi_demo, camera_multi_demo, rh_multi_demo, lh_multi_demo, joints_multi_demo = segment_by_demo(
+                    end_eff, camera, rh, lh, joint, demo_max)
+            except:
+                print("PID " + str(PID) + " is missing demos for gesture " +
+                      str(gesture_num) + ".")
+
+            demo_metrics_separate = np.array([])
+
+            # Check for which hand the participant was using:
+            #TODO(Jennifer): Figure out whether the LH or RH had a bigger range and assume that was
+            # the primary hand that they used. If both hands were used, can we calculate and present
+            # both? Not the way the heat map is currently drawn, but at least print out a statement
+            # so that I can resolve it with my notes.
+            is_right_hand = right_handedness(rh_multi_demo[0],
+                                             lh_multi_demo[0])
+
+            camera_range = hand_range(camera_multi_demo[0])
+            # print("Camera range:" + str(np.linalg.norm(camera_range)))
+
+            if (is_right_hand):
+                hand_data = rh_multi_demo
+            else:
+                hand_data = lh_multi_demo
+                handedness_array[PID - 1, gesture_num - 1] = 1
+            """TODO(Jennifer): Handle it when both rh_range and lh_range are above the threshold that 
+                indicates this is a 2-handed motion"""
+
+            for i in range(0, 4):
+                for j in range(i + 1, 5):
+                    try:
+                        # Centering code, for participants who clearly walked around during or between their demos:
+                        camera_range_i = hand_range(camera_multi_demo[i])
+                        camera_range_j = hand_range(camera_multi_demo[j])
+                        camera_shift = np.linalg.norm(
+                            camera_multi_demo[i][1:4] -
+                            camera_multi_demo[j][1:4])
+                        if (camera_range_i > shift_limit
+                                or camera_range_j > shift_limit
+                                or camera_shift > shift_limit):
+                            print("Centering data for participant " +
+                                  str(PID) + " gesture " + str(gesture_num))
+                            temp_metrics = get_evo_metrics(
+                                hand_data[i] - camera_multi_demo[i],
+                                hand_data[j] - camera_multi_demo[j])
+                        else:
+                            # print("Using non-centered data for participant "+str(PID)+" gesture "+str(gesture_num))
+                            temp_metrics = get_evo_metrics(
+                                hand_data[i], hand_data[j])
+                    except:
+                        print("Demo " + str(j) + " is missing for PID " +
+                              str(PID) + ", gesture " + str(gesture_num) + ".")
+                        # How do we want to compensate for missing data?
+                        # temp_metrics['rmse'] = 10
+                        # raise
+
+                    if (i == 1 and j == 2):
+                        demo_metrics_separate = temp_metrics['rmse']
+                    else:
+                        demo_metrics_separate = np.hstack(
+                            (demo_metrics_separate, temp_metrics['rmse']))
+
+            total_demo_rmse = np.mean(demo_metrics_separate)
+            # print("PID " + str(PID)+" gesture "+str(gesture_num)+ " demo_rmse: " + str(total_demo_rmse))
+
+            if (gesture_num == 1):
+                gesture_metrics = total_demo_rmse
+            else:
+                gesture_metrics = np.hstack((gesture_metrics, total_demo_rmse))
+
+        if PID == 1:
+            heatmap_array = gesture_metrics
+        else:
+            heatmap_array = np.vstack((heatmap_array, gesture_metrics))
+
+    # print(heatmap_array)
+    return heatmap_array, handedness_array
+
+
