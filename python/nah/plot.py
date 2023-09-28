@@ -377,7 +377,7 @@ def view_participant_robot_gesture(robot_name,
                   centered=centered)
 
 
-def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
+def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array, alignment=None, self=False):
     if (robot_name == "j2s6s300"):
         robot_name = "Jaco"
     participant_labels = []
@@ -392,27 +392,33 @@ def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
     df.index = participant_labels
 
     ax = sns.heatmap(demo_heatmap_array,
-                     cmap='cividis',
+                     cmap='rocket',
                      vmin=0,
                      vmax=np.max(demo_heatmap_array))
     sns.heatmap(df,
-                cmap='rocket',
+                cmap='cividis',
                 ax=ax,
-                mask=handed_array,
+                mask=1-handed_array,
                 vmin=0,
                 vmax=np.max(demo_heatmap_array))
 
-    title = "Participant Demonstration Self-Similarity (RMSE)\n for " + robot_name + " Robot"
+    if self:
+        title = "Participant Demonstration Self-Similarity (RMSE)\n for " + robot_name + " Robot"
+    else:
+        title = "Similarity Between Participant Hand and\n Robot End-Effector Trajectories,\n"+robot_name+" Robot"
     if followup:
         title += ",\n Follow-up Study"
 
     ax.set_title(title, fontsize=14, fontweight="bold")
     plt.tight_layout()
     plt.show()
-    figname = 'Self_Similarity_' + robot_name + '_v0_LinearPlot_withCentering'
+    if self:
+        figname = 'Self_Similarity_' + robot_name + '_v0_LinearPlot_withCentering'
+    else: 
+        figname = robot_name+"_eeff_hand_similarity"
     if followup:
         figname += '_FollowUpStudy'
-    figname += '.png'
+    figname += "_"+str(alignment)+'.png'
     plt.savefig(figname)
     # plt.close("all")
 
