@@ -5,6 +5,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
 from nah.loader import load_npzs
+from nah.utils import study_range_vals
 from tqdm import tqdm
 
 
@@ -380,12 +381,7 @@ def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
         robot_name = "Jaco"
     participant_labels = []
     gesture_labels = []
-    if followup:
-        participant_max = 9
-        gesture_max = 6
-    else:
-        participant_max = 16
-        gesture_max = 15
+    participant_max, gesture_max = study_range_vals(followup)
     for i in range(1, participant_max + 1):
         participant_labels.append("Participant " + str(i))
     for i in range(1, gesture_max + 1):
@@ -419,25 +415,39 @@ def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
     plt.savefig(figname)
     # plt.close("all")
 
-    # figname = 'Self_Similarity_' + robot_name + '_v0_LogPlot_withCentering'
-    # if followup:
-    #     figname += '_FollowUpStudy'
-    # figname += '.png'
-    # ax = sns.heatmap(df,
-    #                  cmap='rocket',
-    #                  vmin=0,
-    #                  vmax=np.max(demo_heatmap_array),
-    #                  norm=LogNorm())
-    # sns.heatmap(demo_heatmap_array,
-    #             mask=handed_array,
-    #             cmap='cividis',
-    #             ax=ax,
-    #             vmin=0,
-    #             vmax=np.max(demo_heatmap_array),
-    #             norm=LogNorm())
-    # # ax = sns.heatmap(df, norm=LogNorm())
-    # ax.set_title(title, fontsize=14, fontweight="bold")
-    # plt.tight_layout()
-    # plt.show()
-    # plt.savefig(figname)
-    # plt.savefig(figname)
+def plot_correlation_matrix(robot_name, gesture, followup, heatmap_array, handed_array):
+    if (robot_name == "j2s6s300"):
+        robot_name = "Jaco"
+    participant_labels = []
+    gesture_labels = []
+    participant_max, gesture_max = study_range_vals(followup)
+    for i in range(1, participant_max + 1):
+        participant_labels.append("Participant " + str(i))
+
+    df = pd.DataFrame(heatmap_array, columns=participant_labels)
+    df.index = participant_labels
+
+    ax = sns.heatmap(heatmap_array,
+                     cmap='rocket',
+                     vmin=0,
+                     vmax=np.max(heatmap_array))
+    sns.heatmap(df,
+                cmap='cividis',
+                ax=ax,
+                mask=handed_array,
+                vmin=0,
+                vmax=np.max(heatmap_array))
+
+    title = robot_name + " Robot, Gesture "+str(gesture)+" Correlation Matrix"
+    if followup:
+        title += ",\n Follow-up Study"
+
+    ax.set_title(title, fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    plt.show()
+    figname = robot_name + '_gesture_'+str(gesture)+'_correlation_matrix'
+    if followup:
+        figname += '_FollowUpStudy'
+    figname += '.png'
+    plt.savefig(figname)
+    # plt.close("all")
