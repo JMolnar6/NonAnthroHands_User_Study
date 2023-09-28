@@ -277,17 +277,23 @@ def generate_hand_endeff_similarity_matrix(robot_name, followup, demo_max, align
         gesture_metrics = np.array([])
 
         for gesture_num in range(1, gesturemax + 1):
-            end_eff, camera, rh, lh, joint = load_npzs(robot_name, PID,
+            try: 
+                end_eff, camera, rh, lh, joint = load_npzs(robot_name, PID,
                                                        followup, gesture_num)
-            try:
-                end_eff_multi_demo, camera_multi_demo, rh_multi_demo, lh_multi_demo, joints_multi_demo = segment_by_demo(
-                    end_eff, camera, rh, lh, joint, demo_max)
             except:
                 print("PID " + str(PID) + " is missing demos for gesture " +
                       str(gesture_num) + ".")
                 heatmap_array[PID-1,gesture_num-1] = np.nan
-                break
+                break          
                 
+            for demo_max_temp in range(demo_max,0,-1):
+                try:
+                    end_eff_multi_demo, camera_multi_demo, rh_multi_demo, lh_multi_demo, joints_multi_demo = segment_by_demo(
+                        end_eff, camera, rh, lh, joint, demo_max)
+                    break
+                except:
+                    print("Demo_max not equal to "+str(demo_max) +"for PID "+str(PID) +", gesture "+str(gesture_num))
+                    continue
 
             temp_metrics = np.zeros(demo_max)
 
