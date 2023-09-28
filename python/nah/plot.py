@@ -415,7 +415,7 @@ def plot_heatmap(robot_name, followup, demo_heatmap_array, handed_array):
     plt.savefig(figname)
     # plt.close("all")
 
-def plot_correlation_matrix(robot_name, gesture, followup, heatmap_array, handed_array):
+def plot_correlation_matrix(robot_name, gesture, followup, alignment, heatmap_array, handed_array):
     if (robot_name == "j2s6s300"):
         robot_name = "Jaco"
     participant_labels = []
@@ -445,7 +445,7 @@ def plot_correlation_matrix(robot_name, gesture, followup, heatmap_array, handed
     ax.set_title(title, fontsize=14, fontweight="bold")
     plt.tight_layout()
     plt.show()
-    figname = robot_name + '_gesture_'+str(gesture)+'_correlation_matrix'
+    figname = robot_name + '_gesture_'+str(gesture)+'_correlation_matrix_'+str(alignment)
     if followup:
         figname += '_FollowUpStudy'
     figname += '.png'
