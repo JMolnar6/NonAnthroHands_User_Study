@@ -391,9 +391,9 @@ def plot_heatmap(robot_name,
     gesture_labels = []
     participant_max, gesture_max = study_range_vals(followup)
     for i in range(1, participant_max + 1):
-        participant_labels.append("Participant " + str(i))
+        participant_labels.append("P" + str(i))
     for i in range(1, gesture_max + 1):
-        gesture_labels.append("Gesture " + str(i))
+        gesture_labels.append("G" + str(i))
 
     df = pd.DataFrame(demo_heatmap_array, columns=gesture_labels)
     df.index = participant_labels
@@ -514,7 +514,7 @@ def plot_clusters(robot_name, followup, cluster_vals, alignment):
     PID_max,gesture_max=study_range_vals(followup)
 
     for i in range(1, gesture_max + 1):
-        row_labels.append("Gesture " + str(i))
+        row_labels.append("G" + str(i))
 
     for i in range(1, PID_max + 1):
         col_labels.append("P" + str(i))
@@ -530,11 +530,12 @@ def plot_clusters(robot_name, followup, cluster_vals, alignment):
     #                     mask=threshold_mask,
     #                     cbar_kws={'label': 'Right Hand'})
 
-    cmap = sns.color_palette("Spectral", num_colors)
+    cmap = sns.color_palette("nipy_spectral", num_colors)
 
     ax = sns.heatmap(df,
                 # cmap='cividis',
                 cmap=cmap,
+                cbar=False,
                 # mask=cluster_vals,
                 vmin=0,
                 vmax=np.max(cluster_vals))
