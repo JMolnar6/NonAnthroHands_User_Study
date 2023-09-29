@@ -4,7 +4,8 @@ import numpy as np
 from fastdtw import fastdtw
 from nah.alignments import Alignment, evo_to_gtsam, manifold_align, pose_dist
 from nah.loader import load_npzs
-from nah.trajectory import get_evo_metrics, get_evo_trajectory
+from nah.trajectory import (convert_evo_to_np, get_evo_metrics,
+                            get_evo_trajectory)
 from nah.utils import segment_by_demo
 
 
@@ -60,37 +61,39 @@ class TestAlignment(unittest.TestCase):
 
     def test_pose_dist(self):
         """Test custom pose distance metric"""
-        p1 = np.eye(4)
-        p2 = np.eye(4)
+        p1 = np.zeros((7, ))
+        p2 = np.zeros((7, ))
 
         # Difference between identities should be 0
         assert pose_dist(p1, p2) == 0.0
 
-        p1[0:3, 3] = np.arange(1, 4)
-        p2[0:3, 3] = np.arange(1, 4)
+        p1[1:4] = np.arange(1, 4)
+        p2[1:4] = np.arange(1, 4)
         # Difference between the same poses should be 0
         assert pose_dist(p1, p2) == 0.0
 
         # Compare different translations
-        p2[0:3, 3] = np.arange(4, 7)
+        p2[1:4] = np.arange(4, 7)
 
         assert pose_dist(p1, p2) == \
             np.linalg.norm(np.arange(1, 4) - np.arange(4, 7))
 
         # Compare rotations
-        p1 = np.eye(4)
+        p1 = np.zeros((7))
         # Pose with rotation of 180 degrees
-        p2 = np.eye(4)
-        p2[0, 0] = -1
-        p2[1, 1] = -1
+        p2 = np.zeros((7))
+        p2[4] = np.pi
 
         assert pose_dist(p1, p2) == np.pi
 
     def test_dtw_pose_dist(self):
         """Test the use of the pose_dist distance function with DTW"""
         # Trivial case when both trajectories are the same
-        traj1 = get_evo_trajectory(self.end_eff[0]).poses_se3
-        traj2 = get_evo_trajectory(self.end_eff[0]).poses_se3
+        traj1 = get_evo_trajectory(self.end_eff[0])
+        traj2 = get_evo_trajectory(self.end_eff[0])
+
+        traj1 = convert_evo_to_np(traj1)
+        traj2 = convert_evo_to_np(traj2)
 
         distance, path = fastdtw(traj1, traj2, dist=pose_dist)
         np.testing.assert_almost_equal(distance, 0.0)
