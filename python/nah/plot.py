@@ -462,6 +462,8 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
     if threshold is not None:
         threshold_mask = np.where(heatmap_array >= threshold, True, False)
         cmap.set_bad("w")      
+    else:
+        threshold_mask=np.zeros([heatmap_array.shape[0],heatmap_array.shape[1]])
 
     ax = sns.heatmap(heatmap_array,
                      cmap=cmap,
