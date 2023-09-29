@@ -160,3 +160,25 @@ def study_range_vals(followup):
         PIDmax = 16
         gesturemax = 15
     return PIDmax, gesturemax
+
+def translate_followup_participants(num):
+    """Rearrange the order of followup participants so that returning
+    participants are processed first. Provide an index in order from 0-9
+    and receive a followup participant ID in the order [8,5,9,2,7,1,3,4,6],
+    where [1,3,4,6] are the new participants"""
+    followup_participant_list = [8,5,9,2,7,1,3,4,6]
+    participant_matching_list = [[11,2],[6,5],[13,7],[1,8],[10,9]]
+    new_participants = [1,3,4,6]
+    return followup_participant_list(num)
+
+
+def translate_followup_gesture(robot_name, num):
+    """Provide the new gesture number, see which gesture it matched to from the original set"""
+    if robot_name == "Reachy":
+        gesture_matching_list=[[2,6],[3,5],[10,4],[11,3],[12,2],[15,1]]
+    elif robot_name == 'j2s6s300':
+        gesture_matching_list=[[1,6],[4,5],[10,4],[11,3],[12,2],[15,1]]
+    
+    print("New gesture number: "+str(num)+", original gesture: "+str(gesture_matching_list[-num,0]))
+    return gesture_matching_list[-num,0]
+
