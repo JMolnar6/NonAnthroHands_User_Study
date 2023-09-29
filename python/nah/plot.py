@@ -399,13 +399,18 @@ def plot_heatmap(robot_name,
     ax = sns.heatmap(demo_heatmap_array,
                      cmap='rocket',
                      vmin=0,
-                     vmax=np.max(demo_heatmap_array))
-    sns.heatmap(df,
+                     vmax=np.max(demo_heatmap_array),
+                     cbar_kws={'label': 'Right Hand'}
+                     )
+    if np.any(handed_array):
+        sns.heatmap(df,
                 cmap='cividis',
                 ax=ax,
                 mask=1 - handed_array,
                 vmin=0,
-                vmax=np.max(demo_heatmap_array))
+                vmax=np.max(demo_heatmap_array),
+                cbar_kws={'label': 'Left Hand'}
+                )
 
     if self:
         title = "Participant Demonstration Self-Similarity (RMSE)\n for " + robot_name + " Robot"
@@ -438,24 +443,33 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
     for i in range(1, participant_max + 1):
         participant_labels.append("P" + str(i))
 
-    df = pd.DataFrame(heatmap_array, columns=participant_labels)
     if followup_participant_override:
         # followup_participant_list = [8,5,9,2,7,1,3,4,6]
         followup_participant_labels = ("P1B","P6B","P10B","P11B","P13B","P17","P18","P19","P20")
-        df.index = followup_participant_labels
+        df = pd.DataFrame(heatmap_array, columns=followup_participant_labels)
     else:
-        df.index = participant_labels
+        df = pd.DataFrame(heatmap_array, columns=participant_labels)
+    # if followup_participant_override:
+    #     # followup_participant_list = [8,5,9,2,7,1,3,4,6]
+    #     followup_participant_labels = ("P1B","P6B","P10B","P11B","P13B","P17","P18","P19","P20")
+    #     df.index = followup_participant_labels
+    # else:
+    df.index = participant_labels
 
     ax = sns.heatmap(heatmap_array,
                      cmap='rocket',
                      vmin=0,
-                     vmax=np.max(heatmap_array))
+                     vmax=np.max(heatmap_array),
+                     cbar_kws={'label': 'Right Hand'})
+    
+    # if not np.all(handed_array):
     sns.heatmap(df,
                 cmap='cividis',
                 ax=ax,
                 mask=handed_array,
                 vmin=0,
-                vmax=np.max(heatmap_array))
+                vmax=np.max(heatmap_array),
+                cbar_kws={'label': 'Left Hand'})
 
     title = robot_name + " Robot, Gesture " + str(
         gesture) + " Correlation Matrix"
