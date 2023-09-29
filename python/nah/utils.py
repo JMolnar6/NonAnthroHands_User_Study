@@ -175,10 +175,15 @@ def translate_followup_participants(num):
 def translate_followup_gesture(robot_name, num):
     """Provide the new gesture number, see which gesture it matched to from the original set"""
     if robot_name == "Reachy":
-        gesture_matching_list=[[2,6],[3,5],[10,4],[11,3],[12,2],[15,1]]
+        gesture_matching_list=[15,12,11,10,3,2]
     elif robot_name == 'j2s6s300':
-        gesture_matching_list=[[1,6],[4,5],[10,4],[11,3],[12,2],[15,1]]
+        gesture_matching_list=[15,12,11,10,4,1]
+
+    gesture_matching_list_Reachy=[[2,6],[3,5],[10,4],[11,3],[12,2],[15,1]]
+    gesture_list_Reachy_original=[15,12,11,10,3,2]
+    gesture_matching_list_Jaco=[[1,6],[4,5],[10,4],[11,3],[12,2],[15,1]]
+    gesture_list_Jaco_original=[15,12,11,10,4,1]
     
-    print("New gesture number: "+str(num)+", original gesture: "+str(gesture_matching_list[-num,0]))
-    return gesture_matching_list[-num,0]
+    print("New gesture number: "+str(num)+", original gesture: "+str(gesture_matching_list[num-1]))
+    return gesture_matching_list[num-1]
 

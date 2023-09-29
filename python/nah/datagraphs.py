@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from nah.loader import load_npzs
 from nah.trajectory import get_evo_metrics, get_evo_trajectory, convert_evo_to_np, align_trajectories
 from nah.alignments import evo_align, dtw_align, Alignment
-from nah.utils import segment_by_demo, study_range_vals
+from nah.utils import segment_by_demo, study_range_vals, translate_followup_gesture
 from nah.plot import plot_raw_data
 
 
@@ -130,33 +130,37 @@ def generate_pairwise_comparison(participant_1,
                                  followup,
                                  demo_max,
                                  alignment=Alignment.SpatioTemporal,
-                                 isfollowup2=False,
-                                 followup_2=False):
+                                 isfollowup2=False
+                                 ):
     """Aligns two participant hand motions and produces a numerical error metric between them.
        Tests for handedness and compares both participants' dominant hand motions for the gesture.
     """
 
     followup1 = followup
     if isfollowup2:
-        followup2 = followup_2
+        followup2 = isfollowup2
+        gesture2 = gesture
+        gesture = translate_followup_gesture(robot_name,gesture)
+        PID_string_append="B"
     else:
         followup2 = followup
+        PID_string_append=""
     #Check to make sure demos for this gesture exist for both participants:
 
     try:
         end_eff_1, camera_1, rh_1, lh_1, joint_1 = load_npzs(
             robot_name, participant_1, followup1, gesture)
     except:
-        print("No demos available for participant" + str(participant_1) +
+        print("No demos available for participant " + str(participant_1) +
               " for this gesture")
         return np.nan
 
     try:
         end_eff_2, camera_2, rh_2, lh_2, joint_2 = load_npzs(
-            robot_name, participant_2, followup2, gesture)
+            robot_name, participant_2, followup2, gesture2)
     except:
-        print("No demos available for participant" + str(participant_2) +
-              " for this gesture")
+        print("No demos available for participant " + str(participant_2) +
+              PID_string_append+" for this gesture")
         return np.nan
 
     for demo_max_temp in range(demo_max, 0, -1):
@@ -177,7 +181,7 @@ def generate_pairwise_comparison(participant_1,
             break
         except:
             print("Demo_max not equal to " + str(demo_max) + "for PID " +
-                  str(participant_2) + ", gesture " + str(gesture) +
+                  str(participant_2) + PID_string_append+", gesture " + str(gesture2) +
                   ", followup = " + str(followup2))
             continue
 
@@ -244,7 +248,9 @@ def generate_pairwise_comparison(participant_1,
                               str(demo_num1 + 1) + " and " +
                               str(participant_2) + " demo " +
                               str(demo_num2 + 1))
-                        raise
+                        temp_metrics[demo_num1,demo_num2]= np.nan
+                        break
+                        # raise
 
             temp_metrics[demo_num1, demo_num2] = metrics['rmse']
             # print(temp_metrics)
@@ -257,32 +263,36 @@ def generate_all_cross_correlation_matrix(robot_name,
                                           followup,
                                           demo_max,
                                           alignment=Alignment.SpatioTemporal,
-                                          isfollowup2=False,
-                                          followup2=False):
+                                          isfollowup2=False
+                                          ):
 
     PID_max1, gesture_max1 = study_range_vals(followup)
     if isfollowup2:
-        PID_max2, gesture_max2 = study_range_vals(followup2)
+        PID_max2, gesture_max2 = study_range_vals(isfollowup2)
+        participant_list = [8,5,9,2,7,1,3,4,6]
+        PID_string_append="B"
     else:
         PID_max2 = PID_max1
+        participant_list=list(range(1, PID_max2+1))
+        PID_string_append=""
 
-    correlation_array = np.zeros([PID_max1, PID_max2])
-    handedness_array = np.zeros([PID_max1, PID_max2])
+    correlation_array = np.zeros([PID_max1, np.size(participant_list)])
+    handedness_array = np.zeros([PID_max1, np.size(participant_list)])
 
     for PID1 in range(1, PID_max1 + 1):
         for PID2 in range(1, PID_max2 + 1):
             print("Getting metrics for Participants " + str(PID1) + " and " +
-                  str(PID2) + ": ")
+                  str(participant_list[PID2-1]) + PID_string_append+": ")
+
             temp_metrics, is_right_hand1 = generate_pairwise_comparison(
                 PID1,
-                PID2,
+                participant_list[PID2-1],
                 robot_name,
                 gesture,
                 followup,
                 demo_max,
                 alignment=alignment,
-                isfollowup2=isfollowup2,
-                followup_2=followup2)
+                isfollowup2=isfollowup2)
 
             if is_right_hand1:
                 handedness_array[PID1 - 1, PID2 - 1] = 1
@@ -379,10 +389,10 @@ def generate_hand_endeff_similarity_matrix(robot_name,
                                 + str(PID) + ", gesture " + str(gesture_num) +
                                 ", demo " + str(i + 1))
                             metrics['rmse'] = np.nan
-                            raise
+                            # raise
 
                 temp_metrics[i] = metrics['rmse']
-
+            print(np.nanmean(temp_metrics))
             heatmap_array[PID - 1, gesture_num - 1] = np.nanmean(temp_metrics)
 
     return heatmap_array, handedness_array

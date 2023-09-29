@@ -429,17 +429,22 @@ def plot_heatmap(robot_name,
 
 
 def plot_correlation_matrix(robot_name, gesture, followup, alignment,
-                            heatmap_array, handed_array):
+                            heatmap_array, handed_array, followup_participant_override=False):
     if (robot_name == "j2s6s300"):
         robot_name = "Jaco"
     participant_labels = []
     gesture_labels = []
     participant_max, gesture_max = study_range_vals(followup)
     for i in range(1, participant_max + 1):
-        participant_labels.append("Participant " + str(i))
+        participant_labels.append("P" + str(i))
 
     df = pd.DataFrame(heatmap_array, columns=participant_labels)
-    df.index = participant_labels
+    if followup_participant_override:
+        # followup_participant_list = [8,5,9,2,7,1,3,4,6]
+        followup_participant_labels = ("P1B","P6B","P10B","P11B","P13B","P17","P18","P19","P20")
+        df.index = followup_participant_labels
+    else:
+        df.index = participant_labels
 
     ax = sns.heatmap(heatmap_array,
                      cmap='rocket',
