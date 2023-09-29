@@ -74,8 +74,9 @@ def pose_dist(p1: np.ndarray, p2: np.ndarray):
     Given poses p1 and p2, the distance between the two
     is computed as the L2 norm of the vector difference of the Lie algebras.
     """
-    aTb1 = gtsam.Pose3(p1)
-    aTb2 = gtsam.Pose3(p2)
+    # Convert from 1x7 vector of (s, x, y, z, r, p, y) to Pose3 object
+    aTb1 = gtsam.Pose3(gtsam.Rot3.Ypr(*p1[4:7][::-1]), p1[1:4])
+    aTb2 = gtsam.Pose3(gtsam.Rot3.Ypr(*p2[4:7][::-1]), p2[1:4])
 
     # Compute the transformation difference in SE(3)
     b1Tb2 = aTb1.inverse() * aTb2
