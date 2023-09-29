@@ -5,6 +5,7 @@ import seaborn as sns
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
+from matplotlib import colors
 from nah.loader import load_npzs
 from nah.utils import study_range_vals
 from tqdm import tqdm
@@ -496,3 +497,66 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
     figname += '.png'
     plt.savefig(figname)
     # plt.close("all")
+
+def plot_clusters(robot_name, followup, cluster_vals, alignment):
+    """Import an organized matrix of agglomorate clusters and plot it"""    
+
+    plt.close("all")
+
+    if (robot_name == "j2s6s300"):
+        robot_name = "Jaco"
+
+    col_labels = []
+    row_labels = []
+
+    num_colors = np.unique(cluster_vals).shape[0]
+
+    PID_max,gesture_max=study_range_vals(followup)
+
+    for i in range(1, gesture_max + 1):
+        row_labels.append("Gesture " + str(i))
+
+    for i in range(1, PID_max + 1):
+        col_labels.append("P" + str(i))
+
+    df = pd.DataFrame(cluster_vals, columns=col_labels)
+
+    df.index = row_labels
+
+    # ax = sns.heatmap(heatmap_array,
+    #                     cmap=cmap,
+    #                     vmin=0,
+    #                     vmax=np.max(heatmap_array),
+    #                     mask=threshold_mask,
+    #                     cbar_kws={'label': 'Right Hand'})
+
+    cmap = sns.color_palette("Spectral", num_colors)
+
+    ax = sns.heatmap(df,
+                # cmap='cividis',
+                cmap=cmap,
+                # mask=cluster_vals,
+                vmin=0,
+                vmax=np.max(cluster_vals))
+
+
+    # Get the colorbar object from the Seaborn heatmap
+    # colorbar = ax.collections[0].colorbar
+    # The list comprehension calculates the positions to place the labels to be evenly distributed across the colorbar
+    # r = colorbar.vmax - colorbar.vmin
+    # colorbar.set_ticks([colorbar.vmin + 0.5 * r / (num_colors) + r * i / (num_colors) for i in range(num_colors)])
+    # colorbar.set_ticklabels(list(vmap.values()))
+
+    title = robot_name + " Clusters"
+    if followup:
+        title += ",\n Follow-up Study"
+
+    ax.set_title(title, fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    plt.show()
+    figname = robot_name + '_clusters_' + str(alignment)
+    if followup:
+        figname += '_FollowUpStudy'
+    figname += '.png'
+    plt.savefig(figname)
+
