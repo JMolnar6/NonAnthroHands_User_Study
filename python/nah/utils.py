@@ -193,12 +193,23 @@ def cluster(robot_name, followup, alignment, threshold=1.7, linkage='single'):
     PID_max, gesture_max = study_range_vals(followup)
     gesture_start = 1
     gesture_end=gesture_max
+    
+    # if followup:
+    #     clustering_vals=np.zeros([gesture_max, 16])
+    # else:
     clustering_vals=np.zeros([gesture_max, PID_max])
 
     for gesture in range(gesture_start,gesture_end+1):
-        filename = str(robot_name)+"_gesture_"+str(gesture)+"_cross_correlation_"+str(alignment)+".npz"
+        filename = str(robot_name)+"_gesture_"+str(gesture)+"_cross_correlation_"
+        if (followup):
+            filename+="w_FollowUpPs_"
+        filename+=str(alignment)+".npz"
+        # print(filename)
         data = np.load(filename)
         correlation_array = data['correlation_array']
+        if followup:
+            correlation_array=correlation_array.T
+        # print(correlation_array.shape)
         # hand_array = data['hand_array']
         clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=threshold, compute_full_tree=True, linkage=linkage).fit(correlation_array)
         clustering
