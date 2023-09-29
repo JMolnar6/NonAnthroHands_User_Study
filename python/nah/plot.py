@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
 from nah.loader import load_npzs
@@ -434,7 +435,7 @@ def plot_heatmap(robot_name,
 
 
 def plot_correlation_matrix(robot_name, gesture, followup, alignment,
-                            heatmap_array, handed_array, followup_participant_override=False):
+                            heatmap_array, handed_array, followup_participant_override=False, threshold=None):
     if (robot_name == "j2s6s300"):
         robot_name = "Jaco"
     participant_labels = []
@@ -456,10 +457,16 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
     # else:
     df.index = participant_labels
 
+    cmap = mpl.colormaps.get_cmap('rocket')
+    if threshold is not None:
+        threshold_mask = np.where(heatmap_array >= threshold, True, False)
+        cmap.set_bad("w")      
+
     ax = sns.heatmap(heatmap_array,
-                     cmap='rocket',
+                     cmap=cmap,
                      vmin=0,
                      vmax=np.max(heatmap_array),
+                     mask=threshold_mask,
                      cbar_kws={'label': 'Right Hand'})
     
     # if not np.all(handed_array):
@@ -470,6 +477,9 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
                 vmin=0,
                 vmax=np.max(heatmap_array),
                 cbar_kws={'label': 'Left Hand'})
+    
+
+
 
     title = robot_name + " Robot, Gesture " + str(
         gesture) + " Correlation Matrix"
