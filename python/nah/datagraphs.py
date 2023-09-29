@@ -144,6 +144,7 @@ def generate_pairwise_comparison(participant_1,
         PID_string_append="B"
     else:
         followup2 = followup
+        gesture2=gesture
         PID_string_append=""
     #Check to make sure demos for this gesture exist for both participants:
 
