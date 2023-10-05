@@ -188,7 +188,7 @@ def translate_followup_gesture(robot_name, num):
     print("New gesture number: "+str(num)+", original gesture: "+str(gesture_matching_list[num-1]))
     return gesture_matching_list[num-1]
 
-def cluster(robot_name, followup, alignment, threshold=1.7, linkage='single'):
+def cluster(robot_name, followup, alignment, eeff=False,threshold=1.7, linkage='single'):
 
     PID_max, gesture_max = study_range_vals(followup)
     gesture_start = 1
@@ -200,13 +200,19 @@ def cluster(robot_name, followup, alignment, threshold=1.7, linkage='single'):
     clustering_vals=np.zeros([gesture_max, PID_max])
 
     for gesture in range(gesture_start,gesture_end+1):
-        filename = str(robot_name)+"_gesture_"+str(gesture)+"_cross_correlation_"
+        if eeff:
+            filename = str(robot_name)+"_eeff_hand_similarity_matrix_"
+        else:
+            filename = str(robot_name)+"_gesture_"+str(gesture)+"_cross_correlation_"
         if (followup):
             filename+="w_FollowUpPs_"
         filename+=str(alignment)+".npz"
         # print(filename)
         data = np.load(filename)
-        correlation_array = data['correlation_array']
+        if eeff:
+            correlation_array=data['heat_map']
+        else:
+            correlation_array = data['correlation_array']
         if followup:
             correlation_array=correlation_array.T
         # print(correlation_array.shape)
