@@ -98,10 +98,10 @@ public class PosRotRecorder : MonoBehaviour
         // string filePath = Application.persistentDataPath + "/Data/" + "goMotion";
         string filePath = "";
         if (hitRecord){
-            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "_" + go.name + "_Motion_gesture_" + gesture_num.ToString() + "_" + demo_num + ".csv";
+            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "B_" + go.name + "_Motion_gesture_" + gesture_num.ToString() + "_" + demo_num + ".csv";
         }
         else{
-            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "_" + go.name + "_Playback.csv";
+            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "B_" + go.name + "_Playback.csv";
         }
         
         // Debug.Log("filepath = " + filePath);
