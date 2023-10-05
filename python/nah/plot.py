@@ -468,7 +468,8 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
     ax = sns.heatmap(heatmap_array,
                      cmap=cmap,
                      vmin=0,
-                     vmax=np.max(heatmap_array),
+                    #  vmax=np.max(heatmap_array),
+                     vmax=3.0,
                      mask=threshold_mask,
                      cbar_kws={'label': 'Right Hand'})
     
@@ -478,7 +479,8 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
                 ax=ax,
                 mask=handed_array,
                 vmin=0,
-                vmax=np.max(heatmap_array),
+                # vmax=np.max(heatmap_array),
+                vmax =3.0,
                 cbar_kws={'label': 'Left Hand'})
     
 
@@ -500,7 +502,7 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
     plt.savefig(figname)
     # plt.close("all")
 
-def plot_clusters(robot_name, followup, cluster_vals, alignment):
+def plot_clusters(robot_name, followup, cluster_vals, alignment, eeff=False):
     """Import an organized matrix of agglomorate clusters and plot it"""    
 
     plt.close("all")
@@ -560,6 +562,8 @@ def plot_clusters(robot_name, followup, cluster_vals, alignment):
     figname = robot_name + '_clusters_' + str(alignment)
     if followup:
         figname += '_FollowUpStudy'
+    elif eeff:
+        figname+= '_eeff'
     figname += '.png'
     plt.savefig(figname)
 
