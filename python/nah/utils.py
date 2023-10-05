@@ -2,6 +2,7 @@
 import numpy as np
 from fastdtw import fastdtw
 from scipy.signal import find_peaks
+from sklearn.cluster import AgglomerativeClustering
 
 
 def norm_data(x, y):
@@ -160,3 +161,103 @@ def study_range_vals(followup):
         PIDmax = 16
         gesturemax = 15
     return PIDmax, gesturemax
+
+def translate_followup_participants(num):
+    """Rearrange the order of followup participants so that returning
+    participants are processed first. Provide an index in order from 0-9
+    and receive a followup participant ID in the order [8,5,9,2,7,1,3,4,6],
+    where [1,3,4,6] are the new participants"""
+    followup_participant_list = [8,5,9,2,7,1,3,4,6]
+    participant_matching_list = [[11,2],[6,5],[13,7],[1,8],[10,9]]
+    new_participants = [1,3,4,6]
+    return followup_participant_list(num)
+
+
+def translate_followup_gesture(robot_name, num):
+    """Provide the new gesture number, see which gesture it matched to from the original set"""
+    if robot_name == "Reachy":
+        gesture_matching_list=[15,12,11,10,3,2]
+    elif robot_name == 'j2s6s300':
+        gesture_matching_list=[15,12,11,10,4,1]
+
+    gesture_matching_list_Reachy=[[2,6],[3,5],[10,4],[11,3],[12,2],[15,1]]
+    gesture_list_Reachy_original=[15,12,11,10,3,2]
+    gesture_matching_list_Jaco=[[1,6],[4,5],[10,4],[11,3],[12,2],[15,1]]
+    gesture_list_Jaco_original=[15,12,11,10,4,1]
+    
+    print("New gesture number: "+str(num)+", original gesture: "+str(gesture_matching_list[num-1]))
+    return gesture_matching_list[num-1]
+
+def cluster(robot_name, followup, alignment, eeff=False,threshold=1.7, linkage='single'):
+
+    PID_max, gesture_max = study_range_vals(followup)
+    gesture_start = 1
+    gesture_end=gesture_max
+    
+    # if followup:
+    #     clustering_vals=np.zeros([gesture_max, 16])
+    # else:
+    clustering_vals=np.zeros([gesture_max, PID_max])
+
+    for gesture in range(gesture_start,gesture_end+1):
+        if eeff:
+            filename = str(robot_name)+"_eeff_hand_similarity_matrix_"
+        else:
+            filename = str(robot_name)+"_gesture_"+str(gesture)+"_cross_correlation_"
+        if (followup):
+            filename+="w_FollowUpPs_"
+        filename+=str(alignment)+".npz"
+        # print(filename)
+        data = np.load(filename)
+        if eeff:
+            correlation_array=data['heat_map']
+        else:
+            correlation_array = data['correlation_array']
+        if followup:
+            correlation_array=correlation_array.T
+        # print(correlation_array.shape)
+        # hand_array = data['hand_array']
+        clustering = AgglomerativeClustering(n_clusters=None, distance_threshold=threshold, compute_full_tree=True, linkage=linkage).fit(correlation_array)
+        clustering
+        clustering_vals[gesture-1]=clustering.labels_
+
+    return clustering_vals
+
+
+def compare_rows(row_1, row_2):
+    unique_row_2_vals = np.unique(row_2)
+    # We want to maximize the number of elements that match from one row to the next
+    for i in range(0,unique_row_2_vals.shape[0]-1):
+        for j in range(0,unique_row_2_vals.shape[0]):
+            temp_row = switch_elements(row_2, unique_row_2_vals[i], unique_row_2_vals[j])
+            if count_matched_elements(row_1, temp_row)>count_matched_elements(row_1, row_2):
+                row_2 = np.copy(temp_row)
+    return row_2
+    
+
+def count_matched_elements(row_1, row_2):
+    matches = 0
+    for i in range(0,row_1.shape[0]):
+        if row_1[i]==row_2[i]:
+            matches += 1
+    # print(matches)
+    return matches
+
+def switch_elements(row_1, val1, val2):
+    # Find all occurances of a value in row 1
+    row_swap_indices_1 = np.where(row_1==val1)
+    row_swap_indices_2 = np.where(row_1==val2)
+    new_row = np.copy(row_1)
+    for i in row_swap_indices_1:
+        new_row[i] = val2
+    for i in row_swap_indices_2:
+        new_row[i] = val1
+    
+    # print("New row:"+str(new_row)+"\nOld row: "+str(row_1))
+    return new_row
+
+def organize_cluster_graph(cluster_array):
+    for i in range(0,cluster_array.shape[0]-1):
+        cluster_array[i+1]=compare_rows(cluster_array[i],cluster_array[i+1])
+    return cluster_array
+
