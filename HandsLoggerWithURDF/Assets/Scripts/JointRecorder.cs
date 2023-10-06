@@ -11,6 +11,7 @@ public class JointRecorder : MonoBehaviour
     public GameObject urdf;
 
     private string URDFName;
+    private string version;
 
     private bool isRec = false;
     private bool playLaunched = true;
@@ -45,6 +46,16 @@ public class JointRecorder : MonoBehaviour
 
         controller = GameObject.Find("Controller").GetComponent<ControllerFromLogFile>();
         eventHandler = GameObject.Find("Event System").GetComponent<EventSystemManager>();
+        
+        if (eventHandler.Version==0){
+            version = "";
+        }
+        else if (eventHandler.Version==1){
+            version = "B";
+        }
+        else if (eventHandler.Version==2){
+            version = "C";
+        }
         
         ArticulationBody[] tempArticulationChain = urdf.GetComponentsInChildren<ArticulationBody>();
 
@@ -187,7 +198,7 @@ public class JointRecorder : MonoBehaviour
     }
 
     private void WriteLogFile(){
-        string filePath = Application.persistentDataPath + "/" + URDFName + "_PID" + eventHandler.ParticipantID + "B_JointMotion_gesture_" + gesture_num.ToString() + "_" + demo_num.ToString() + ".csv";
+        string filePath = Application.persistentDataPath + "/" + URDFName + "_PID" + eventHandler.ParticipantID + version + "_JointMotion_gesture_" + gesture_num.ToString() + "_" + demo_num.ToString() + ".csv";
         // Debug.Log("filepath = " + filePath);
         
         writer = new StreamWriter(filePath);

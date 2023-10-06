@@ -14,6 +14,7 @@ public class PosRotRecorder : MonoBehaviour
     // public ControllerFromLogFile fp;
 
     // public Button RecordButton;
+    private string version;
 
     private bool isRec = false;
     private bool playLaunched = true;
@@ -42,6 +43,15 @@ public class PosRotRecorder : MonoBehaviour
         PlayResultButton.onClick.AddListener(delegate{TaskOnRecordClick(false);});
         
         eventHandler = GameObject.Find("Event System").GetComponent<EventSystemManager>();
+        if (eventHandler.Version==0){
+            version = "";
+        }
+        else if (eventHandler.Version==1){
+            version = "B";
+        }
+        else if (eventHandler.Version==2){
+            version = "C";
+        }
         
     }
 
@@ -98,10 +108,10 @@ public class PosRotRecorder : MonoBehaviour
         // string filePath = Application.persistentDataPath + "/Data/" + "goMotion";
         string filePath = "";
         if (hitRecord){
-            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "B_" + go.name + "_Motion_gesture_" + gesture_num.ToString() + "_" + demo_num + ".csv";
+            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + version + "_" + go.name + "_Motion_gesture_" + gesture_num.ToString() + "_" + demo_num + ".csv";
         }
         else{
-            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "B_" + go.name + "_Playback.csv";
+            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + version + "_" + go.name + "_Playback.csv";
         }
         
         // Debug.Log("filepath = " + filePath);

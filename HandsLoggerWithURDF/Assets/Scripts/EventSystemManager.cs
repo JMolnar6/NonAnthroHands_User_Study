@@ -6,6 +6,7 @@ using TMPro;
 
 public class EventSystemManager : MonoBehaviour
 {
+    public int Version = 0; // 0 = normal; 1 = followup; 2 = demo
     public int ParticipantID = 0;
     public float catchupTime = 1.5f;
     public bool begin = false;
