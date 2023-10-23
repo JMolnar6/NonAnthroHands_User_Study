@@ -72,7 +72,6 @@ public class EventSystemManager : MonoBehaviour
         GameObject NextButton    = GameObject.Find("Next");
 
         Button RecordButton  = GameObject.Find("Record Button").GetComponent<Button>();
-        RecordButton.interactable=false;
         Button PlayButton    = GameObject.Find("Play Button").GetComponent<Button>();
         
         WelcomeButton.GetComponent<Button>().onClick.AddListener(TaskOnClickOpen);
@@ -229,9 +228,6 @@ public class EventSystemManager : MonoBehaviour
             gesture_num = 1;//controller.gesture_num; //Allows us to set a gesture in the public edit field for debug       
         }
         controller.gesture_num=gesture_num;
-
-        DebugReport2.SetText("Demo #: "+(demo_num+1).ToString());
-        Debug.Log("Setting demo number text in debug log");
         
         string URDFName = robot.name;
         URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
@@ -247,6 +243,7 @@ public class EventSystemManager : MonoBehaviour
     private void TaskOnRecord(){
         demo_num=demo_num+1; 
         Debug.Log("Demo num = "+demo_num.ToString()); 
+        DebugReport2.SetText("Demo #: "+demo_num.ToString());
         Button RecordButton = GameObject.Find("Record Button").GetComponent<Button>();
         Button PlayButton   = GameObject.Find("Play Button").GetComponent<Button>();
         RecordButton.interactable = false;
@@ -267,8 +264,6 @@ public class EventSystemManager : MonoBehaviour
         RecordButton.interactable = true;
         Button PlayButton         = GameObject.Find("Play Button").GetComponent<Button>();
         PlayButton.interactable   = true;
-        DebugReport2.SetText("Demo #: "+(demo_num+1).ToString()); //Tell what the next demo is going to be. Only actually change demo_num
-                                                                  // when you hit "record".
     }
 
     private void ConnectToQuest(){
@@ -395,12 +390,6 @@ public class EventSystemManager : MonoBehaviour
         GameObject NextButton   = GameObject.Find("Next");   
         NextButton.transform.localScale = new Vector3(0,0,0);
         NextButton.GetComponent<Button>().enabled = false;
-
-        // Make the Record button uninteractable until after the play button has been pressed.
-        Button RecordButton  = GameObject.Find("Record Button").GetComponent<Button>();
-        RecordButton.interactable=false;
-
-        DebugReport2.SetText("");
 
     }
 

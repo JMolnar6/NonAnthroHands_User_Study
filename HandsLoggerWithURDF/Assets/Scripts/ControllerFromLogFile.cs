@@ -156,27 +156,19 @@ public class ControllerFromLogFile : MonoBehaviour {
         }
 
         // Special handling of start-pose pacing for gestures that start too far from the default position
-       if ((URDFName =="j2s6s300") && (gesture_num==14)){
-            Debug.Log("Smoothing out gesture 14");
+        if ((URDFName =="j2s6s300") && (gesture_num==14)){
             StartCoroutine(SmoothReturnToStartPose(2));
         }
-        else if ((URDFName =="j2s6s300") && (gesture_num==15)){
-            Debug.Log("Smoothing out gesture 15");
-            StartCoroutine(SmoothReturnToStartPose(1));
-        }
-        // The following lines were added for the follow-up participants, who received their gestures in reverse order
-        else if ((URDFName =="j2s6s300") && (gesture_num==1)){
-            Debug.Log("Smoothing out gesture 15");
+        if ((URDFName =="j2s6s300") && (gesture_num==15)){
             StartCoroutine(SmoothReturnToStartPose(1));
         }
         else{
-            // ReturnToStartPose();
-            StartCoroutine(SmoothReturnToStartPose(0.5f));
+            ReturnToStartPose();
         }
         
     }
 
-    private IEnumerator SmoothReturnToStartPose(float smoothnessScale){
+    private IEnumerator SmoothReturnToStartPose(int smoothnessScale){
         string URDFName = transform.root.gameObject.name;
         URDFName = URDFName.Substring(0, URDFName.IndexOf("("));
         
@@ -198,17 +190,15 @@ public class ControllerFromLogFile : MonoBehaviour {
         string[] Positions = PositionLines[1].Split(',');
         int numJoints = Positions.Length;
     
-        Debug.Log("Put URDF in smooth starting position: "+PositionLines[1]);
+        Debug.Log("Put URDF in starting position: "+PositionLines[1]);
 
-        // Want to smooth this from the current position, not the default starting position
-
+                // Default position is all 0s
 
         for (int i=1; i<=replayRefreshRate*smoothnessScale; i++){
             int j=0; //Does your positions file keep track of which joints you cared about? You don't want to map the first 6 positions regardless of column, if there are more
             foreach (ArticulationBody joint in articulationChain){   
                 var drive = joint.xDrive;
-                float temptarget = drive.target;
-                drive.target = temptarget + ((float.Parse(Positions[j])*180/(float)Math.PI) - temptarget)*i/(replayRefreshRate*smoothnessScale); // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
+                drive.target = float.Parse(Positions[j])*180/(float)Math.PI*i/(replayRefreshRate*smoothnessScale); // If you insert this line of code, you never have to translate your MoveIt trajectories to degrees        
                 joint.xDrive = drive;            
                 // Debug.Log("Setting joint "+joint.ToString() + " to position " + Positions[j].ToString());
                 j=j+1;
@@ -240,7 +230,7 @@ public class ControllerFromLogFile : MonoBehaviour {
         string[] Positions = PositionLines[1].Split(',');
         int numJoints = Positions.Length;
     
-        Debug.Log("Put URDF in sharp starting position: "+PositionLines[1]);
+        Debug.Log("Put URDF in starting position: "+PositionLines[1]);
 
                 // Default position is all 0s
 
@@ -406,17 +396,12 @@ public class ControllerFromLogFile : MonoBehaviour {
         DebugReport1.SetText("Gesture complete: \n"+Mathf.Round(animationTime).ToString() + " sec");
         gesture_over_sound.Play();
         yield return new WaitForSecondsRealtime(0.5f);
-        // if ((URDFName =="j2s6s300") && (gesture_num==14)){ //Special handling for gestures that end 
-        //     StartCoroutine(SmoothReturnToStartPose(1));     // in positions too far from their starting points
-        // }
-        // else if ((URDFName =="j2s6s300") && (gesture_num==11)){ //Special handling for gestures that end 
-        //     Debug.Log("smoothing out gesture 11");
-        //     StartCoroutine(SmoothReturnToStartPose(1));     // in positions too far from their starting points
-        // }
-        // else{
-        //     ReturnToStartPose();
-        // }
-        StartCoroutine(SmoothReturnToStartPose(0.5f));
+        if ((URDFName =="j2s6s300") && (gesture_num==14)){ //Special handling for gestures that end 
+            StartCoroutine(SmoothReturnToStartPose(1));     // in positions too far from their starting points
+        }
+        else{
+            ReturnToStartPose();
+        }
     }
 
 }

@@ -187,7 +187,7 @@ public class JointRecorder : MonoBehaviour
     }
 
     private void WriteLogFile(){
-        string filePath = Application.persistentDataPath + "/" + URDFName + "_PID" + eventHandler.ParticipantID + "B_JointMotion_gesture_" + gesture_num.ToString() + "_" + demo_num.ToString() + ".csv";
+        string filePath = Application.persistentDataPath + "/" + URDFName + "_PID" + eventHandler.ParticipantID + "_JointMotion_gesture_" + gesture_num.ToString() + "_" + demo_num.ToString() + ".csv";
         // Debug.Log("filepath = " + filePath);
         
         writer = new StreamWriter(filePath);
