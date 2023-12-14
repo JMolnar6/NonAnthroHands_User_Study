@@ -75,6 +75,7 @@ public class PosRotRecorder : MonoBehaviour
                 Vector3 tempPos = go.position;
                 Quaternion tempRot = go.rotation;
 
+                // Debug.Log("length of tempRot quaternion:" +tempRot.ToString());
                 pos.Add(tempPos);
                 rot.Add(tempRot);
                 tim.Add(Time.time);
@@ -117,9 +118,9 @@ public class PosRotRecorder : MonoBehaviour
         // Debug.Log("filepath = " + filePath);
         
         StreamWriter writer = new StreamWriter(filePath);
-        writer.WriteLine("Time, Position (X), Position (Y), Position (Z), Rotation (X), Rotation (Y), Rotation (Z)");
+        writer.WriteLine("Time, Position (X), Position (Y), Position (Z), Rotation (X), Rotation (Y), Rotation (Z), Angle of rotation (W)");
         for (int i = 0; i < tim.Count; i++) {
-            writer.WriteLine(tim[i]+","+pos[i][0]+","+pos[i][1]+","+pos[i][2]+","+rot[i][0]+","+rot[i][1]+","+rot[i][2]);
+            writer.WriteLine(tim[i]+","+pos[i][0]+","+pos[i][1]+","+pos[i][2]+","+rot[i][0]+","+rot[i][1]+","+rot[i][2]+","+rot[i][3]);
         }
         writer.Flush();
         writer.Close();
