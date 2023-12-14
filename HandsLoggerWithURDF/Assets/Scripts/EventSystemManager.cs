@@ -184,6 +184,7 @@ public class EventSystemManager : MonoBehaviour
 
     private void TaskOnClickBegin()
     {
+        //TODO: Add back in the statement that blanks out the record button if they haven't already played the motion
         GameObject IDField       = GameObject.Find("Participant ID");
         IDField.transform.localScale = new Vector3(0.0f,0.0f,0.0f);
         ParticipantID = IDField.GetComponent<Dropdown>().value;
