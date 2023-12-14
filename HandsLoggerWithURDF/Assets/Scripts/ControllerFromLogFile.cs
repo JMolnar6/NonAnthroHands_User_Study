@@ -9,6 +9,7 @@ using TMPro;
 public class ControllerFromLogFile : MonoBehaviour {
     public GameObject urdf;
     public GameObject handPrefab;
+    private GameObject exampleHand;
     private List<ArticulationBody> articulationChain = new List<ArticulationBody>();
     // private bool hasMoved = false;
 
@@ -28,7 +29,7 @@ public class ControllerFromLogFile : MonoBehaviour {
 
     public float replayRefreshRate = 15;
     
-    public bool debugHandMotion = false;
+    public bool debugHandMotion = false; // Allow replay of hand motion if this is checked, based on pos_rot_hand.csv file
     public bool playFinalMotion = false;
 
     // public ControlType control = PositionControl;
@@ -51,6 +52,8 @@ public class ControllerFromLogFile : MonoBehaviour {
     {
         Button PlayButton       = GameObject.Find("Play Button").GetComponent<Button>();
         Button RecordButton     = GameObject.Find("Record Button").GetComponent<Button>();
+
+        GameObject ReplayHandButtonObject = GameObject.Find("Replay Hand Motion");
         
         DebugReport1 = GameObject.Find("Debug Report 1").GetComponent<TextMeshPro>();
         DebugReport2 = GameObject.Find("Debug Report 2").GetComponent<TextMeshPro>();
@@ -71,12 +74,12 @@ public class ControllerFromLogFile : MonoBehaviour {
 
         if (debugHandMotion==false){
             // handPrefab.SetActive(false);
-            GameObject ReplayHandButtonObject = GameObject.Find("Replay Hand Motion");
             ReplayHandButtonObject.transform.localScale = new Vector3(0, 0, 0);
         }
         else{
             Button ReplayHandButton = GameObject.Find("Replay Hand Motion").GetComponent<Button>();
             ReplayHandButton.onClick.AddListener(EndEffPlayback);
+            ReplayHandButtonObject.transform.localScale = new Vector3(0.025f, 0.025f, 0.025f);
             // handPrefab.Instantiate();
         }
         // DebugReport1.SetText("Debug Info: We are setting up the robot.");// + ((int) statusUpdate["RedTeamScore"].n));
@@ -372,27 +375,38 @@ public class ControllerFromLogFile : MonoBehaviour {
         String filename = "pos_rot_hand.csv";
         // Clear any distracting debug text
         DebugReport2.SetText("");
-        Instantiate(handPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        exampleHand = Instantiate(handPrefab, new Vector3(0f, 0.3f, 0.3f), Quaternion.identity);
+        // GameObject oculusControllerPrefab = GameObject.Find("OculusTouchForQuest2RightModel").GetComponent<GameObject>(); 
+        // oculusControllerPrefab.SetActive(true);
+        
         StartCoroutine(PlaybackHandMotion(filename));
     }
 
     private IEnumerator PlaybackHandMotion(string filename){
+        
         string[] PositionLines = System.IO.File.ReadAllLines(Application.persistentDataPath+"/"+filename);
         
-        for (int i=0; i<=PositionLines.Length-1; i++){
+        for (int i=1; i<=PositionLines.Length-1; i++){ // Skip the header
             string[] Positions = PositionLines[i].Split(','); 
 
-            //Do these need to be modified for Unity's inverted y-axis?
-            Vector3 tempPos = new Vector3(float.Parse(Positions[0]),float.Parse(Positions[1]),float.Parse(Positions[2])); 
-            Vector3 tempRot = new Vector3(float.Parse(Positions[3])*180/(float)Math.PI,float.Parse(Positions[4])*180/(float)Math.PI,float.Parse(Positions[5])*180/(float)Math.PI);
+            // Positions[0] = time
+            //Do these need to be modified for Unity's inverted y-axis? Adjust the Z position so it's not too far behind the robot.
+            Vector3 tempPos = new Vector3(float.Parse(Positions[1]),float.Parse(Positions[2]),float.Parse(Positions[3])) + Vector3.up*(-1f) + Vector3.forward*(-2f); 
+            Vector3 tempRot = new Vector3(float.Parse(Positions[4])*(180)/(float)Math.PI,float.Parse(Positions[5])*(180)/(float)Math.PI,float.Parse(Positions[6])*(180)/(float)Math.PI);
             Debug.Log("Rotation = "+tempRot[0].ToString() + " " + tempRot[1].ToString() + " " + tempRot[2].ToString());
-            handPrefab.transform.position = tempPos;
+            Debug.Log("Position = "+exampleHand.transform.position.ToString());
+            // exampleHand.transform.position = tempPos;
                         
-            Quaternion safeRot = Quaternion.Euler(tempRot[0],-tempRot[2],tempRot[1]);
-            handPrefab.transform.rotation = safeRot;
+            Quaternion safeRot = Quaternion.Euler(tempRot[0],tempRot[1],tempRot[2]);
+            exampleHand.transform.rotation = safeRot;
+            exampleHand.transform.SetPositionAndRotation(tempPos, safeRot);
+            Debug.Log("New transform is: "+exampleHand.transform.position.ToString()+" "+ exampleHand.transform.rotation.ToString());
+            // exampleHand.transform.eulerAngles = tempRot;
+            // exampleHand.transform.Rotate(0f,-180f,0f, Space.World); //Rotations should be with respect to the camera, not the world, and this is the camera's rotation
 
-            if (i==PositionLines.Length){
+            if (i==PositionLines.Length-1){
                 Debug.Log("Final animation time: " + Time.time.ToString());
+                // Destroy(exampleHand);
             }
 
         yield return new WaitForSecondsRealtime((float) 0.5/replayRefreshRate);
