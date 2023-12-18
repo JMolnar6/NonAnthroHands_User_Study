@@ -6,6 +6,7 @@ using TMPro;
 
 public class EventSystemManager : MonoBehaviour
 {
+    public int Version = 0; // 0 = normal; 1 = followup; 2 = demo
     public int ParticipantID = 0;
     public float catchupTime = 1.5f;
     public bool begin = false;
@@ -183,6 +184,7 @@ public class EventSystemManager : MonoBehaviour
 
     private void TaskOnClickBegin()
     {
+        //TODO: Add back in the statement that blanks out the record button if they haven't already played the motion
         GameObject IDField       = GameObject.Find("Participant ID");
         IDField.transform.localScale = new Vector3(0.0f,0.0f,0.0f);
         ParticipantID = IDField.GetComponent<Dropdown>().value;

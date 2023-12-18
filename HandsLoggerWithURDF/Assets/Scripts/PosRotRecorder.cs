@@ -14,6 +14,7 @@ public class PosRotRecorder : MonoBehaviour
     // public ControllerFromLogFile fp;
 
     // public Button RecordButton;
+    private string version;
 
     private bool isRec = false;
     private bool playLaunched = true;
@@ -42,6 +43,15 @@ public class PosRotRecorder : MonoBehaviour
         PlayResultButton.onClick.AddListener(delegate{TaskOnRecordClick(false);});
         
         eventHandler = GameObject.Find("Event System").GetComponent<EventSystemManager>();
+        if (eventHandler.Version==0){
+            version = "";
+        }
+        else if (eventHandler.Version==1){
+            version = "B";
+        }
+        else if (eventHandler.Version==2){
+            version = "C";
+        }
         
     }
 
@@ -65,6 +75,7 @@ public class PosRotRecorder : MonoBehaviour
                 Vector3 tempPos = go.position;
                 Quaternion tempRot = go.rotation;
 
+                // Debug.Log("length of tempRot quaternion:" +tempRot.ToString());
                 pos.Add(tempPos);
                 rot.Add(tempRot);
                 tim.Add(Time.time);
@@ -98,18 +109,18 @@ public class PosRotRecorder : MonoBehaviour
         // string filePath = Application.persistentDataPath + "/Data/" + "goMotion";
         string filePath = "";
         if (hitRecord){
-            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "_" + go.name + "_Motion_gesture_" + gesture_num.ToString() + "_" + demo_num + ".csv";
+            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + version + "_" + go.name + "_Motion_gesture_" + gesture_num.ToString() + "_" + demo_num + ".csv";
         }
         else{
-            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + "_" + go.name + "_Playback.csv";
+            filePath = Application.persistentDataPath + "/" + controller.URDFName + "_PID" + eventHandler.ParticipantID + version + "_" + go.name + "_Playback.csv";
         }
         
         // Debug.Log("filepath = " + filePath);
         
         StreamWriter writer = new StreamWriter(filePath);
-        writer.WriteLine("Time, Position (X), Position (Y), Position (Z), Rotation (X), Rotation (Y), Rotation (Z)");
+        writer.WriteLine("Time, Position (X), Position (Y), Position (Z), Rotation (X), Rotation (Y), Rotation (Z), Angle of rotation (W)");
         for (int i = 0; i < tim.Count; i++) {
-            writer.WriteLine(tim[i]+","+pos[i][0]+","+pos[i][1]+","+pos[i][2]+","+rot[i][0]+","+rot[i][1]+","+rot[i][2]);
+            writer.WriteLine(tim[i]+","+pos[i][0]+","+pos[i][1]+","+pos[i][2]+","+rot[i][0]+","+rot[i][1]+","+rot[i][2]+","+rot[i][3]);
         }
         writer.Flush();
         writer.Close();
