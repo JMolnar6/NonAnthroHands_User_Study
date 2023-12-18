@@ -10,4 +10,9 @@ HandsLoggerWithURDF/tempdata/PID 0 (test)/
 data
 *.npz
 *.png
+<<<<<<< Updated upstream
 HandsLoggerWithURDF/Assets/Particle Ribbon by Moonflower Carnivore/
+=======
+npz_files
+server
+>>>>>>> Stashed changes
