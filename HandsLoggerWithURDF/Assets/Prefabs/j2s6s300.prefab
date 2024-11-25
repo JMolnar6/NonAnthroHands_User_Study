@@ -7050,11 +7050,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   urdf: {fileID: 3671922608385142336}
-  handPrefab: {fileID: 0}
+  handPrefab: {fileID: 919132149155446097, guid: 708687bbe7be37e4ab18a61e661403a3, type: 3}
   gesture_num: 1
   demo_complete: 0
   replayRefreshRate: 15
-  debugHandMotion: 0
+  debugHandMotion: 1
   playFinalMotion: 0
   stiffness: 100000
   damping: 10000

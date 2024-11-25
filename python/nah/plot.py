@@ -2,8 +2,10 @@
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 from matplotlib.colors import LogNorm, Normalize
+from matplotlib import colors
 from nah.loader import load_npzs
 from nah.utils import study_range_vals
 from tqdm import tqdm
@@ -389,9 +391,9 @@ def plot_heatmap(robot_name,
     gesture_labels = []
     participant_max, gesture_max = study_range_vals(followup)
     for i in range(1, participant_max + 1):
-        participant_labels.append("Participant " + str(i))
+        participant_labels.append("P" + str(i))
     for i in range(1, gesture_max + 1):
-        gesture_labels.append("Gesture " + str(i))
+        gesture_labels.append("G" + str(i))
 
     df = pd.DataFrame(demo_heatmap_array, columns=gesture_labels)
     df.index = participant_labels
@@ -434,7 +436,7 @@ def plot_heatmap(robot_name,
 
 
 def plot_correlation_matrix(robot_name, gesture, followup, alignment,
-                            heatmap_array, handed_array, followup_participant_override=False):
+                            heatmap_array, handed_array, followup_participant_override=False, threshold=None):
     if (robot_name == "j2s6s300"):
         robot_name = "Jaco"
     participant_labels = []
@@ -456,10 +458,19 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
     # else:
     df.index = participant_labels
 
+    cmap = mpl.colormaps.get_cmap('rocket')
+    if threshold is not None:
+        threshold_mask = np.where(heatmap_array >= threshold, True, False)
+        cmap.set_bad("w")      
+    else:
+        threshold_mask=np.zeros([heatmap_array.shape[0],heatmap_array.shape[1]])
+
     ax = sns.heatmap(heatmap_array,
-                     cmap='rocket',
+                     cmap=cmap,
                      vmin=0,
-                     vmax=np.max(heatmap_array),
+                    #  vmax=np.max(heatmap_array),
+                     vmax=3.0,
+                     mask=threshold_mask,
                      cbar_kws={'label': 'Right Hand'})
     
     # if not np.all(handed_array):
@@ -468,8 +479,12 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
                 ax=ax,
                 mask=handed_array,
                 vmin=0,
-                vmax=np.max(heatmap_array),
+                # vmax=np.max(heatmap_array),
+                vmax =3.0,
                 cbar_kws={'label': 'Left Hand'})
+    
+
+
 
     title = robot_name + " Robot, Gesture " + str(
         gesture) + " Correlation Matrix"
@@ -486,3 +501,69 @@ def plot_correlation_matrix(robot_name, gesture, followup, alignment,
     figname += '.png'
     plt.savefig(figname)
     # plt.close("all")
+
+def plot_clusters(robot_name, followup, cluster_vals, alignment, eeff=False):
+    """Import an organized matrix of agglomorate clusters and plot it"""    
+
+    plt.close("all")
+
+    if (robot_name == "j2s6s300"):
+        robot_name = "Jaco"
+
+    col_labels = []
+    row_labels = []
+
+    num_colors = np.unique(cluster_vals).shape[0]
+
+    PID_max,gesture_max=study_range_vals(followup)
+
+    for i in range(1, gesture_max + 1):
+        row_labels.append("G" + str(i))
+
+    for i in range(1, PID_max + 1):
+        col_labels.append("P" + str(i))
+
+    df = pd.DataFrame(cluster_vals, columns=col_labels)
+
+    df.index = row_labels
+
+    # ax = sns.heatmap(heatmap_array,
+    #                     cmap=cmap,
+    #                     vmin=0,
+    #                     vmax=np.max(heatmap_array),
+    #                     mask=threshold_mask,
+    #                     cbar_kws={'label': 'Right Hand'})
+
+    cmap = sns.color_palette("nipy_spectral", num_colors)
+
+    ax = sns.heatmap(df,
+                # cmap='cividis',
+                cmap=cmap,
+                cbar=False,
+                # mask=cluster_vals,
+                vmin=0,
+                vmax=np.max(cluster_vals))
+
+
+    # Get the colorbar object from the Seaborn heatmap
+    # colorbar = ax.collections[0].colorbar
+    # The list comprehension calculates the positions to place the labels to be evenly distributed across the colorbar
+    # r = colorbar.vmax - colorbar.vmin
+    # colorbar.set_ticks([colorbar.vmin + 0.5 * r / (num_colors) + r * i / (num_colors) for i in range(num_colors)])
+    # colorbar.set_ticklabels(list(vmap.values()))
+
+    title = robot_name + " Clusters"
+    if followup:
+        title += ",\n Follow-up Study"
+
+    ax.set_title(title, fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    plt.show()
+    figname = robot_name + '_clusters_' + str(alignment)
+    if followup:
+        figname += '_FollowUpStudy'
+    elif eeff:
+        figname+= '_eeff'
+    figname += '.png'
+    plt.savefig(figname)
+

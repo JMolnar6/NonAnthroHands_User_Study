@@ -3,7 +3,8 @@
 import numpy as np
 from evo.core import metrics, sync
 from evo.core.trajectory import PoseTrajectory3D
-from nah.alignments import Alignment, dtw_align, evo_align, manifold_align, pose_dist
+from nah.alignments import (Alignment, dtw_align, evo_align, manifold_align,
+                            pose_dist)
 from scipy.spatial.transform import Rotation
 
 
@@ -73,20 +74,18 @@ def align_trajectories(traj1, traj2, alignment=Alignment.No):
         traj1_evo = get_evo_trajectory(traj1_aligned)
         traj2_evo = get_evo_trajectory(traj2_aligned)
 
-        # raise NotImplementedError("Temporal alignment not implemented.")
-
     elif alignment == Alignment.SpatioTemporal:
-        #TODO(Jennifer) Varun, I wanted to do spatiotemporal alignment and
-        # right now, evo_alignment is working better. I commented out the
-        # manifold_alignment but it's ready here for you to re-insert. The
-        # Alignment description in nah.alignments matches what's here
-        # traj2_evo_spatial = manifold_align(traj1_evo, traj2_evo)
+        # Perform spatial alignment
         traj2_evo_spatial = evo_align(traj1_evo, traj2_evo)
+
+        # Perform temporal alignment
         traj1_spatial = convert_evo_to_np(traj1_evo)
         traj2_spatial = convert_evo_to_np(traj2_evo_spatial)
         traj1_aligned, traj2_aligned = dtw_align(traj1_spatial,
                                                  traj2_spatial,
                                                  dist=pose_dist)
+
+        # Convert back to evo trajectory
         traj1_evo = get_evo_trajectory(traj1_aligned)
         traj2_evo = get_evo_trajectory(traj2_aligned)
 
